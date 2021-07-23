@@ -298,7 +298,7 @@ begin
 
   menuCopy := TMenuItem.Create(ctxMenu);
   menuCopy.Caption := FSI_PLUGIN_EDITOR_COPY_MENU;
-  menuCopy.OnClick := doOnEditorClearContextMenuClick;
+  menuCopy.OnClick := doOnEditorCopyContextMenuClick;
   ctxMenu.Items.Add(menuCopy);  
 
 //  menu := TMenuItem.Create(ctxMenu);
@@ -462,7 +462,7 @@ begin
   end;
 end;
 
-procedure TFSIViewer.doOnEditorClearContextMenuClick(sender: TObject);
+procedure TFSIViewer.doOnEditorCopyContextMenuClick(sender: TObject);
 begin
   _editor.CopyToClipboard;
 end;

@@ -95,11 +95,13 @@ unit Pipes;
 ////////////////////////////////////////////////////////////////////////////////
 interface
 
+{$WARN SYMBOL_PLATFORM OFF}        // TThreadPriority is specific to Windows
+
 ////////////////////////////////////////////////////////////////////////////////
 //   Include units
 ////////////////////////////////////////////////////////////////////////////////
 uses
-  Windows, SysUtils, Classes, Messages;
+  Windows, Types, SysUtils, Classes, Messages;
 
 ////////////////////////////////////////////////////////////////////////////////
 //   Compiler defines
@@ -4139,7 +4141,7 @@ function GetConsoleWindow(ProcessHandle: THandle): HWND;
 var  lpConsoleHwnd: Pointer;
      hThread:       THandle;
      dwSize:        DWORD;
-     dwWrite:       DWORD;
+     dwWrite:       SIZE_T;
      dwExit:        DWORD;
 begin
 
@@ -4238,7 +4240,7 @@ function ExecConsoleEvent(ProcessHandle: THandle; Event: DWORD): Boolean;
 var  lpCtrlEvent:   Pointer;
      hThread:       THandle;
      dwSize:        DWORD;
-     dwWrite:       DWORD;
+     dwWrite:       SIZE_T;
      dwExit:        DWORD;
 begin
 
