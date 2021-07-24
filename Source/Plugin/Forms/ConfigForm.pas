@@ -29,10 +29,16 @@ unit ConfigForm;
 interface
 
 uses
-  Forms, Classes, Controls, ExtCtrls, StdCtrls, ComCtrls, Dialogs;
+  Forms, Classes, Controls, ExtCtrls, StdCtrls, ComCtrls, Dialogs,
+  // expose TConfiguration so we can manage the lifetime of a local instance,
+  // preventing memory leaks
+  Config;
 
 type
   TFrmConfiguration = class(TForm)
+  private
+    _config: TConfiguration;
+  published
     pnlBase: TPanel;
     grpFSISettings: TGroupBox;
     grpEditorSettings: TGroupBox;
@@ -56,6 +62,8 @@ type
     procedure chkConvertToTabsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cmdSelectBinaryClick(Sender: TObject);
     procedure cmdSaveClick(Sender: TObject);
+    procedure cmdCancelClick(Sender: TObject);
+    procedure DestroyWindowHandle; override;
   private
     procedure initialize;
     procedure doOnConvertToTabsCheckBoxStateChange;
@@ -68,7 +76,7 @@ uses
   // standard units
   SysUtils,
   // plugin units
-  Config, Constants;
+  Constants;
 
 {$R *.dfm}
 
@@ -103,15 +111,22 @@ end;
 procedure TFrmConfiguration.cmdSaveClick(Sender: TObject);
 begin
   saveConfiguration;
+  Close;
+end;
+
+procedure TFrmConfiguration.cmdCancelClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFrmConfiguration.initialize;
 begin
-  txtFSIBinary.Text := Configuration.FSIPath;
-  txtFSIBinaryArgs.Text := Configuration.FSIArgs;
-  chkConvertToTabs.Checked := Configuration.ConvertTabsToSpacesInFSIEditor;
-  txtTabLength.Text := IntToStr(Configuration.TabLength);
-  chkEchoText.Checked := Configuration.EchoNPPTextInEditor;
+  _config := TConfiguration.Create;
+  txtFSIBinary.Text := _config.FSIPath;
+  txtFSIBinaryArgs.Text := _config.FSIArgs;
+  chkConvertToTabs.Checked := _config.ConvertTabsToSpacesInFSIEditor;
+  txtTabLength.Text := IntToStr(_config.TabLength);
+  chkEchoText.Checked := _config.EchoNPPTextInEditor;
 end;
 
 procedure TFrmConfiguration.doOnConvertToTabsCheckBoxStateChange;
@@ -122,16 +137,24 @@ end;
 
 procedure TFrmConfiguration.saveConfiguration;
 begin
-  Configuration.FSIPath := txtFSIBinary.Text;
-  Configuration.FSIArgs := txtFSIBinaryArgs.Text;
-  Configuration.ConvertTabsToSpacesInFSIEditor := chkConvertToTabs.Checked;
+  _config.FSIPath := txtFSIBinary.Text;
+  _config.FSIArgs := txtFSIBinaryArgs.Text;
+  _config.ConvertTabsToSpacesInFSIEditor := chkConvertToTabs.Checked;
   if (chkConvertToTabs.Checked) then
-    Configuration.TabLength := StrToInt(txtTabLength.Text)
+    _config.TabLength := StrToInt(txtTabLength.Text)
   else
-    Configuration.TabLength := DEFAULT_TAB_LENGTH;
-  Configuration.EchoNPPTextInEditor := chkEchoText.Checked;
+    _config.TabLength := DEFAULT_TAB_LENGTH;
+  _config.EchoNPPTextInEditor := chkEchoText.Checked;
 
-  Configuration.SaveToConfigFile;
+  _config.SaveToConfigFile;
+end;
+
+procedure TFrmConfiguration.DestroyWindowHandle;
+begin
+  if Assigned(_config) then
+    FreeAndNil(_config);
+
+  inherited;
 end;
 
 end.
