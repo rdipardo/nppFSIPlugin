@@ -32,7 +32,9 @@ uses
   // standard units 
   Classes, ComCtrls, Controls, Types, Messages, Menus,
   // windows pipes wrapper 
-  Pipes;
+  Pipes,
+  // configuration manager
+  Config;
 
 type
 
@@ -41,6 +43,7 @@ type
   /// 
   TFSIViewer = class
   private
+    _config: TConfiguration;
     _editor: TRichEdit;
     _pipedConsole: TPipeConsole;
     _editableAreaStartCoord: TPoint;
@@ -140,12 +143,15 @@ type
     /// </summary>
     procedure AddToEditor(const text: String);
   public
+    /// <summary>
+    /// Gets a readonly instance of the config manager.
+    /// </summary>
+    property Config: TConfiguration read _config;
 
     /// <summary>
     /// Get the instance of the editor that interfaces with FSI.
     /// </summary>
     property Editor: TRichEdit read _editor;
-  public
 
     /// <summary>
     /// Event raised when text is sent to FSI.
@@ -169,7 +175,7 @@ uses
   // standard units 
   Windows, StrUtils, StdCtrls, Graphics, SysUtils,
   // plugin units
-  Config, Constants;
+  Constants;
 
 {$REGION 'Constructor & Destructor' }
 
@@ -184,8 +190,12 @@ destructor TFSIViewer.Destroy;
 begin
   Stop;
 
-  _pipedConsole.Free;
-  _editor.Free;
+  if Assigned(_pipedConsole) then
+    FreeAndNil(_pipedConsole);
+  if Assigned(_editor) then
+    FreeAndNil(_editor);
+  if Assigned(_config) then
+    FreeAndNil(_config);
 
   inherited;
 end;
@@ -196,7 +206,7 @@ end;
 
 function TFSIViewer.Start: Boolean;
 begin
-  _editor.Enabled := _pipedConsole.Start(Configuration.FSIPath, Configuration.FSIArgs);
+  _editor.Enabled := _pipedConsole.Start(_config.FSIPath, _config.FSIArgs);
   Result := _editor.Enabled;
 end;
 
@@ -225,16 +235,16 @@ begin
       else
         finalText := text + ';;';
 
-      finalText := finalText + #13;
+      finalText := finalText + #13#10;
     end
     else
     begin
       finalText := text;
     end;
 
-    if (Configuration.ConvertTabsToSpacesInFSIEditor) then
+    if (_config.ConvertTabsToSpacesInFSIEditor) then
     begin
-      finalText := StringReplace(finalText, #9, DupeString(' ', Configuration.TabLength), [rfReplaceAll]);
+      finalText := StringReplace(finalText, #9, DupeString(' ', _config.TabLength), [rfReplaceAll]);
     end;
 
     if (appendEditor) then
@@ -266,6 +276,7 @@ end;
 
 procedure TFSIViewer.createEditor;
 begin
+  _config := TConfiguration.Create;
   _editor := TRichEdit.Create(Nil);
   _editor.Width := 10;
   _editor.Height := 10;
@@ -405,7 +416,7 @@ begin
       _editor.SelLength := _editor.GetTextLen - _editableAreaStartPos;
       newText := _editor.SelText;
       updateEditableAreaStart;
-      newText := newText + #13;
+      newText := newText + #13#10;
       SendText(newText, false, false);
     end
     else if (Key = VK_UP) then
@@ -427,10 +438,10 @@ begin
     end
     else if (Key = VK_TAB) then
     begin
-      if (Configuration.ConvertTabsToSpacesInFSIEditor) then
+      if (_config.ConvertTabsToSpacesInFSIEditor) then
       begin
         _editor.SelStart := _editor.GetTextLen;
-        _editor.SelText := DupeString(' ', Configuration.TabLength);
+        _editor.SelText := DupeString(' ', _config.TabLength);
       end;
     end;
   end

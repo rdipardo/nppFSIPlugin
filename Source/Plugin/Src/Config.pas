@@ -58,11 +58,6 @@ type
     property EchoNPPTextInEditor: Boolean read _echoNPPTextInEditor write _echoNPPTextInEditor;
   end;
 
-  /// <summary>
-  /// Gets the singleton instance of the config manager.
-  /// </summary>
-  function Configuration: TConfiguration;
-
 implementation
 
 uses
@@ -72,17 +67,6 @@ uses
   NPP,
   // plugin units
   Constants;
-
-var
-  _configuration: TConfiguration;
-
-function Configuration: TConfiguration;
-begin
-  if (not Assigned(_configuration)) then
-    _configuration := TConfiguration.Create;
-
-  Result := _configuration;
-end;
 
 { TConfiguration }
 
@@ -96,7 +80,7 @@ end;
 
 destructor TConfiguration.Destroy;
 begin
-  saveToConfigFile;
+  SaveToConfigFile;
 
   inherited;
 end;

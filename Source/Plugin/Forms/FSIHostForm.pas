@@ -48,12 +48,14 @@ type
   /// </summary>
   TFrmFSIHost = class(TForm)
   private
+    _configOK: Boolean;
     _formRegData: PTbData;
     _fsiViewer: TFSIViewer;
     _onClose: TFSIHostCloseEvent;
   private
     procedure registerForm;
     procedure createFSI;
+    procedure quitFSI;
     procedure doOnResultOutput(sender: TObject);
     procedure doOnSendText(sender: TObject);
   protected
@@ -85,8 +87,8 @@ constructor TFrmFSIHost.Create(owner: TComponent);
 begin
   inherited Create(owner);
 
+  _configOK := false;
   createFSI;
-  registerForm;
 end;
 
 destructor TFrmFSIHost.Destroy;
@@ -98,6 +100,10 @@ begin
     FreeMem(_formRegData, SizeOf(TTbData));
   end;
 
+  QuitFSI;
+  // make sure the configuration reflects any changed options
+  // so they're saved to disk
+  _fsiViewer.Config.LoadFromConfigFile;
   _fsiViewer.Free;
 
   inherited;
@@ -108,14 +114,35 @@ end;
 {$REGION 'Public Mehtods'}
 
 procedure TFrmFSIHost.Show;
-begin
-  Visible := true;
-  ShowDialog(Handle);
+ begin
+   if not Assigned(_fsiViewer) then
+    createFSI;
+
+   if (_fsiViewer.Editor.Lines.Count > 0) then
+   begin
+     QuitFSI;
+     _fsiViewer.Editor.Clear;
+   end;
+
+   _configOK := _fsiViewer.Start;
+
+   if (not _configOK) then
+      MessageDlg(FSI_PLUGIN_START_FAILE_MSG, mtError, [mbClose], 0)
+   else
+   begin
+      if not Assigned(_formRegData) then
+         registerForm;
+
+      Visible := true;
+      ShowDialog(Handle);
+   end;
 end;
 
 procedure TFrmFSIHost.SendSelectedTextInNPPToFSI;
 begin
-  _fsiViewer.SendText(GetSelectedText, true, Configuration.EchoNPPTextInEditor);
+  // reload options in case they've changed
+  _fsiViewer.Config.LoadFromConfigFile;
+  _fsiViewer.SendText(GetSelectedText, true, _fsiViewer.Config.EchoNPPTextInEditor);
 end;
 
 {$ENDREGION}
@@ -163,11 +190,12 @@ begin
   _fsiViewer.Editor.Parent := self;
   _fsiViewer.OnSendText := doOnSendText;
   _fsiViewer.OnResultOutput := doOnResultOutput;
+end;
 
-  if (not _fsiViewer.Start) then
-  begin
-    MessageDlg(FSI_PLUGIN_START_FAILE_MSG, mtError, [mbOK], 0);
-  end;
+procedure TFrmFSIHost.QuitFSI;
+begin
+  if Assigned(_fsiViewer) then
+      _fsiViewer.SendText(PChar('#quit ;;' + #13#10), false, false);
 end;
 
 procedure TFrmFSIHost.doOnResultOutput(sender: TObject);
