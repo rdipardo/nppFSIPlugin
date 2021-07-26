@@ -1,5 +1,4 @@
 library NPPFSIPlugin;
-
 // =============================================================================
 // Unit: NPPFSIPlugin
 // Description: Main library source for plugin.
@@ -25,15 +24,15 @@ library NPPFSIPlugin;
 // THE SOFTWARE.
 //
 // =============================================================================
-
 {$IF CompilerVersion >= 21.0}
   {$WEAKLINKRTTI ON}
   {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
-{$IFEND}
+{$ENDIF}
 
 uses
   SysUtils,
   Windows,
+  Graphics,
   Pipes in 'Src\Pipes.pas',
   Scintilla in 'Src\Scintilla.pas',
   NPP in 'Src\NPP.pas',
@@ -44,49 +43,55 @@ uses
   ConfigForm in 'Forms\ConfigForm.pas' {FrmConfiguration},
   AboutForm in 'Forms\AboutForm.pas' {FrmAbout};
 
-{$R *.RES}
+{$R 'NPPFSIPlugin.res' 'NPPFSIPlugin.rc'}
+{$R *.dres}
 
 var
   PluginLoaded: Boolean;
-  PluginFuncs: array [0 .. FSI_PLUGIN_FUNC_COUNT - 1] of TFuncItem;
+  PluginFuncs: TPluginFuncList;
   FSIHostForm: TFrmFSIHost;
-
+  Bmp: TBitMap;
+  Icon: TIcon;
+  IconDark: TIcon;
 {$REGION 'Methods exported by plugin'}
-
 /// Supports Unicode
 ///
 function isUnicode: BOOL; cdecl;
 begin
   Result := True;
 end;
-
 /// Loads basic NPP info.
 ///
 procedure setInfo(data: TNppData); cdecl;
 begin
   NppData := data;
 end;
-
 /// Define the name of the plugin.
 ///
 function getName: PChar; cdecl;
 begin
   Result := PChar(FSI_PLUGIN_NAME);
 end;
-
 /// Message handler for NPP messages
 ///
 function messageProc(Message: Cardinal; wParam: wParam; lParam: lParam): LRESULT; cdecl;
 begin
   Result := 0;
 end;
-
 /// Handle Notifications from Scintilla.
 ///
 procedure beNotified(msg: PSCNotification); cdecl;
+var
+  sciMsg: TSCNotification;
 begin
+  sciMsg := TSCNotification(msg^);
+  if sciMsg.nmhdr.code = NPPN_TBMODIFICATION then begin
+      Bmp := TBitMap.Create;
+      Icon := TIcon.Create;
+      IconDark := TIcon.Create;
+      SetToolBarIcon(@PluginFuncs, Icon, IconDark, Bmp);
+  end;
 end;
-
 /// Get the custom functions defined by the plugin.
 ///
 function getFuncsArray(var funcCount: Integer): Pointer; cdecl;
@@ -94,11 +99,8 @@ begin
   funcCount := FSI_PLUGIN_FUNC_COUNT;
   Result := @PluginFuncs;
 end;
-
 {$ENDREGION}
-
 {$REGION 'Methods called by NPP'}
-
 /// <summary>
 /// Handle host form close notification.
 /// </summary>
@@ -106,7 +108,6 @@ procedure DoOnFSIFormClose();
 begin
   FSIHostForm := Nil;
 end;
-
 /// <summary>
 /// Load the FSI window and show it.
 /// </summary>
@@ -117,10 +118,8 @@ begin
     FSIHostForm := TFrmFSIHost.Create(Nil);
     FSIHostForm.OnClose := DoOnFSIFormClose;
   end;
-
   FSIHostForm.Show;
 end;
-
 /// <summary>
 /// Send text from NPP to FSI.
 /// </summary>
@@ -131,7 +130,6 @@ begin
     FSIHostForm.SendSelectedTextInNPPToFSI;
   end;
 end;
-
 /// <summary>
 /// Show the plugin configuration window.
 /// </summary>
@@ -140,14 +138,12 @@ var
   configForm: TFrmConfiguration;
 begin
   configForm := TFrmConfiguration.Create(Nil);
-
   try
     configForm.ShowModal;
   finally
     configForm.Free;
   end;
 end;
-
 /// <summary>
 /// Show the About window
 /// </summary>
@@ -156,18 +152,14 @@ var
   aboutForm: TFrmAbout;
 begin
   aboutForm := TFrmAbout.Create(Nil);
-
   try
     aboutForm.ShowModal;
   finally
     aboutForm.Free;
   end;
 end;
-
 {$ENDREGION}
-
 {$REGION 'Helper Methods'}
-
 /// Create and store structure that registers custom functions exported by the FSI plugin.
 ///
 procedure RegisterPluginFunction(funcIndex: Integer; funcName: String; func: TPluginProc;
@@ -180,7 +172,6 @@ begin
   PluginFuncs[funcIndex]._cmdID := 0;
   PluginFuncs[funcIndex]._PShKey := shortcut;
 end;
-
 /// Defines a keyboard shortcut for a function exposed by the FSI plugin.
 ///
 function MakeShortcutKey(const useCtrl, useAlt, useShift: Boolean; key: UCHAR): PShortcutKey;
@@ -191,7 +182,6 @@ begin
   Result._isShift := useShift;
   Result._key := key;
 end;
-
 /// Loads plugin by registering all custom funcs exposed by the FSI plugin.
 ///
 procedure LoadPlugin;
@@ -205,11 +195,9 @@ begin
     RegisterPluginFunction(FSI_SEP_1_CMD_ID, '-', Nil, false, Nil);
     RegisterPluginFunction(FSI_CONFIG_CMD_ID, FSI_PLUGIN_CONFIG_MENU, ShowConfig, false, Nil);
     RegisterPluginFunction(FSI_ABOUT_CMD_ID, FSI_PLUGIN_ABOUT_MENU, ShowAbout, false, Nil);
-
     PluginLoaded := true;
   end;
 end;
-
 /// Releases rsources before unloading FSI plugin.
 ///
 procedure UnLoadPlugin;
@@ -218,20 +206,21 @@ var
 begin
   if Assigned(FSIHostForm) then
     FreeAndNil(FSIHostForm);
-
+  if Assigned(Icon) then
+    FreeAndNil(Icon);
+  if Assigned(IconDark) then
+    FreeAndNil(IconDark);
+  if Assigned(Bmp) then
+    FreeAndNil(Bmp);
   for i := Low(PluginFuncs) to High(PluginFuncs) do
   begin
     if (PluginFuncs[i]._PShKey <> Nil) then
       Dispose(PluginFuncs[i]._PShKey);
   end;
-
   PluginLoaded := false;
 end;
-
 {$ENDREGION}
-
 {$REGION 'DLL Proc'}
-
 procedure DLLEntry(dwReason: DWORD);
 begin
   case dwReason of
@@ -241,9 +230,7 @@ begin
       UnLoadPlugin;
   end;
 end;
-
 {$ENDREGION}
-
 exports
   isUnicode,
   setInfo,
@@ -251,7 +238,6 @@ exports
   getFuncsArray,
   beNotified,
   messageProc;
-
 begin
   DllProc := @DLLEntry;
   DLLEntry(DLL_PROCESS_ATTACH);

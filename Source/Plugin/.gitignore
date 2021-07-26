@@ -20,3 +20,9 @@ Bin/**/*
 *.zip
 *.exe
 *.dll
+*.dres
+*.rc
+*.res
+*.ico
+!Resources/**/*ico
+!Source/Plugin/NPPFSIPlugin.rc

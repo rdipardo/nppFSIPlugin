@@ -1,0 +1,13 @@
+* text=auto
+*.dfm     text   eol=crlf
+*.dpr     text   eol=crlf
+*.dproj   text   eol=crlf
+*.lfm     text   eol=crlf
+*.lpi     text   eol=crlf
+*.lpr     text   eol=crlf
+*.pas     text   eol=crlf
+*.inc     text   eol=crlf
+*.ini     text   eol=crlf
+*.rc      text   eol=crlf
+*.bat     text   eol=crlf
+*.cmd     text   eol=crlf

@@ -49,36 +49,6 @@ resourcestring
 const
 
   /// <summary>
-  /// ID of function that invokes the FSI plugin.
-  /// </summary>
-  FSI_INVOKE_CMD_ID = 0;
-
-  /// <summary>
-  /// ID of the functions that sends text to the FSI plugin.
-  /// </summary>
-  FSI_SEND_TEXT_CMD_ID = 1;
-
-  /// <summary>
-  /// ID of a separator menu item.
-  /// </summary>
-  FSI_SEP_1_CMD_ID = 2;
-
-  /// <summary>
-  /// ID of function that invokes the configuration dialog.
-  /// </summary>
-  FSI_CONFIG_CMD_ID = 3;
-
-  /// <summary>
-  /// ID of function that invokes the about dialog.
-  /// </summary>
-  FSI_ABOUT_CMD_ID = 4;
-
-  /// <summary>
-  /// Number of public functions exposed by FSI.
-  /// </summary>
-  FSI_PLUGIN_FUNC_COUNT = 5;
-
-  /// <summary>
   /// Name of dll containing the plugin
   /// </summary>
   FSI_PLUGIN_MODULE_FILENAME = 'NPPFSIPlugin.dll';

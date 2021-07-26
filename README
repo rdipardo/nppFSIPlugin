@@ -17,3 +17,7 @@ Before use this paths check that you you have installed appropriate version of F
 7) Save you changes. Now it should work.
   Alt+T to open F# interactive
   Alt+Enter to to send selected text to F# Interactive
+
+Acknowledgements
+================================
+The F# Software Foundation logo for F# is an asset of the F# Software Foundation <https://foundation.fsharp.org/logo>
