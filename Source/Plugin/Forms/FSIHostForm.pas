@@ -75,7 +75,7 @@ implementation
 
 uses
   // standard units
-  SysUtils, Controls, Dialogs,
+  SysUtils, Controls, Dialogs, System.UITypes,
   // plugin units
   Constants, Config;
 

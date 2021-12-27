@@ -118,6 +118,11 @@ type
     /// Copy text to the clipboard
     /// </summary>
     procedure doOnEditorCopyContextMenuClick(sender: TObject);    
+
+    /// <summary>
+    /// Check for non-empty text selection and enable "Copy" menu item if true
+    /// </summary>
+    procedure doOnContextMenuPopup(sender: TObject);
   public
     constructor Create;
     destructor Destroy; override;
@@ -316,7 +321,7 @@ begin
 //  menu.Caption := FSI_PLUGIN_EDITOR_CANCELEVAL_MENU;
 //  menu.OnClick := doOnEditorCancelEvalContextMenuClick;
 //  ctxMenu.Items.Add(menu);
-
+  ctxMenu.OnPopup := doOnContextMenuPopup;
   _editor.PopupMenu := ctxMenu;
 end;
 
@@ -476,6 +481,18 @@ end;
 procedure TFSIViewer.doOnEditorCopyContextMenuClick(sender: TObject);
 begin
   _editor.CopyToClipboard;
+end;
+
+procedure TFSIViewer.doOnContextMenuPopup(sender: TObject);
+var
+  ctxMenu: TPopupMenu;
+  menuCopy: TMenuItem;
+begin
+  ctxMenu := _editor.PopupMenu;
+  menuCopy := ctxMenu.Items.Find(FSI_PLUGIN_EDITOR_COPY_MENU);
+  if Assigned(menuCopy) then begin
+    menuCopy.Enabled := (_editor.SelLength > 0);
+  end;
 end;
 
 {$ENDREGION}
