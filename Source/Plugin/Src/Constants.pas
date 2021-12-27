@@ -66,7 +66,7 @@ const
   /// <summary>
   /// Fully qualified name of the FSI binary
   /// </summary>
-  DEFAULT_FSI_BINARY = 'C:\Program Files\FSharp-2.0.0.0\bin\fsi.exe';
+  DEFAULT_FSI_BINARY = 'C:\Windows\System32\cmd.exe';
 
   /// <summary>
   /// Default number of spaces used when converting tabs to spaces.

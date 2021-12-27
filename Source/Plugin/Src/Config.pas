@@ -106,6 +106,10 @@ begin
       configINI.Free;
     end;
   end;
+
+  if SameText(_fsiPath, DEFAULT_FSI_BINARY) and (_fsiArgs = '') then
+    _fsiArgs := '/c dotnet fsi ';
+
 end;
 
 procedure TConfiguration.SaveToConfigFile;
@@ -130,8 +134,9 @@ end;
 
 procedure TConfiguration.initializeConfiguration;
 begin
-  _configFile := GetPluginConfigDirectory + PathDelim + FSI_PLUGIN_CONFIG_FILE_NAME;
+  _configFile := Format('%s%s%s', [GetPluginConfigDirectory, PathDelim, FSI_PLUGIN_CONFIG_FILE_NAME]);
   _fsiPath := DEFAULT_FSI_BINARY;
+  _fsiArgs := EmptyStr;
   _convertTabsToSpacesInFSIEditor := True;
   _tabLength := DEFAULT_TAB_LENGTH;
   _echoNPPTextInEditor := True;
