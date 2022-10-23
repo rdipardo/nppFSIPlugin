@@ -34,7 +34,6 @@ uses
   Windows,
   Graphics,
   Pipes in 'Src\Pipes.pas',
-  Scintilla in 'Src\Scintilla.pas',
   NPP in 'Src\NPP.pas',
   FSIWrapper in 'Src\FSIWrapper.pas',
   Constants in 'Src\Constants.pas',

@@ -32,47 +32,12 @@ uses
   // std delphi units
   Windows, Messages, Graphics;
 
+{$I 'Include\Scintilla.inc'}
+{$I 'Include\Npp.inc'}
+{$I 'Include\Docking.inc'}
+{$I 'Include\DockingResource.inc'}
+
 const
-
-  // NPP messages
-  NPPN_FIRST = 1000;
-  NPPMSG = (WM_USER + 1000);
-  NPPN_TBMODIFICATION = (NPPN_FIRST + 2);
-	NPPM_GETCURRENTSCINTILLA = (NPPMSG + 4);
-  NPPM_DMMREGASDCKDLG = (NPPMSG + 33);
-	NPPM_DMMSHOW = (NPPMSG + 30);
-	NPPM_DMMHIDE = (NPPMSG + 31);
-	NPPM_DMMUPDATEDISPINFO = (NPPMSG + 32);
-  NPPM_ADDTOOLBARICON = (NPPMSG + 41);
-  NPPM_GETPLUGINSCONFIGDIR = (NPPMSG + 46);
-  NPPM_GETNPPVERSION = (NPPMSG + 50);
-  NPPM_ADDTOOLBARICON_FORDARKMODE = (NPPMSG + 101);
-
-  // since 8.0
-  // https://github.com/notepad-plus-plus/npp-usermanual/blob/master/content/docs/plugin-communication.md#nppm_addtoolbaricon-nppm_addtoolbaricon_deprecated-in-v80
-  NPPM_ADDTOOLBARICON_DEPRECATED = NPPM_ADDTOOLBARICON;
-
-  // docking manager related
-  CONT_LEFT	= 0;
-  CONT_RIGHT = 1;
-  CONT_TOP = 2;
-  CONT_BOTTOM = 3;
-  DOCKCONT_MAX = 4;
-  DMN_FIRST = 1050;
-  DMN_CLOSE = (DMN_FIRST + 1);
-  DMN_DOCK = (DMN_FIRST + 2);
-  DMN_FLOAT = (DMN_FIRST + 3);
-
-  // mask params for plugin internal dialogs
-  DWS_ICONTAB	= $00000001;			              // icon for tabs are available
-  DWS_ICONBAR	= $00000002;			              // icon for icon bar are available (currently not supported)
-  DWS_ADDINFO	= $00000004;			              // additional information in use
-  DWS_PARAMSALL	=	(DWS_ICONTAB or DWS_ICONBAR or DWS_ADDINFO);
-  DWS_DF_CONT_LEFT =(CONT_LEFT	shl 28);	    // default docking on left
-  DWS_DF_CONT_RIGHT	= (CONT_RIGHT	shl 28);	  // default docking on right
-  DWS_DF_CONT_TOP	= (CONT_TOP	shl 28);	      // default docking on top
-  DWS_DF_CONT_BOTTOM = (CONT_BOTTOM shl 28);	// default docking on bottom
-  DWS_DF_FLOATING = $80000000;                // default state is floating
 
   /// <summary>
   /// ID of function that invokes the FSI plugin.
@@ -105,55 +70,6 @@ const
   FSI_PLUGIN_FUNC_COUNT = 5;
 
 type
-
-  TNppData = record
-    _nppHandle: HWND;
-    _scintillaMainHandle: HWND;
-    _scintillaSecondHandle: HWND;
-  end;
-
-  TPluginProc = procedure; cdecl;
-
-  TShortcutKey = record
-    _isCtrl: Boolean;
-    _isAlt: Boolean;
-    _isShift: Boolean;
-    _key: UCHAR;
-  end;
-
-  PShortcutKey = ^TShortcutKey;
-
-  TFuncItem = record
-    _itemName: array [0 .. 63] of Char;
-    _pFunc: TPluginProc;
-    _cmdID: Integer;
-    _init2Check: BOOL;
-    _PShKey: PShortcutKey;
-  end;
-
-  TTbData = record
-    hClient: HWND;          // client Window Handle
-    pszName: PChar;         // name of plugin (shown in window)
-    dlgID: Integer;         // a funcItem provides the function pointer to start a dialog
-    uMask: UINT;            // mask params
-    hIconTab: HICON;        // icon for tabs
-    pszAddInfo: PChar;      // for plugin to display additional informations
-    rcFloat: TRect;         // floating position
-    iPrevCont: Integer;     // stores the previous container (toggling between float and dock)
-    pszModuleName: PChar;   // it's the plugin file name. It's used to identify the plugin
-  end;
-  PTbData = ^TTbData;
-
-  TTbIcons = record
-    hToolbarBmp: HBITMAP;
-    hToolbarIcon: HICON;
-  end;
-
-  TTbIconsDarkMode = record
-    hToolbarBmp: HBITMAP;
-    hToolbarIcon: HICON;
-    hToolbarIconDarkMode: HICON;
-  end;
 
   TPluginFuncList = array [0 .. FSI_PLUGIN_FUNC_COUNT - 1] of TFuncItem;
   PTPluginFuncList = ^TPluginFuncList;
@@ -201,10 +117,7 @@ implementation
 
 uses
   // standard delphi units
-  SysUtils, Imaging.pngimage,
-  // scintilla interface
-  Scintilla
-  ;
+  SysUtils, Imaging.pngimage;
 
 function GetPluginConfigDirectory: String;
 var
