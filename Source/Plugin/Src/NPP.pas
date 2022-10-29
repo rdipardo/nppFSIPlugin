@@ -75,6 +75,17 @@ type
   PTPluginFuncList = ^TPluginFuncList;
 
   /// <summary>
+  /// Get the version number of the running application.
+  /// </summary>
+  function GetNppVersion: Cardinal;
+
+  /// <summary>
+  /// Return `true` if the Scintilla API level is at least 5.2.1 -- i.e., if the Npp version is >= 8.4.
+  /// https://github.com/notepad-plus-plus/notepad-plus-plus/commit/a61b03ea8887e21c6e1b7374068962f635b79b80
+  /// </summary>
+  function HasV5Apis: Boolean;
+
+  /// <summary>
   /// Get the dir where NPP stores the config information of its plugins.
   /// </summary>
   function GetPluginConfigDirectory: String;
@@ -154,6 +165,7 @@ begin
 
     if (selTextLength > 1) then
     begin
+      if HasV5Apis then Inc(selTextLength);
       GetMem(textBuffer, SizeOf(Char) * selTextLength);
       try
         SendMessage(activeEditorHandle, SCI_GETSELTEXT, 0, LPARAM(textBuffer));
@@ -220,14 +232,12 @@ var
   tbIcons: TTbIcons;
   tbIconsDM: TTbIconsDarkMode;
   funcList: TPluginFuncList;
-  nppVersion: LONG;
   haveDarkMode: Boolean;
 begin
   tbBmpSource := TPngImage.Create;
   tbIcons := Default (TTbIcons);
   tbIconsDM := Default (TTbIconsDarkMode);
-  nppVersion := SendMessage(NppData._nppHandle, NPPM_GETNPPVERSION, 0, 0);
-  haveDarkMode := HIWORD(nppVersion) >= 8;
+  haveDarkMode := HIWORD(GetNppVersion) >= 8;
 
   try
     tbBmpSource.LoadFromResourceName(HInstance, 'tbBmpSource');
@@ -261,5 +271,32 @@ begin
   end;
 end;
 
+function GetNppVersion: Cardinal;
+var
+  NppVersion: Cardinal;
+begin
+  NppVersion := SendMessage(NppData._nppHandle, NPPM_GETNPPVERSION, 0, 0);
+  // retrieve the zero-padded version, if available
+  // https://github.com/notepad-plus-plus/notepad-plus-plus/commit/ef609c896f209ecffd8130c3e3327ca8a8157e72
+  if ((HIWORD(NppVersion) > 8) or
+      ((HIWORD(NppVersion) = 8) and
+        (((LOWORD(NppVersion) >= 41) and (not (LOWORD(NppVersion) in [191, 192, 193]))) or
+          (LOWORD(NppVersion) in [5, 6, 7, 8, 9])))) then
+    NppVersion := SendMessage(NppData._nppHandle, NPPM_GETNPPVERSION, 1, 0);
+
+  Result := NppVersion;
+end;
+
+function HasV5Apis: Boolean;
+var
+  NppVersion: Cardinal;
+begin
+  NppVersion := GetNppVersion;
+  Result :=
+    (HIWORD(NppVersion) > 8) or
+    ((HIWORD(NppVersion) = 8) and
+        ((LOWORD(NppVersion) >= 4) and
+           (not (LOWORD(NppVersion) in [11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 31, 32, 33, 191, 192, 193]))));
+end;
 
 end.
