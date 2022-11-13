@@ -36,6 +36,7 @@ type
   TConfiguration = class
   private
     _configFile: String;
+    _useDotnet: Boolean;
     _fsiPath: String;
     _fsiArgs: String;
     _convertTabsToSpacesInFSIEditor: Boolean;
@@ -51,6 +52,7 @@ type
     procedure SaveToConfigFile;
   public
     property ConfigFile: String read _configFile;
+    property UseDotnet: Boolean read _useDotnet write _useDotnet;
     property FSIPath: String read _fsiPath write _fsiPath;
     property FSIArgs: String read _fsiArgs write _fsiArgs;
     property ConvertTabsToSpacesInFSIEditor: Boolean read _convertTabsToSpacesInFSIEditor write _convertTabsToSpacesInFSIEditor;
@@ -97,7 +99,8 @@ begin
   begin
     configINI := TIniFile.Create(_configFile);
     try
-      _fsiPath := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, DEFAULT_FSI_BINARY);
+      _useDotnet := configINI.ReadBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_USE_DOTNET_FSI, True);
+      _fsiPath := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, EmptyStr);
       _fsiArgs := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARYARGS_KEY_NAME, EmptyStr);
       _convertTabsToSpacesInFSIEditor := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
       _tabLength := configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH);
@@ -106,10 +109,6 @@ begin
       configINI.Free;
     end;
   end;
-
-  if SameText(_fsiPath, DEFAULT_FSI_BINARY) and (_fsiArgs = '') then
-    _fsiArgs := '/c dotnet fsi ';
-
 end;
 
 procedure TConfiguration.SaveToConfigFile;
@@ -118,6 +117,7 @@ var
 begin
   configINI := TIniFile.Create(_configFile);
   try
+    configINI.WriteBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_USE_DOTNET_FSI, _useDotnet);
     configINI.WriteString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, _fsiPath);
     configINI.WriteString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARYARGS_KEY_NAME, _fsiArgs);
     configINI.WriteBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, _convertTabsToSpacesInFSIEditor);
@@ -135,7 +135,8 @@ end;
 procedure TConfiguration.initializeConfiguration;
 begin
   _configFile := Format('%s%s%s', [GetPluginConfigDirectory, PathDelim, FSI_PLUGIN_CONFIG_FILE_NAME]);
-  _fsiPath := DEFAULT_FSI_BINARY;
+  _useDotnet := True;
+  _fsiPath := EmptyStr;
   _fsiArgs := EmptyStr;
   _convertTabsToSpacesInFSIEditor := True;
   _tabLength := DEFAULT_TAB_LENGTH;

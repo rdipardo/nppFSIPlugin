@@ -64,11 +64,6 @@ const
   FSI_PLUGIN_CONFIG_FILE_NAME = 'NPPFSIPlugin.ini';
 
   /// <summary>
-  /// Fully qualified name of the FSI binary
-  /// </summary>
-  DEFAULT_FSI_BINARY = 'C:\Windows\System32\cmd.exe';
-
-  /// <summary>
   /// Default number of spaces used when converting tabs to spaces.
   /// </summary>
   DEFAULT_TAB_LENGTH = 4;
@@ -85,6 +80,7 @@ const
 
   // config file related
   CONFIG_FSI_SECTION_NAME = 'FSI';
+  CONFIG_FSI_SECTION_USE_DOTNET_FSI = 'USE_DOTNET_FSI';
   CONFIG_FSI_SECTION_BINARY_KEY_NAME = 'BINARY';
   CONFIG_FSI_SECTION_BINARYARGS_KEY_NAME = 'BINARY_ARGS';
   CONFIG_FSIEDITOR_SECTION_NAME = 'FSI_EDITOR';

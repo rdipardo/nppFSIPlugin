@@ -4,8 +4,8 @@ object FrmConfiguration: TFrmConfiguration
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Configuration'
-  ClientHeight = 241
-  ClientWidth = 544
+  ClientHeight = 274
+  ClientWidth = 609
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,73 +20,133 @@ object FrmConfiguration: TFrmConfiguration
   object pnlBase: TPanel
     Left = 0
     Top = 0
-    Width = 544
-    Height = 241
+    Width = 609
+    Height = 274
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
     DesignSize = (
-      544
-      241)
+      609
+      274)
     object grpFSISettings: TGroupBox
       Left = 8
-      Top = 8
-      Width = 526
-      Height = 81
+      Top = 16
+      Width = 592
+      Height = 105
       Anchors = [akLeft, akTop, akRight]
       Caption = 'FSI'
       TabOrder = 2
-      DesignSize = (
-        526
-        81)
-      object lblFSIBinaryPath: TLabel
-        Left = 16
-        Top = 21
-        Width = 59
+      object lblDotnetSdkSite: TLabel
+        Left = 220
+        Top = 19
+        Width = 221
         Height = 13
-        Caption = 'Binary Path:'
+        Caption = 'https://dotnet.microsoft.com/en-us/download'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        OnClick = lblDotnetSdkSiteClick
+        OnMouseEnter = lblDotnetSdkSiteMouseEnter
+        OnMouseLeave = lblDotnetSdkSiteMouseLeave
       end
-      object lblFSIBinaryArgs: TLabel
-        Left = 16
-        Top = 48
-        Width = 56
+      object Label2: TLabel
+        Left = 447
+        Top = 19
+        Width = 4
         Height = 13
-        Caption = 'Arguments:'
+        Caption = ')'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
       end
-      object txtFSIBinary: TEdit
-        Left = 83
+      object chkUseDotnetFsi: TCheckBox
+        Left = 16
         Top = 18
-        Width = 399
-        Height = 21
-        Anchors = [akLeft, akTop, akRight]
-        TabOrder = 0
-        TextHint = 'Fully qualified name of the FSI binary'
-      end
-      object txtFSIBinaryArgs: TEdit
-        Left = 83
-        Top = 45
-        Width = 399
-        Height = 21
-        Anchors = [akLeft, akTop, akRight]
-        TabOrder = 2
-        TextHint = 'Arguments for the FSI binary'
-      end
-      object cmdSelectBinary: TButton
-        Left = 489
-        Top = 16
-        Width = 26
-        Height = 25
-        Anchors = [akTop, akRight]
-        Caption = '...'
+        Width = 200
+        Height = 17
+        Caption = 'Use dotnet fsi (requires the .NET SDK:'
+        Checked = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        State = cbChecked
         TabOrder = 1
-        OnClick = cmdSelectBinaryClick
+        OnClick = chkUseDotnetFsiClick
+      end
+      object pnlCustomFSI: TPanel
+        Left = 3
+        Top = 34
+        Width = 582
+        Height = 76
+        BevelOuter = bvNone
+        ShowCaption = False
+        TabOrder = 0
+        DesignSize = (
+          582
+          76)
+        object lblFSIBinaryArgs: TLabel
+          Left = 16
+          Top = 40
+          Width = 56
+          Height = 13
+          Caption = 'Arguments:'
+          Enabled = False
+        end
+        object lblFSIBinaryPath: TLabel
+          Left = 13
+          Top = 16
+          Width = 59
+          Height = 13
+          Caption = 'Binary Path:'
+          Enabled = False
+        end
+        object txtFSIBinary: TEdit
+          Left = 78
+          Top = 12
+          Width = 467
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Enabled = False
+          TabOrder = 0
+          TextHint = 'Fully qualified name of the FSI binary'
+        end
+        object txtFSIBinaryArgs: TEdit
+          Left = 78
+          Top = 36
+          Width = 467
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Enabled = False
+          TabOrder = 1
+          TextHint = 'Arguments for the FSI binary'
+        end
+        object cmdSelectBinary: TButton
+          Left = 551
+          Top = 10
+          Width = 26
+          Height = 25
+          Anchors = [akTop, akRight]
+          Caption = '...'
+          Enabled = False
+          TabOrder = 2
+          OnClick = cmdSelectBinaryClick
+        end
       end
     end
     object grpEditorSettings: TGroupBox
       Left = 8
-      Top = 95
-      Width = 526
-      Height = 105
+      Top = 127
+      Width = 592
+      Height = 106
       Anchors = [akLeft, akTop, akRight, akBottom]
       Caption = 'Editor'
       TabOrder = 3
@@ -153,8 +213,8 @@ object FrmConfiguration: TFrmConfiguration
       end
     end
     object cmdSave: TButton
-      Left = 378
-      Top = 207
+      Left = 444
+      Top = 240
       Width = 75
       Height = 26
       Anchors = [akRight, akBottom]
@@ -165,8 +225,8 @@ object FrmConfiguration: TFrmConfiguration
       OnClick = cmdSaveClick
     end
     object cmdCancel: TButton
-      Left = 459
-      Top = 207
+      Left = 525
+      Top = 240
       Width = 75
       Height = 26
       Anchors = [akRight, akBottom]
@@ -178,8 +238,9 @@ object FrmConfiguration: TFrmConfiguration
   end
   object dlgFSIBinarySelect: TOpenDialog
     DefaultExt = 'exe'
+    Filter = 'EXE|*.exe;*.bat;*.cmd'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofDontAddToRecent]
     Left = 16
-    Top = 200
+    Top = 232
   end
 end

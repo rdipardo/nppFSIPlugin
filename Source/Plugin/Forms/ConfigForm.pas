@@ -40,6 +40,7 @@ type
     _config: TConfiguration;
   published
     pnlBase: TPanel;
+    pnlCustomFSI: TPanel;
     grpFSISettings: TGroupBox;
     grpEditorSettings: TGroupBox;
     cmdSave: TButton;
@@ -57,12 +58,19 @@ type
     dlgFSIBinarySelect: TOpenDialog;
     lblEchoText: TLabel;
     chkEchoText: TCheckBox;
+    chkUseDotnetFsi: TCheckBox;
+    lblDotnetSdkSite: TLabel;
+    Label2: TLabel;
     procedure FormShow(Sender: TObject);
+    procedure chkUseDotnetFsiClick(Sender: TObject);
     procedure chkConvertToTabsClick(Sender: TObject);
     procedure chkConvertToTabsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cmdSelectBinaryClick(Sender: TObject);
     procedure cmdSaveClick(Sender: TObject);
     procedure cmdCancelClick(Sender: TObject);
+    procedure lblDotnetSdkSiteClick(Sender: TObject);
+    procedure lblDotnetSdkSiteMouseEnter(Sender: TObject);
+    procedure lblDotnetSdkSiteMouseLeave(Sender: TObject);
     procedure DestroyWindowHandle; override;
   private
     procedure initialize;
@@ -74,7 +82,7 @@ implementation
 
 uses
   // standard units
-  SysUtils,
+  SysUtils, ShellApi, Windows,
   // plugin units
   Constants;
 
@@ -87,6 +95,16 @@ procedure TFrmConfiguration.FormShow(Sender: TObject);
 begin
   initialize;
   doOnConvertToTabsCheckBoxStateChange;
+end;
+
+procedure TFrmConfiguration.chkUseDotnetFsiClick(Sender: TObject);
+var
+  i: integer;
+begin
+  for i := 0 to pnlCustomFSI.ControlCount - 1 do
+  begin
+    pnlCustomFSI.controls[i].Enabled := (not chkUseDotnetFsi.Checked);
+  end;
 end;
 
 procedure TFrmConfiguration.chkConvertToTabsClick(Sender: TObject);
@@ -122,6 +140,7 @@ end;
 procedure TFrmConfiguration.initialize;
 begin
   _config := TConfiguration.Create;
+  chkUseDotnetFsi.Checked := _config.UseDotnet;
   txtFSIBinary.Text := _config.FSIPath;
   txtFSIBinaryArgs.Text := _config.FSIArgs;
   chkConvertToTabs.Checked := _config.ConvertTabsToSpacesInFSIEditor;
@@ -137,6 +156,7 @@ end;
 
 procedure TFrmConfiguration.saveConfiguration;
 begin
+  _config.UseDotnet := chkUseDotnetFsi.Checked;
   _config.FSIPath := txtFSIBinary.Text;
   _config.FSIArgs := txtFSIBinaryArgs.Text;
   _config.ConvertTabsToSpacesInFSIEditor := chkConvertToTabs.Checked;
@@ -147,6 +167,22 @@ begin
   _config.EchoNPPTextInEditor := chkEchoText.Checked;
 
   _config.SaveToConfigFile;
+end;
+
+procedure TFrmConfiguration.lblDotnetSdkSiteClick(Sender: TObject);
+begin
+  ShellAPI.ShellExecute(0, 'Open', PChar(lblDotnetSdkSite.Caption), Nil, Nil, SW_SHOWNORMAL);
+  cmdSaveClick(Sender);
+end;
+
+procedure TFrmConfiguration.lblDotnetSdkSiteMouseEnter(Sender: TObject);
+begin
+  lblDotnetSdkSite.Cursor := crHandPoint;
+end;
+
+procedure TFrmConfiguration.lblDotnetSdkSiteMouseLeave(Sender: TObject);
+begin
+  lblDotnetSdkSite.Cursor := crDefault;
 end;
 
 procedure TFrmConfiguration.DestroyWindowHandle;

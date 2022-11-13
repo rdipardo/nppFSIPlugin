@@ -210,8 +210,17 @@ end;
 {$REGION 'Public methods'}
 
 function TFSIViewer.Start: Boolean;
+var
+  cmd, args: String;
 begin
-  _editor.Enabled := _pipedConsole.Start(_config.FSIPath, _config.FSIArgs);
+  if _config.UseDotnet then begin
+    cmd := 'C:\Windows\System32\cmd.exe';
+    args := '/c dotnet fsi';
+  end else begin
+    cmd := _config.FSIPath;
+    args := _config.FSIArgs;
+  end;
+  _editor.Enabled := _pipedConsole.Start(cmd, args);
   Result := _editor.Enabled;
 end;
 
