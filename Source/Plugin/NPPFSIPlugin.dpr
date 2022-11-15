@@ -150,7 +150,7 @@ procedure ShowAbout; cdecl;
 var
   aboutForm: TFrmAbout;
 begin
-  aboutForm := TFrmAbout.Create(Nil);
+  aboutForm := TFrmAbout.Create;
   try
     aboutForm.ShowModal;
   finally

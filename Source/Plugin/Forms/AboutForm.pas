@@ -28,24 +28,9 @@ unit AboutForm;
 
 interface
 
-uses
-  // standard units
-  Forms, Classes, Controls, ExtCtrls, StdCtrls;
-
 type
-  TFrmAbout = class(TForm)
-    pnlBase: TPanel;
-    lblAuthorCaption: TLabel;
-    lblAuthorName: TLabel;
-    cmdOK: TButton;
-    lblVersionCaption: TLabel;
-    lblVersionString: TLabel;
-    lblURLCaption: TLabel;
-    lblURL: TLabel;
-    procedure FormShow(Sender: TObject);
-    procedure lblURLMouseEnter(Sender: TObject);
-    procedure lblURLMouseLeave(Sender: TObject);
-    procedure lblURLClick(Sender: TObject);
+  TFrmAbout = class
+    procedure ShowModal;
   private
     function getBuildNumber: String;
   end;
@@ -54,33 +39,22 @@ implementation
 
 uses
   // standard units
-  Windows, SysUtils, ShellApi,
+  Windows, SysUtils,
   // plugin units
   Constants
   ;
 
-{$R *.dfm}
-
-procedure TFrmAbout.FormShow(Sender: TObject);
+procedure TFrmAbout.ShowModal;
+const
+  arch = {$IFDEF CPUx64}64{$ELSE}32{$ENDIF};
+  lblFmt = '%-12s';
+var
+  msgText: String;
 begin
-  lblAuthorName.Caption := FSI_PLUGIN_AUTHOR;
-  lblVersionString.Caption := GetBuildNumber;
-  lblURL.Caption := FSI_PLUGIN_URL;
-end;
-
-procedure TFrmAbout.lblURLClick(Sender: TObject);
-begin
-  ShellAPI.ShellExecute(0, 'Open', PChar(lblURL.Caption), Nil, Nil, SW_SHOWNORMAL);
-end;
-
-procedure TFrmAbout.lblURLMouseEnter(Sender: TObject);
-begin
-  lblURL.Cursor := crHandPoint;
-end;
-
-procedure TFrmAbout.lblURLMouseLeave(Sender: TObject);
-begin
-  lblURL.Cursor := crDefault;
+  msgText := Format(#$00A9' %s'#13#10,[FSI_PLUGIN_AUTHOR]);
+  msgText := Concat(msgText, Format(lblFmt+'%s (%d-bit)'#13#10, ['Version:', GetBuildNumber, arch]));
+  msgText := Concat(msgText, Format(lblFmt+'%s', ['Web:', FSI_PLUGIN_URL]));
+  MessageBox(0, Pchar(msgText), PChar('About FSI Plugin For Notepad++'), MB_ICONINFORMATION);
 end;
 
 {$WARN SYMBOL_PLATFORM OFF}
