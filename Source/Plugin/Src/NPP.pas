@@ -108,8 +108,7 @@ type
   /// <summary>
   /// Send a message to a docked plugin dialog in NPP.
   /// </summary>
-  procedure SendDockDialogMsg(handle: HWND; windowTitle, additionalInfo, pluginName: String;
-    commandId: Integer; dlgMask: UINT; iconHandle: HICON);
+  procedure SendDockDialogMsg(regData: PTbData);
 
   /// <summary>
   /// Show a plugin dialog.
@@ -184,40 +183,9 @@ begin
   SendMessage(NppData._nppHandle, NPPM_DMMREGASDCKDLG, 0, LPARAM(registrationData));
 end;
 
-procedure SendDockDialogMsg(handle: HWND; windowTitle, additionalInfo, pluginName: String; commandId: Integer; dlgMask: UINT; iconHandle: HICON);
-var
-  regData: PTbData;
+procedure SendDockDialogMsg(regData: PTbData);
 begin
-  regData := AllocMem(SizeOf(TTbData));
-  GetMem(regData.pszName, SizeOf(Char) * (Length(windowTitle) + 1));
-  if (additionalInfo <> '') then
-  begin
-    GetMem(regData.pszAddInfo, SizeOf(Char) * (Length(additionalInfo) + 1));
-  end;
-  GetMem(regData.pszModuleName,  SizeOf(Char) * (Length(pluginName) + 1));
-
-  try
-    regData.hClient := handle;
-    StrCopy(regData.pszName, PChar(windowTitle));
-    regData.dlgID := commandId;
-    regData.uMask := dlgMask;
-    regData.hIconTab := iconHandle;
-    if (additionalInfo <> '') then
-    begin
-      StrCopy(regData.pszAddInfo, PChar(additionalInfo));
-    end;
-    StrCopy(regData.pszModuleName, PChar(pluginName));
-
-    SendMessage(NppData._nppHandle, NPPM_DMMREGASDCKDLG, 0, LPARAM(regData));
-  finally
-    FreeMem(regData.pszModuleName, SizeOf(Char) * (Length(pluginName) + 1));
-    if (additionalInfo <> '') then
-    begin
-      FreeMem(regData.pszAddInfo, SizeOf(Char) * (Length(additionalInfo) + 1));
-    end;
-    FreeMem(regData.pszName, SizeOf(Char) * (Length(windowTitle) + 1));
-    FreeMem(regData);
-  end;
+  SendMessage(NppData._nppHandle, NPPM_DMMREGASDCKDLG, 0, LPARAM(regData));
 end;
 
 procedure ShowDialog(dialogHandle: HWND);

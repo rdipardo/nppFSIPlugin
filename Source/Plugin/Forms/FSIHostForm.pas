@@ -95,9 +95,12 @@ destructor TFrmFSIHost.Destroy;
 begin
   if Assigned(_formRegData) then
   begin
-    FreeMem(_formRegData.pszName, SizeOf(Char) * (Length(FSI_PLUGIN_WND_TITLE) + 1));
-    FreeMem(_formRegData.pszModuleName,  SizeOf(Char) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1));
+    FreeMem(_formRegData.pszName, SizeOf(Char) * (Length(_formRegData.pszName) + 1));
+    FreeMem(_formRegData.pszModuleName, SizeOf(Char) * (Length(_formRegData.pszModuleName) + 1));
+    if Assigned(_formRegData.pszAddInfo) and (StrLen(_formRegData.pszAddInfo) <> 0) then
+      FreeMem(_formRegData.pszAddInfo, SizeOf(Char) * (Length(_formRegData.pszAddInfo) + 1));
     FreeMem(_formRegData, SizeOf(TTbData));
+    _formRegData := Nil;
   end;
 
   QuitFSI;
@@ -179,8 +182,30 @@ end;
 {$REGION 'Private Methods'}
 
 procedure TFrmFSIHost.registerForm;
+var
+  lenTitle, lenModName: Cardinal;
 begin
-  SendDockDialogMsg(Handle, FSI_PLUGIN_WND_TITLE, '', FSI_PLUGIN_MODULE_FILENAME, FSI_INVOKE_CMD_ID, DEF_FSI_PLUGIN_WND_DOCK, 0);
+  _formRegData := PTbData(AllocMem(SizeOf(TTbData)));
+  _formRegData.hClient := Handle;
+  _formRegData.dlgID := FSI_INVOKE_CMD_ID;
+  _formRegData.uMask := DWS_DF_CONT_BOTTOM;
+  _formRegData.hIconTab := 0;
+  lenTitle := SizeOf(Char) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
+  lenModName := SizeOf(Char) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1);
+  GetMem(_formRegData.pszName, lenTitle);
+  GetMem(_formRegData.pszModuleName, lenModName);
+  StrLCopy(_formRegData.pszName, PChar(FSI_PLUGIN_WND_TITLE), lenTitle);
+  StrLCopy(_formRegData.pszModuleName, PChar(FSI_PLUGIN_MODULE_FILENAME), lenModName);
+  try
+    SendDockDialogMsg(_formRegData);
+  except
+    FreeMem(_formRegData.pszName, lenTitle);
+    FreeMem(_formRegData.pszModuleName, lenModName);
+    if Assigned(_formRegData.pszAddInfo) and (StrLen(_formRegData.pszAddInfo) <> 0) then
+      FreeMem(_formRegData.pszAddInfo, SizeOf(Char) * (Length(_formRegData.pszAddInfo) + 1));
+    FreeMem(_formRegData, SizeOf(TTbData));
+    _formRegData := Nil;
+  end;
 end;
 
 procedure TFrmFSIHost.createFSI;

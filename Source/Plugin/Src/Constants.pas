@@ -54,11 +54,6 @@ const
   FSI_PLUGIN_MODULE_FILENAME = 'NPPFSIPlugin.dll';
 
   /// <summary>
-  /// Defines the position where the FSI host winoow will be docked in NPP
-  /// </summary>
-  DEF_FSI_PLUGIN_WND_DOCK = DWS_DF_CONT_BOTTOM;
-
-  /// <summary>
   /// Name of file that stores configuration information
   /// </summary>
   FSI_PLUGIN_CONFIG_FILE_NAME = 'NPPFSIPlugin.ini';
