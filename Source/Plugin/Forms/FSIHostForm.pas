@@ -56,8 +56,6 @@ type
     procedure registerForm;
     procedure createFSI;
     procedure quitFSI;
-    procedure doOnResultOutput(sender: TObject);
-    procedure doOnSendText(sender: TObject);
   protected
     procedure DoClose(var Action: TCloseAction); override;
     procedure WMNotify(var msg: TWMNotify); message WM_NOTIFY;
@@ -67,6 +65,7 @@ type
   public
     procedure Show;
     procedure SendSelectedTextInNPPToFSI;
+    procedure ToggleDarkMode;
   public
     property OnClose: TFSIHostCloseEvent read _onClose write _onClose;
   end;
@@ -75,7 +74,7 @@ implementation
 
 uses
   // standard units
-  SysUtils, Controls, Dialogs, System.UITypes,
+  SysUtils, Controls, Dialogs, Graphics, System.UITypes,
   // plugin units
   Constants, Config;
 
@@ -136,6 +135,7 @@ procedure TFrmFSIHost.Show;
       if not Assigned(_formRegData) then
          registerForm;
 
+      ToggleDarkMode;
       Visible := true;
       ShowDialog(Handle);
    end;
@@ -148,6 +148,25 @@ begin
   _fsiViewer.SendText(GetSelectedText, true, _fsiViewer.Config.EchoNPPTextInEditor);
 end;
 
+procedure TFrmFSIHost.ToggleDarkMode;
+var
+  currentBuffer: String;
+begin
+  ParentBackground := (not Npp.IsDarkModeEnabled);
+  _fsiViewer.Editor.ParentColor := ParentBackground;
+  with _fsiViewer.Editor do begin
+    if (not ParentColor) then
+      Color := TColor($3C3838)
+     else
+      Color := clWhite;
+
+    Self.Color := Color;
+    SelectAll;
+    currentBuffer := SelText;
+    Clear;
+  end;
+  _fsiViewer.AddToEditor(currentBuffer);
+end;
 {$ENDREGION}
 
 {$REGION 'Protected Methods'}
@@ -188,7 +207,7 @@ begin
   _formRegData := PTbData(AllocMem(SizeOf(TTbData)));
   _formRegData.hClient := Handle;
   _formRegData.dlgID := FSI_INVOKE_CMD_ID;
-  _formRegData.uMask := DWS_DF_CONT_BOTTOM;
+  _formRegData.uMask := DWS_DF_CONT_BOTTOM or DWS_USEOWNDARKMODE;
   _formRegData.hIconTab := 0;
   lenTitle := SizeOf(Char) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
   lenModName := SizeOf(Char) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1);
@@ -213,26 +232,12 @@ begin
   _fsiViewer := TFSIViewer.Create;
   _fsiViewer.Editor.Align := alClient;
   _fsiViewer.Editor.Parent := self;
-  _fsiViewer.OnSendText := doOnSendText;
-  _fsiViewer.OnResultOutput := doOnResultOutput;
 end;
 
 procedure TFrmFSIHost.QuitFSI;
 begin
   if Assigned(_fsiViewer) then
       _fsiViewer.SendText(PChar('#quit ;;' + #13#10), false, false);
-end;
-
-procedure TFrmFSIHost.doOnResultOutput(sender: TObject);
-begin
-  // disabled for ver 0.1
-  //SendDockDialogMsg(Handle, FSI_PLUGIN_WND_TITLE, '', FSI_PLUGIN_MODULE_FILENAME, FSI_INVOKE_CMD_ID, DWS_ADDINFO, 0);
-end;
-
-procedure TFrmFSIHost.doOnSendText(sender: TObject);
-begin
-  // disabled for ver 0.1
-  //SendDockDialogMsg(Handle, FSI_PLUGIN_WND_TITLE, 'working', FSI_PLUGIN_MODULE_FILENAME, FSI_INVOKE_CMD_ID, DWS_ADDINFO, 0);
 end;
 
 {$ENDREGION}

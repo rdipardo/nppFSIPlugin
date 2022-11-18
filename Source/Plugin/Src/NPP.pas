@@ -86,6 +86,13 @@ type
   function HasV5Apis: Boolean;
 
   /// <summary>
+  /// Return `true` if the dark mode setting can be detected by sending the NPPM_ISDARKMODEENABLED message;
+  /// works in Npp versions >= 8.4.1.
+  /// https://github.com/notepad-plus-plus/notepad-plus-plus/commit/1eb5b10e41d7ab92b60aa32b28d4fe7739d15b53
+  /// </summary>
+  function IsDarkModeEnabled: Boolean;
+
+  /// <summary>
   /// Get the dir where NPP stores the config information of its plugins.
   /// </summary>
   function GetPluginConfigDirectory: String;
@@ -265,6 +272,19 @@ begin
     ((HIWORD(NppVersion) = 8) and
         ((LOWORD(NppVersion) >= 4) and
            (not (LOWORD(NppVersion) in [11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 31, 32, 33, 191, 192, 193]))));
+end;
+
+function IsDarkModeEnabled: Boolean;
+var
+  NppVersion: Cardinal;
+  HasQueryApi: Boolean;
+begin
+  NppVersion := GetNppVersion;
+  HasQueryApi :=
+    ((HIWORD(NppVersion) > 8) or
+     ((HIWORD(NppVersion) = 8) and
+        (((LOWORD(NppVersion) >= 41) and (not (LOWORD(NppVersion) in [191, 192, 193]))))));
+  Result := (HasQueryApi and Boolean(SendMessage(NppData._nppHandle, NPPM_ISDARKMODEENABLED, 0, 0)));
 end;
 
 end.

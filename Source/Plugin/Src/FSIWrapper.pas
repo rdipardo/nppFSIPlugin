@@ -178,9 +178,9 @@ implementation
 
 uses
   // standard units 
-  Windows, StrUtils, StdCtrls, Graphics, SysUtils,
+  Windows, StrUtils, StdCtrls, Graphics, SysUtils, Forms,
   // plugin units
-  Constants;
+  Constants, Npp;
 
 {$REGION 'Constructor & Destructor' }
 
@@ -247,7 +247,7 @@ begin
       else if ((Length(lastChars) > 1) and (lastChars[2] = ';')) then
         finalText := text + ';'
       else
-        finalText := text + ';;';
+        finalText := text + ' ;;';
 
       finalText := finalText + #13#10;
     end
@@ -261,13 +261,10 @@ begin
       finalText := StringReplace(finalText, #9, DupeString(' ', _config.TabLength), [rfReplaceAll]);
     end;
 
-    if (appendEditor) then
+    if (Length(Trim(finalText)) > 0) then
     begin
-      AddToEditor(finalText);
-    end;
-
-    if (Length(finalText) > 0) then
-    begin
+      if (appendEditor) then
+        AddToEditor('> ' + finalText);
       _pipedConsole.Write(finalText[1], SizeOf(Char) * Length(finalText));
     end;
 
@@ -281,6 +278,10 @@ end;
 procedure TFSIViewer.AddToEditor(const text: String);
 begin
   _editor.SelStart := _editor.GetTextLen;
+  if Npp.IsDarkModeEnabled then
+    _editor.SelAttributes.Color := clWhite
+  else
+    _editor.SelAttributes.Color := clBlack;
   _editor.SelText := text;
 end;
 
@@ -292,6 +293,9 @@ procedure TFSIViewer.createEditor;
 begin
   _config := TConfiguration.Create;
   _editor := TRichEdit.Create(Nil);
+  _editor.Align := alClient;
+  _editor.AlignWithMargins := True;
+  _editor.BorderStyle := bsNone;
   _editor.Width := 10;
   _editor.Height := 10;
   _editor.ScrollBars := ssBoth;
@@ -299,6 +303,13 @@ begin
   _editor.OnKeyPress := doOnEditorKeyPress;
   _defEditorWndProc := _editor.WindowProc;
   _editor.WindowProc := editorWndProc;
+  _editor.ReadOnly := True;
+  with _editor.Margins do begin
+    Top := 0;
+    Bottom := 0;
+    Right := 8;
+    Left := 8;
+  end;
 end;
 
 procedure TFSIViewer.createFSI;
@@ -379,8 +390,11 @@ begin
   try
     strStream.CopyFrom(stream, 0);
     _editor.SelStart := _editor.GetTextLen;
-    _editor.SelAttributes.Color := clBlack;
-    _editor.SelText := strStream.DataString;
+    if Npp.IsDarkModeEnabled then
+      _editor.SelAttributes.Color := clWhite
+    else
+      _editor.SelAttributes.Color := clBlack;
+    _editor.SelText := StringReplace(strStream.DataString, '> ', '', [rfReplaceAll]);
     updateEditableAreaStart;
     _editor.Perform(WM_VSCROLL, MakeWParam(SB_BOTTOM, 0), 0);
 
@@ -399,7 +413,10 @@ begin
   try
     strStream.CopyFrom(stream, 0);
     _editor.SelStart := _editor.GetTextLen;
-    _editor.SelAttributes.Color := clRed;
+    if Npp.IsDarkModeEnabled then
+      _editor.SelAttributes.Color := TColor($4763FF)
+    else
+      _editor.SelAttributes.Color := clRed;
     _editor.SelText := strStream.DataString;
     updateEditableAreaStart;
     _editor.Perform(WM_VSCROLL, MakeWParam(SB_BOTTOM, 0), 0);

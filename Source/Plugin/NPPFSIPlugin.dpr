@@ -84,11 +84,17 @@ var
   sciMsg: TSCNotification;
 begin
   sciMsg := TSCNotification(msg^);
-  if sciMsg.nmhdr.code = NPPN_TBMODIFICATION then begin
+  case sciMsg.nmhdr.code of
+    NPPN_TBMODIFICATION: begin
       Bmp := TBitMap.Create;
       Icon := TIcon.Create;
       IconDark := TIcon.Create;
       SetToolBarIcon(@PluginFuncs, Icon, IconDark, Bmp);
+    end;
+    NPPN_DARKMODECHANGED: begin
+      if Assigned(FSIHostForm) then
+        FSIHostForm.ToggleDarkMode;
+    end;
   end;
 end;
 /// Get the custom functions defined by the plugin.

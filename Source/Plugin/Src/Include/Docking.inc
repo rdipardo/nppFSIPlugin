@@ -32,6 +32,7 @@ const
   DWS_ICONTAB     = $00000001;     // Icon for tabs are available
   DWS_ICONBAR     = $00000002;     // Icon for icon bar are available (currently not supported);
   DWS_ADDINFO     = $00000004;     // Additional information are in use
+  DWS_USEOWNDARKMODE = $00000008;  // Use plugin's own dark mode
   DWS_PARAMSALL   = (DWS_ICONTAB or DWS_ICONBAR or DWS_ADDINFO);
 
 // default docking values for first call of plugin
