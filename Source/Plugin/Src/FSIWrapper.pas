@@ -70,11 +70,6 @@ type
     procedure createContextMenu;
 
     /// <summary>
-    /// Store postion of editor caret.
-    /// </summary>
-    procedure updateEditableAreaStart;
-
-    /// <summary>
     /// Based on the editor's caret position determine if the user is allowed to make changes
     /// directly to the editor.
     /// </summary>
@@ -126,6 +121,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure updateEditableAreaStart(ScrollTo: Boolean = False);
   public
 
     /// <summary>
@@ -213,6 +209,7 @@ function TFSIViewer.Start: Boolean;
 var
   cmd, args: String;
 begin
+  _config.LoadFromConfigFile;
   if _config.UseDotnet then begin
     cmd := 'C:\Windows\System32\cmd.exe';
     args := '/c dotnet fsi';
@@ -345,11 +342,12 @@ begin
   _editor.PopupMenu := ctxMenu;
 end;
 
-procedure TFSIViewer.updateEditableAreaStart;
+procedure TFSIViewer.updateEditableAreaStart(ScrollTo: Boolean);
 begin
   _editor.SelStart := _editor.GetTextLen;
   _editableAreaStartCoord := _editor.CaretPos;
   _editableAreaStartPos := _editor.SelStart;
+  if ScrollTo then _editor.Perform(WM_VSCROLL, MakeWParam(SB_BOTTOM, 0), 0); 
 end;
 
 function TFSIViewer.isEditorCaretInAValidPos: Boolean;
@@ -395,8 +393,7 @@ begin
     else
       _editor.SelAttributes.Color := clBlack;
     _editor.SelText := StringReplace(strStream.DataString, '> ', '', [rfReplaceAll]);
-    updateEditableAreaStart;
-    _editor.Perform(WM_VSCROLL, MakeWParam(SB_BOTTOM, 0), 0);
+    updateEditableAreaStart(True);
 
     if Assigned(_onResultOutput) then
       _onResultOutput(self);
@@ -418,8 +415,7 @@ begin
     else
       _editor.SelAttributes.Color := clRed;
     _editor.SelText := strStream.DataString;
-    updateEditableAreaStart;
-    _editor.Perform(WM_VSCROLL, MakeWParam(SB_BOTTOM, 0), 0);
+    updateEditableAreaStart(True);
 
     if Assigned(_onErrorOutput) then
       _onErrorOutput(self);

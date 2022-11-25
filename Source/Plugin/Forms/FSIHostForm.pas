@@ -166,6 +166,7 @@ begin
     Clear;
   end;
   _fsiViewer.AddToEditor(currentBuffer);
+  _fsiViewer.updateEditableAreaStart(True);
 end;
 {$ENDREGION}
 
