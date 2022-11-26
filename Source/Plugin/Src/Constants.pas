@@ -28,11 +28,7 @@ unit Constants;
 
 interface
 
-uses
-  // NPP wrapper unit
-  NPP;
-
-resourcestring
+const
 
   FSI_PLUGIN_NAME = 'F# Interactive';
   FSI_PLUGIN_WND_TITLE = 'FSI';

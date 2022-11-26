@@ -1,0 +1,14 @@
+object FrmFSIHost: TFrmFSIHost
+  Left = 913
+  Height = 349
+  Top = 293
+  Width = 469
+  BorderStyle = bsToolWindow
+  Caption = 'FSI Host'
+  Color = clBtnFace
+  DesignTimePPI = 120
+  Font.Color = clWindowText
+  Font.Height = -15
+  Font.Name = 'Consolas'
+  Position = poScreenCenter
+end

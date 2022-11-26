@@ -25,6 +25,7 @@ unit ConfigForm;
 // THE SOFTWARE.
 //
 // =============================================================================
+{$IFDEF FPC}{$mode delphiunicode}{$ENDIF}
 
 interface
 
@@ -71,7 +72,7 @@ type
     procedure lblDotnetSdkSiteClick(Sender: TObject);
     procedure lblDotnetSdkSiteMouseEnter(Sender: TObject);
     procedure lblDotnetSdkSiteMouseLeave(Sender: TObject);
-    procedure DestroyWindowHandle; override;
+    procedure {$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF}; override;
   private
     procedure initialize;
     procedure doOnConvertToTabsCheckBoxStateChange;
@@ -86,7 +87,11 @@ uses
   // plugin units
   Constants;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 
 { TFrmConfiguration }
@@ -170,8 +175,11 @@ begin
 end;
 
 procedure TFrmConfiguration.lblDotnetSdkSiteClick(Sender: TObject);
+var
+  url: String;
 begin
-  ShellAPI.ShellExecute(0, 'Open', PChar(lblDotnetSdkSite.Caption), Nil, Nil, SW_SHOWNORMAL);
+  url := {$IFDEF FPC}UTF8Decode{$ENDIF}(lblDotnetSdkSite.Caption);
+  ShellAPI.ShellExecute(0, 'Open', PChar(url), Nil, Nil, SW_SHOWNORMAL);
   cmdSaveClick(Sender);
 end;
 
@@ -185,7 +193,7 @@ begin
   lblDotnetSdkSite.Cursor := crDefault;
 end;
 
-procedure TFrmConfiguration.DestroyWindowHandle;
+procedure TFrmConfiguration.{$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF};
 begin
   if Assigned(_config) then
     FreeAndNil(_config);

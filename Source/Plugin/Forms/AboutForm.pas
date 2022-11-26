@@ -51,7 +51,7 @@ const
 var
   msgText: String;
 begin
-  msgText := Format(#$00A9' %s'#13#10,[FSI_PLUGIN_AUTHOR]);
+  msgText := Format(#169' %s'#13#10,[FSI_PLUGIN_AUTHOR]);
   msgText := Concat(msgText, Format(lblFmt+'%s (%d-bit)'#13#10, ['Version:', GetBuildNumber, arch]));
   msgText := Concat(msgText, Format(lblFmt+'%s', ['Web:', FSI_PLUGIN_URL]));
   MessageBox(0, Pchar(msgText), PChar('About FSI Plugin For Notepad++'), MB_ICONINFORMATION);

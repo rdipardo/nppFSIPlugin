@@ -2,19 +2,31 @@
 
 Author:       Russell Libby, updated by François PIETTE @ OverByte
 Creation:     Mar 30, 2003
-Last update:  Oct 04, 2013
+Last update:  Nov 26, 2022
 Description:  Pipe components by Russell Libby
               See blog article at http://francois-piette.blogspot.be
-Version:      1.01
+Version:      1.02
 History:      See below in the original comments
 
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-unit Pipes;
+{ avoid name collision with the Pipes unit in Free Pascal's fcl-process package }
+unit FpcPipes;
+
+{$IFDEF FPC}
+   {$MODE Delphi}
+   {$ASMMODE Intel}
+   {$IFDEF CPUx64}
+      {$WARN 4056 OFF}
+   {$ENDIF}
+   {$WARN 4055 OFF}
+   {$WARN 4082 OFF}
+   {$WARN SYMBOL_DEPRECATED OFF}
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-//   Unit        :  Pipes
+//   Unit        :  FpcPipes
 //   Author      :  rllibby
 //   Date        :  01.30.2003  -  Original code
 //   URL:        :  http://home.roadrunner.com/~rllibby/source.html
@@ -72,7 +84,10 @@ unit Pipes;
 //                                Made event parameter HPIPE a type THandle otherwise there type mismatches
 //                                in event handler signatures.
 //
-// Description : Set of client and server named pipe components for Delphi, as
+//                  26.11.2022  - Robert Di Pardo <dipardo.r@gmail.com>
+//                                Adapted unit for Free Pascal.
+//
+// Description : Set of client and server named pipe components for Delphi & Free Pascal, as
 // well a console pipe redirection component.
 //
 // Notes:
@@ -90,7 +105,7 @@ unit Pipes;
 // - Write (works, but no memory throttling)
 //
 // The reason these calls do not work is that they are expecting
-// interaction from the worker thead, which is currently stalled while
+// interaction from the worker thread, which is currently stalled while
 // waiting on the event handler to finish (and the SendMessage call to
 // complete). I have coded these routines so that they will NOT deadlock,
 // but again, don't expect them to ever return success if called from
@@ -122,7 +137,7 @@ interface
     {$DEFINE DELPHI_XE2_ABOVE} // has 64-bit compiler
   {$IFEND}
 {$ENDIF}
-{$IFNDEF DELPHI_XE2_ABOVE}
+{$IF NOT DEFINED(DELPHI_XE2_ABOVE) AND NOT DEFINED(FPC)}
   {$DEFINE CPUX86}
 {$ENDIF}
 
@@ -162,6 +177,7 @@ const
   MAX_BUFFER      = Pred(MaxWord);
   DEF_SLEEP       = 100;
   DEF_MEMTHROTTLE = 10240000;
+  PIPE_UNLIMITED_INSTANCES = 255;
 
 ////////////////////////////////////////////////////////////////////////////////
 //   Pipe mode constants
@@ -429,7 +445,7 @@ type
   TFastMemStream = class(TMemoryStream)
   protected
      // Protected declarations
-     function Realloc(var NewCapacity : Longint) : Pointer; override;
+     function Realloc(var NewCapacity : Longint) : Pointer; {$IFDEF FPC}reintroduce{$ELSE}override{$ENDIF};
   end;
 
   // Multipacket message handler
@@ -756,7 +772,7 @@ function MakeObjectInstance(Method : TWndMethod) : Pointer;
 
 implementation
 
-{$IFNDEF DELPHI_XE2_ABOVE}
+{$IF NOT DEFINED(DELPHI_XE2_ABOVE) AND NOT DEFINED(FPC)}
 type
     NativeUInt = LongWord;
     NativeInt  = LongInt;
@@ -1002,7 +1018,11 @@ begin
   // Resource protection
   try
      // Get the environment variable for COMSPEC and truncate to actual result
+{$IFNDEF FPC}
      SetLength(Result, GetEnvironmentVariable(PChar(resComSpec), Pointer(Result), MAX_PATH));
+{$ELSE}
+     StrLCopy(PChar(Result), PChar(GetEnvironmentVariable(resComSpec)), MAX_PATH);
+{$ENDIF}
   finally
      // Capture the last error code
      FLastErr := GetLastError;
@@ -1521,7 +1541,7 @@ begin
   begin
      // Check to see if in a send message
      if InSendMessage then
-        // Defered shutdown
+        // Deferred shutdown
         PostMessage(FHwnd, WM_DOSHUTDOWN, ExitValue, 0)
      else
      begin
@@ -1591,7 +1611,7 @@ begin
      // Disconnect the pipe
      Disconnect;
      // Close the event handle
-     CloseHandle(FKillEv);
+     {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(FKillEv);
      // Free the write queue
      FWriteQueue.Free;
      // Free memory resources
@@ -1721,7 +1741,7 @@ begin
   begin
      // Check to see if processing a message from another thread
      if InSendMessage then
-        // Defered shutdown
+        // Deferred shutdown
         PostMessage(FHwnd, WM_DOSHUTDOWN, 0, 0)
      else
      begin
@@ -1994,7 +2014,7 @@ begin
      // Raise exception
      WM_THREADCTX :
         raise EPipeException.CreateRes(@resThreadCtx);
-     // Disconect
+     // Disconnect
      WM_DOSHUTDOWN :
         Disconnect;
   else
@@ -2043,7 +2063,7 @@ begin
      // Perform the shutdown if active
      Active := FALSE;
      // Close the event handle
-     CloseHandle(FKillEv);
+     {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(FKillEv);
      // Free the clients list
      FClients.Free;
      // Free the thread counter
@@ -2078,14 +2098,14 @@ begin
      WM_PIPESEND :
         if Assigned(FOPS) then
             FOPS(Self, message.wParam, message.lParam);
-     // Data message recieved on pipe
+     // Data message received on pipe
      WM_PIPEMESSAGE :
         if Assigned(FOPM) then
             FOPM(Self, message.wParam, TStream(Pointer(message.lParam)));
      // Raise exception
      WM_THREADCTX :
          raise EPipeException.CreateRes(@resThreadCtx);
-     // Disconect
+     // Disconnect
      WM_DOSHUTDOWN :
          Active := FALSE;
   else
@@ -2289,7 +2309,7 @@ begin
            // Free the write queue
            ppiClient^.WriteQueue.Free;
            // Close the event handle
-           CloseHandle(ppiClient^.KillEvent);
+           {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(ppiClient^.KillEvent);
         finally
            // Free the client record
            FreeMem(ppiClient);
@@ -2321,7 +2341,7 @@ begin
         SetEvent(PPipeInfo(FClients[dwIndex])^.KillEvent);
      end;
   end
-  // Get the specifed pipe info
+  // Get the specified pipe info
   else if GetClientInfo(Pipe, ppiClient) then
      // Set the kill event
      SetEvent(ppiClient^.KillEvent)
@@ -2489,7 +2509,7 @@ begin
   begin
      // Check in message flag
      if InSendMessage then
-        // Defered shutdown
+        // Deferred shutdown
         PostMessage(FHwnd, WM_DOSHUTDOWN, 0, 0)
      else
      begin
@@ -2979,8 +2999,13 @@ begin
      // Disconnect and close the pipe handle at this point
      DisconnectAndClose(FPipe, FServer);
      // Close all open handles that we own
+   {$IFDEF FPC}
+     FileClose(FOlapRead.hEvent);
+     FileClose(FOlapWrite.hEvent);
+   {$ELSE}
      CloseHandle(FOlapRead.hEvent);
      CloseHandle(FOlapWrite.hEvent);
+   {$ENDIF}
   end;
 end;
 
@@ -3020,7 +3045,7 @@ begin
      // Resource protection
      try
         // Close the connect event handle
-        CloseHandle(FOlapConnect.hEvent);
+        {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(FOlapConnect.hEvent);
         // Disconnect and free the handle
         if IsHandle(FPipe) then
         begin
@@ -3030,7 +3055,7 @@ begin
               DisconnectAndClose(FPipe)
            else
               // Just close the handle
-              CloseHandle(FPipe);
+              {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(FPipe);
         end;
         // Release memory for security structure
         FinalizeSecurity(FSA);
@@ -3626,7 +3651,7 @@ begin
      FreeAndNil(FStream);
      // Close handle if open
      if IsHandle(FHandle) then
-         CloseHandle(FHandle);
+         {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(FHandle);
   finally
      // Perform inherited
      inherited Destroy;
@@ -3806,7 +3831,7 @@ begin
   bClassReg := GetClassInfo(hInstance, ThreadWndClass.lpszClassName, clsTemp);
 
   // Ensure the class is registered and the window procedure is the default window proc
-  if not(bClassReg) or not(clsTemp.lpfnWndProc = @ThreadWndProc) then
+  if not(bClassReg) or not({$IFDEF FPC}@{$ENDIF}clsTemp.lpfnWndProc = @ThreadWndProc) then
   begin
      // Unregister if already registered
      if bClassReg then
@@ -4154,7 +4179,7 @@ begin
                  Result := 0;
            finally
               // Close the thread handle
-              CloseHandle(hThread);
+              {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(hThread);
            end;
         end;
      finally
@@ -4273,7 +4298,7 @@ begin
                  Result := FALSE;
            finally
               // Close the thread handle
-              CloseHandle(hThread);
+              {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(hThread);
            end;
         end;
      finally
@@ -4314,7 +4339,7 @@ begin
            WaitForSingleObject(hThread, INFINITE);
         finally
            // Close the handle
-           CloseHandle(hThread);
+           {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(hThread);
         end;
      end;
   end
@@ -4351,7 +4376,7 @@ begin
   // Resource protection
   try
      // Check for invalid handle or zero
-     if IsHandle(Handle) then CloseHandle(Handle);
+     if IsHandle(Handle) then {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(Handle);
   finally
      // Set to invalid handle
      Handle := INVALID_HANDLE_VALUE;
@@ -4380,7 +4405,7 @@ begin
         if IsServer then DisconnectNamedPipe(Pipe);
      finally
         // Close the pipe handle
-        CloseHandle(Pipe);
+        {$IFDEF FPC}FileClose{$ELSE}CloseHandle{$ENDIF}(Pipe);
      end;
   end;
 
@@ -4620,9 +4645,8 @@ end;
 { In    R11 = Address of method pointer }
 { Out   RAX = Result }
 var
-  Msg: TMessage;
+  Msg, dummy: TMessage;
 asm
-        .PARAMS 2
         MOV     Msg.Msg,Message
         MOV     Msg.WParam,AWParam
         MOV     Msg.LParam,ALParam
@@ -4875,7 +4899,7 @@ begin
      // Attempt to get class info
      bClassReg := GetClassInfo(hInstance, ObjWndClass.lpszClassName, clsTemp);
      // Ensure the class is registered and the window procedure is the default window proc
-     if not(bClassReg) or not(clsTemp.lpfnWndProc = @DefWindowProc) then
+     if not(bClassReg) or not({$IFDEF FPC}@{$ENDIF}clsTemp.lpfnWndProc = @DefWindowProc) then
      begin
         // Unregister if already registered
         if bClassReg then
@@ -4887,7 +4911,7 @@ begin
      Result := CreateWindowEx(0, ObjWndClass.lpszClassName, '', WS_POPUP, 0, 0, 0, 0, 0, 0, hInstance, nil);
      // Set method pointer
      if Assigned(Method) then
-        SetWindowLong(Result, GWL_WNDPROC, NativeInt(MakeObjectInstance(Method)));
+        SetWindowLongPtr(Result, GWL_WNDPROC, NativeInt(MakeObjectInstance(Method)));
   finally
      // Leave critical section
      LeaveCriticalSection(InstCritSect);

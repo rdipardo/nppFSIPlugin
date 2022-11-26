@@ -1,10 +1,10 @@
 * text=auto
-*.dfm     text   eol=crlf
-*.dpr     text   eol=crlf
+*.dfm     text   eol=crlf   -linguist-detectable
+*.dpr     text   eol=crlf   -linguist-detectable
 *.dproj   text   eol=crlf
-*.lfm     text   eol=crlf
+*.lfm     text   eol=crlf   linguist-language=Pascal
 *.lpi     text   eol=crlf
-*.lpr     text   eol=crlf
+*.lpr     text   eol=crlf   linguist-language=Pascal
 *.pas     text   eol=crlf
 *.inc     text   eol=crlf
 *.ini     text   eol=crlf

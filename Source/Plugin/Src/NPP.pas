@@ -25,6 +25,7 @@ unit NPP;
 // THE SOFTWARE.
 //
 // =============================================================================
+{$IFDEF FPC}{$mode delphiunicode}{$ENDIF}
 
 interface
 
@@ -73,6 +74,9 @@ type
 
   TPluginFuncList = array [0 .. FSI_PLUGIN_FUNC_COUNT - 1] of TFuncItem;
   PTPluginFuncList = ^TPluginFuncList;
+{$IFDEF FPC}
+  TPngImage = TPortableNetworkGraphic;
+{$ENDIF}
 
   /// <summary>
   /// Get the version number of the running application.
@@ -134,7 +138,7 @@ implementation
 
 uses
   // standard delphi units
-  SysUtils, Imaging.pngimage;
+  SysUtils {$IFNDEF FPC}, Imaging.pngimage{$ENDIF};
 
 function GetPluginConfigDirectory: String;
 var
@@ -217,7 +221,7 @@ begin
   try
     tbBmpSource.LoadFromResourceName(HInstance, 'tbBmpSource');
     tbBmp.Assign(tbBmpSource);
-    tbBmp.PixelFormat := pf32bit;
+    {$IFNDEF FPC}tbBmp.PixelFormat := pf32bit;{$ENDIF}
     tbBmp.Width := 16;
     tbBmp.Height := 16;
   finally

@@ -25,6 +25,7 @@ unit FSIHostForm;
 // THE SOFTWARE.
 //
 // =============================================================================
+{$IFDEF FPC}{$mode delphiunicode}{$ENDIF}
 
 interface
 
@@ -74,11 +75,15 @@ implementation
 
 uses
   // standard units
-  SysUtils, Controls, Dialogs, Graphics, System.UITypes,
+  SysUtils, StdCtrls, Controls, Dialogs, Graphics, System.UITypes,
   // plugin units
   Constants, Config;
 
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
 {$R *.dfm}
+{$ENDIF}
 
 {$REGION 'Constructor & Destructor'}
 
@@ -150,16 +155,25 @@ end;
 
 procedure TFrmFSIHost.ToggleDarkMode;
 var
-  currentBuffer: String;
+  currentBuffer:{$IFDEF FPC}AnsiString{$ELSE}String{$ENDIF};
 begin
   ParentBackground := (not Npp.IsDarkModeEnabled);
   _fsiViewer.Editor.ParentColor := ParentBackground;
   with _fsiViewer.Editor do begin
     if (not ParentColor) then
-      Color := TColor($3C3838)
-     else
+    begin
+      Color := TColor($3C3838);
+{$IFDEF FPC}
+      BorderStyle := bsNone;
+      BorderSpacing.Left := 8;
+{$ENDIF}
+    end else begin
       Color := clWhite;
-
+{$IFDEF FPC}
+      BorderStyle := bsSingle;
+      BorderSpacing.Left := 0;
+{$ENDIF}
+    end;
     Self.Color := Color;
     SelectAll;
     currentBuffer := SelText;
@@ -176,7 +190,7 @@ procedure TFrmFSIHost.DoClose(var Action: TCloseAction);
 begin
   inherited;
 
-  Action := caFree;
+  Action := caHide;
 
   if Assigned(_onClose) then
     _onClose;
@@ -233,6 +247,24 @@ begin
   _fsiViewer := TFSIViewer.Create;
   _fsiViewer.Editor.Align := alClient;
   _fsiViewer.Editor.Parent := self;
+  with _fsiViewer.Editor do begin
+    Parent := self;
+    Align := alClient;
+    BorderStyle := bsNone;
+    Width := 10;
+    Height := 10;
+    ScrollBars := ssBoth;
+    ReadOnly := True;
+{$IFNDEF FPC}
+    AlignWithMargins := True;
+    with Margins do begin
+      Top := 0;
+      Bottom := 0;
+      Right := 0;
+      Left := 8;
+    end;
+{$ENDIF}
+  end;
 end;
 
 procedure TFrmFSIHost.QuitFSI;

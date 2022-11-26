@@ -1,9 +1,10 @@
 library NPPFSIPlugin;
 // =============================================================================
 // Unit: NPPFSIPlugin
-// Description: Main library source for plugin.
+// Description: Main library source for plugin, ported to Free Pascal.
 //
 // Copyright 2010 Prapin Peethambaran
+// Copyright 2022 Robert Di Pardo (Free Pascal version)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,12 +25,13 @@ library NPPFSIPlugin;
 // THE SOFTWARE.
 //
 // =============================================================================
-{$IF CompilerVersion >= 21.0}
-  {$WEAKLINKRTTI ON}
-  {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
-{$ENDIF}
+{$IFDEF FPC}{$mode delphiunicode}{$ENDIF}
 
 uses
+  Interfaces,
+  LCLIntf,
+  LCLType,
+  Forms,
   SysUtils,
   Windows,
   Graphics,
@@ -42,13 +44,13 @@ uses
   ConfigForm in 'Forms\ConfigForm.pas' {FrmConfiguration},
   AboutForm in 'Forms\AboutForm.pas' {FrmAbout};
 
-{$R 'NPPFSIPlugin.res' 'NPPFSIPlugin.rc'}
-{$R *.dres}
+{$R *.res}
 
 var
   PluginLoaded: Boolean;
   PluginFuncs: TPluginFuncList;
   FSIHostForm: TFrmFSIHost;
+  ConfigForm: TFrmConfiguration;
   Bmp: TBitMap;
   Icon: TIcon;
   IconDark: TIcon;
@@ -120,7 +122,7 @@ procedure LoadFSI; cdecl;
 begin
   if not Assigned(FSIHostForm) then
   begin
-    FSIHostForm := TFrmFSIHost.Create(Nil);
+    Application.CreateForm(TFrmFSIHost, FSIHostForm);
     FSIHostForm.OnClose := DoOnFSIFormClose;
   end;
   FSIHostForm.Show;
@@ -139,15 +141,11 @@ end;
 /// Show the plugin configuration window.
 /// </summary>
 procedure ShowConfig; cdecl;
-var
-  configForm: TFrmConfiguration;
 begin
-  configForm := TFrmConfiguration.Create(Nil);
-  try
-    configForm.ShowModal;
-  finally
-    configForm.Free;
-  end;
+  if not Assigned(configForm) then
+    Application.CreateForm(TFrmConfiguration, configForm);
+
+  configForm.ShowModal;
 end;
 /// <summary>
 /// Show the About window
@@ -211,6 +209,8 @@ var
 begin
   if Assigned(FSIHostForm) then
     FreeAndNil(FSIHostForm);
+  if Assigned(ConfigForm) then
+    FreeAndNil(ConfigForm);
   if Assigned(Icon) then
     FreeAndNil(Icon);
   if Assigned(IconDark) then
@@ -244,6 +244,10 @@ exports
   beNotified,
   messageProc;
 begin
-  DllProc := @DLLEntry;
+{$IFDEF VER3_2}
+  Application.Scaled:=True;
+{$ENDIF}
+  Application.Initialize;
+  DLL_PROCESS_DETACH_Hook := @DLLEntry;
   DLLEntry(DLL_PROCESS_ATTACH);
 end.

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+        <Runnable Value="False"/>
+        <CompatibilityMode Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="NPPFSIPlugin"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+      <Resources Count="4">
+        <Resource_0 FileName="Resources\fsharp-logo.ico" Type="ICON" ResourceName="TBICON"/>
+        <Resource_1 FileName="Resources\fsharp-logo-bmp.bmp" Type="BITMAP" ResourceName="TBBMP"/>
+        <Resource_2 FileName="Resources\fsharp-logo-dm.ico" Type="ICON" ResourceName="TBICONDARK"/>
+        <Resource_3 FileName="Resources\fsharp-logo-png.png" Type="RCDATA" ResourceName="TBBMPSOURCE"/>
+      </Resources>
+    </General>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MinorVersionNr Value="1"/>
+      <RevisionNr Value="1"/>
+      <Attributes pvaSpecialBuild="True"/>
+      <StringTable FileDescription="F# Interactive Plugin For Notepad++" LegalCopyright="Copyright 2010 Prapin Peethambaran" ProductVersion="0.1.1.0"/>
+    </VersionInfo>
+    <BuildModes Count="2">
+      <Item1 Name="Debug" Default="True"/>
+      <Item2 Name="Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="Bin/$(TargetCPU)-$(TargetOS)/$(BuildMode)/$NameOnly($(ProjFile))"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="Src;Forms"/>
+            <UnitOutputDirectory Value="Lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="Delphi"/>
+              <UseAnsiStrings Value="False"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <RelocatableUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+              <ExecutableType Value="Library"/>
+            </Options>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-FcUTF8 -vm4055 -vm5024 -vm5094 -dSCI_DISABLE_PROVISIONAL"/>
+          </Other>
+        </CompilerOptions>
+      </Item2>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="richmemopackage"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="NPPFSIPlugin.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="Src/FpcPipes.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="Src/NPP.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="Src/FSIWrapper.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="Src/Constants.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="Src/Config.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="Forms/FSIHostForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmFSIHost"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="Forms/ConfigForm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmConfiguration"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="Forms/AboutForm.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit8>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="Bin/$(TargetCPU)-$(TargetOS)/$(BuildMode)/$NameOnly($(ProjFile))"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="Src;Forms"/>
+      <UnitOutputDirectory Value="Lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="Delphi"/>
+        <IncludeAssertionCode Value="True"/>
+        <UseAnsiStrings Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+      <TargetCPU Value="x86_64"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+        <UseHeaptrc Value="True"/>
+        <TrashVariables Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+        <ExecutableType Value="Library"/>
+      </Options>
+    </Linking>
+    <Other>
+      <CustomOptions Value="-FcUTF8 -dSCI_DISABLE_PROVISIONAL"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

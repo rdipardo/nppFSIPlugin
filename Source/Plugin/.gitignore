@@ -3,9 +3,12 @@ __history
 *.drc
 *.identcache
 *.local
+*.lps
 *.todo
 *.tvsconfig
 *.bak
+*.log
+**/*[Bb]ackup/
 
 Lib/**/*
 Bin/**/*
