@@ -38,7 +38,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Src;Forms"/>
+            <OtherUnitFiles Value="Src;Forms;Src/ClassLib"/>
             <UnitOutputDirectory Value="Lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -88,7 +88,7 @@
         <PackageName Value="richmemopackage"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="NPPFSIPlugin.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -114,23 +114,27 @@
         <IsPartOfProject Value="True"/>
       </Unit5>
       <Unit6>
+        <Filename Value="Src/ClassLib/Utf8IniFiles.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
+      <Unit7>
         <Filename Value="Forms/FSIHostForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FrmFSIHost"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit6>
-      <Unit7>
+      </Unit7>
+      <Unit8>
         <Filename Value="Forms/ConfigForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FrmConfiguration"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit7>
-      <Unit8>
+      </Unit8>
+      <Unit9>
         <Filename Value="Forms/AboutForm.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit8>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -140,7 +144,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="Src;Forms"/>
+      <OtherUnitFiles Value="Src;Forms;Src/ClassLib"/>
       <UnitOutputDirectory Value="Lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)"/>
     </SearchPaths>
     <Parsing>

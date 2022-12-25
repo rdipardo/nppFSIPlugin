@@ -137,16 +137,18 @@ var
 implementation
 
 uses
+  Constants,
   // standard delphi units
   SysUtils {$IFNDEF FPC}, Imaging.pngimage{$ENDIF};
 
 function GetPluginConfigDirectory: String;
 var
-  dirBuffer: String;
+  dirBuffer: array [0..MAX_PATH] of Char;
+  configDir: string;
 begin
-  SetLength(dirBuffer, MAX_PATH);
-  SendMessage(NppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, LPARAM(PChar(dirBuffer)));
-  SetString(Result, PChar(dirBuffer), StrLen(PChar(dirBuffer)));
+  SendMessage(NppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, LPARAM(@dirBuffer[0]));
+  SetString(configDir, PChar(@dirBuffer[0]), StrLen(PChar(@dirBuffer[0])));
+  Result := WideFormat('%s%s%s', [configDir, PathDelim, ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '')]);
 end;
 
 function GetActiveEditorHandle: HWND;

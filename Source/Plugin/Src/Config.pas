@@ -64,11 +64,11 @@ implementation
 
 uses
   // standard units
-  SysUtils, IniFiles,
+  SysUtils,
   // NPP interface
   NPP,
   // plugin units
-  Constants;
+  Constants, Utf8IniFiles;
 
 { TConfiguration }
 
@@ -93,11 +93,11 @@ end;
 
 procedure TConfiguration.LoadFromConfigFile;
 var
-  configINI: TIniFile;
+  configINI: TUtf8IniFile;
 begin
   if FileExists(_configFile) then
   begin
-    configINI := TIniFile.Create(_configFile);
+    configINI := TUtf8IniFile.Create(_configFile);
     try
       _useDotnet := configINI.ReadBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_USE_DOTNET_FSI, True);
       _fsiPath := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, EmptyStr);
@@ -113,9 +113,9 @@ end;
 
 procedure TConfiguration.SaveToConfigFile;
 var
-  configINI: TIniFile;
+  configINI: TUtf8IniFile;
 begin
-  configINI := TIniFile.Create(_configFile);
+  configINI := TUtf8IniFile.Create(_configFile);
   try
     configINI.WriteBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_USE_DOTNET_FSI, _useDotnet);
     configINI.WriteString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, _fsiPath);

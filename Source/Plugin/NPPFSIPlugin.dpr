@@ -33,6 +33,7 @@ uses
   SysUtils,
   Windows,
   Graphics,
+  Utf8IniFiles in 'Src\ClassLib\Utf8IniFiles.pas',
   FpcPipes in 'Src\FpcPipes.pas',
   NPP in 'Src\NPP.pas',
   FSIWrapper in 'Src\FSIWrapper.pas',
