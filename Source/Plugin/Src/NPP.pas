@@ -127,8 +127,7 @@ type
   procedure ShowDialog(dialogHandle: HWND);
 
 
-  procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList;
-    const tbIcon: TIcon; const tbIconDark: TIcon; var tbBmp: TBitmap);
+  procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList; var tbBmp: TBitmap);
 
 var
   // global var to store info provided by NPP
@@ -206,8 +205,7 @@ begin
   SendMessage(NppData._nppHandle, NPPM_DMMSHOW, 0, WPARAM(dialogHandle));
 end;
 
-procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList;
-  const tbIcon: TIcon; const tbIconDark: TIcon; var tbBmp: TBitmap);
+procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList; var tbBmp: TBitmap);
 var
   tbBmpSource: TPngImage;
   tbIcons: TTbIcons;
@@ -230,15 +228,15 @@ begin
     FreeAndNil(tbBmpSource);
   end;
 
-  tbIcon.LoadFromResourceName(HInstance, 'tbIcon');
   tbIcons.hToolbarBmp := tbBmp.handle;
-  tbIcons.hToolbarIcon := tbIcon.handle;
+  tbIcons.hToolbarIcon := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
+    (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
 
   if haveDarkMode then begin
-    tbIconDark.LoadFromResourceName(HInstance, 'tbIconDark');
-    tbIconsDM.hToolbarBmp := tbBmp.handle;
-    tbIconsDM.hToolbarIcon := tbIcon.handle;
-    tbIconsDM.hToolbarIconDarkMode := tbIconDark.handle;
+    tbIconsDM.hToolbarBmp := tbIcons.hToolbarBmp;
+    tbIconsDM.hToolbarIcon := tbIcons.hToolbarIcon;
+    tbIconsDM.hToolbarIconDarkMode := LoadImage(Hinstance, 'tbIconDark', IMAGE_ICON,
+      0, 0, (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
   end;
 
   funcList := TPluginFuncList(pluginFuncList^);

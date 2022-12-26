@@ -51,8 +51,6 @@ var
   PluginFuncs: TPluginFuncList;
   FSIHostForm: TFrmFSIHost;
   Bmp: TBitMap;
-  Icon: TIcon;
-  IconDark: TIcon;
 {$REGION 'Methods exported by plugin'}
 /// Supports Unicode
 ///
@@ -88,9 +86,7 @@ begin
   case sciMsg.nmhdr.code of
     NPPN_TBMODIFICATION: begin
       Bmp := TBitMap.Create;
-      Icon := TIcon.Create;
-      IconDark := TIcon.Create;
-      SetToolBarIcon(@PluginFuncs, Icon, IconDark, Bmp);
+      SetToolBarIcon(@PluginFuncs, Bmp);
     end;
     NPPN_DARKMODECHANGED: begin
       if Assigned(FSIHostForm) then
@@ -212,10 +208,6 @@ var
 begin
   if Assigned(FSIHostForm) then
     FreeAndNil(FSIHostForm);
-  if Assigned(Icon) then
-    FreeAndNil(Icon);
-  if Assigned(IconDark) then
-    FreeAndNil(IconDark);
   if Assigned(Bmp) then
     FreeAndNil(Bmp);
   for i := Low(PluginFuncs) to High(PluginFuncs) do
