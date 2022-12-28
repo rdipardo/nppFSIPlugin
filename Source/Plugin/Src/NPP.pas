@@ -35,6 +35,7 @@ uses
 
 {$I 'Include\Scintilla.inc'}
 {$I 'Include\Npp.inc'}
+{$I 'Include\DarkMode.inc'}
 {$I 'Include\Docking.inc'}
 {$I 'Include\DockingResource.inc'}
 
@@ -132,6 +133,10 @@ type
   /// </summary>
   procedure ShowDialog(dialogHandle: HWND);
 
+  /// <summary>
+  /// Initializes an instance of TDarkModeColors with the editor's active dark mode styles.
+  /// </summary>
+  procedure GetDarkModeColors( PColors: PDarkModeColors);
 
   procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList; var tbBmp: TBitmap);
 
@@ -317,6 +322,12 @@ begin
     (HIWORD(NppVersion) > 8) or
     ((HIWORD(NppVersion) = 8) and
        ((LOWORD(NppVersion) >= 43) and (not (LOWORD(NppVersion) in [191, 192, 193]))));
+end;
+
+procedure GetDarkModeColors(PColors: PDarkModeColors);
+begin
+  if IsDarkModeEnabled then
+    SendMessage(NppData._nppHandle, NPPM_GETDARKMODECOLORS, WPARAM(SizeOf(TDarkModeColors)), LPARAM(PColors));
 end;
 
 end.

@@ -161,6 +161,7 @@ end;
 
 procedure TFrmFSIHost.ToggleDarkMode;
 var
+  DarkModeColors: Npp.TDarkModeColors;
   currentBuffer:{$IFDEF FPC}AnsiString{$ELSE}String{$ENDIF};
 begin
   ParentBackground := (not Npp.IsDarkModeEnabled);
@@ -168,16 +169,16 @@ begin
   with _fsiViewer.Editor do begin
     if (not ParentColor) then
     begin
-      Color := TColor($3C3838);
+      DarkModeColors := Default(Npp.TDarkModeColors);
+      Npp.GetDarkModeColors(@DarkModeColors);
+      Color := TColor(DarkModeColors.SofterBackground);
 {$IFDEF FPC}
       BorderStyle := bsNone;
-      BorderSpacing.Left := 8;
 {$ENDIF}
     end else begin
       Color := clWhite;
 {$IFDEF FPC}
       BorderStyle := bsSingle;
-      BorderSpacing.Left := 0;
 {$ENDIF}
     end;
     Self.Color := Color;
@@ -228,7 +229,7 @@ begin
   _formRegData := PTbData(AllocMem(SizeOf(TTbData)));
   _formRegData.hClient := Handle;
   _formRegData.dlgID := FSI_INVOKE_CMD_ID;
-  _formRegData.uMask := DWS_DF_CONT_BOTTOM or DWS_USEOWNDARKMODE;
+  _formRegData.uMask := DWS_DF_CONT_BOTTOM;
   _formRegData.hIconTab := 0;
   lenTitle := SizeOf(Char) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
   lenModName := SizeOf(Char) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1);
@@ -263,12 +264,6 @@ begin
     ReadOnly := False;
 {$IFNDEF FPC}
     AlignWithMargins := True;
-    with Margins do begin
-      Top := 0;
-      Bottom := 0;
-      Right := 0;
-      Left := 8;
-    end;
 {$ENDIF}
   end;
 end;
