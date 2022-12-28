@@ -147,10 +147,16 @@ procedure TFrmFSIHost.Show;
 end;
 
 procedure TFrmFSIHost.SendSelectedTextInNPPToFSI;
+var
+  selText: String;
 begin
+  selText := GetSelectedText;
+  if Length(selText) = 0 then
+    Exit;
+
   // reload options in case they've changed
   _fsiViewer.Config.LoadFromConfigFile;
-  _fsiViewer.SendText(GetSelectedText, true, _fsiViewer.Config.EchoNPPTextInEditor);
+  _fsiViewer.SendText(selText, true, _fsiViewer.Config.EchoNPPTextInEditor);
 end;
 
 procedure TFrmFSIHost.ToggleDarkMode;
@@ -254,7 +260,7 @@ begin
     Width := 10;
     Height := 10;
     ScrollBars := ssBoth;
-    ReadOnly := True;
+    ReadOnly := False;
 {$IFNDEF FPC}
     AlignWithMargins := True;
     with Margins do begin

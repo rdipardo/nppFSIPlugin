@@ -177,14 +177,15 @@ var
   textBuffer: PAnsiChar;
 begin
   activeEditorHandle := GetActiveEditorHandle;
+  Result := '';
 
   if (activeEditorHandle <> 0) then
   begin
     selTextLength := SendMessage(GetActiveEditorHandle, SCI_GETSELTEXT, 0, 0);
+    if HasV5Apis then Inc(selTextLength);
 
     if (selTextLength > 1) then
     begin
-      if HasV5Apis then Inc(selTextLength);
       GetMem(textBuffer, SizeOf(Char) * selTextLength);
       try
         SendMessage(activeEditorHandle, SCI_GETSELTEXT, 0, LPARAM(textBuffer));
