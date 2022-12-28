@@ -97,6 +97,12 @@ type
   function IsDarkModeEnabled: Boolean;
 
   /// <summary>
+  /// Return `true` if the NPPM_CREATELEXER message is defined -- i.e., if the Npp version is >= 8.4.3.
+  /// https://github.com/notepad-plus-plus/notepad-plus-plus/commit/f1ed4de78dbe8f5d85f4d199bae2970148cca8ed
+  /// </summary>
+  function SupportsILexer: Boolean;
+
+  /// <summary>
   /// Get the dir where NPP stores the config information of its plugins.
   /// </summary>
   function GetPluginConfigDirectory: String;
@@ -128,6 +134,8 @@ type
 
 
   procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList; var tbBmp: TBitmap);
+
+  procedure SetILexer(const LexerName: string);
 
 var
   // global var to store info provided by NPP
@@ -250,6 +258,14 @@ begin
   end;
 end;
 
+procedure SetILexer(const LexerName: string);
+var
+  lexerPtr: NativeInt;
+begin
+  lexerPtr := SendMessage(NppData._nppHandle, NPPM_CREATELEXER, 0, LPARAM(PCHAR(LexerName)));
+  SendMessage(GetActiveEditorHandle, SCI_SETILEXER, 0, lexerPtr);
+end;
+
 function GetNppVersion: Cardinal;
 var
   NppVersion: Cardinal;
@@ -289,6 +305,17 @@ begin
      ((HIWORD(NppVersion) = 8) and
         (((LOWORD(NppVersion) >= 41) and (not (LOWORD(NppVersion) in [191, 192, 193]))))));
   Result := (HasQueryApi and Boolean(SendMessage(NppData._nppHandle, NPPM_ISDARKMODEENABLED, 0, 0)));
+end;
+
+function SupportsILexer: Boolean;
+var
+  NppVersion: Cardinal;
+begin
+  NppVersion := GetNppVersion;
+  Result :=
+    (HIWORD(NppVersion) > 8) or
+    ((HIWORD(NppVersion) = 8) and
+       ((LOWORD(NppVersion) >= 43) and (not (LOWORD(NppVersion) in [191, 192, 193]))));
 end;
 
 end.

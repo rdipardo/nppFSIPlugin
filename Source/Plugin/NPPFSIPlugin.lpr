@@ -38,6 +38,7 @@ uses
   FpcPipes in 'Src\FpcPipes.pas',
   NPP in 'Src\NPP.pas',
   Constants in 'Src\Constants.pas',
+  LexFSharp in 'Src\ClassLib\LexFSharp.pas',
   FSIHostForm in 'Forms\FSIHostForm.pas' {FrmFSIHost},
   ConfigForm in 'Forms\ConfigForm.pas' {FrmConfiguration},
   AboutForm in 'Forms\AboutForm.pas' {FrmAbout};
@@ -86,10 +87,14 @@ begin
     NPPN_TBMODIFICATION: begin
       Bmp := TBitMap.Create;
       SetToolBarIcon(@PluginFuncs, Bmp);
+      TLexFSharp.Init;
     end;
     NPPN_DARKMODECHANGED: begin
       if Assigned(FSIHostForm) then
         FSIHostForm.ToggleDarkMode;
+    end;
+    NPPN_BUFFERACTIVATED, NPPN_LANGCHANGED, NPPN_WORDSTYLESUPDATED: begin
+      TLexFSharp.Lex;
     end;
   end;
 end;
