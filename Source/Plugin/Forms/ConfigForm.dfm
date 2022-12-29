@@ -36,52 +36,6 @@ object FrmConfiguration: TFrmConfiguration
       Anchors = [akLeft, akTop, akRight]
       Caption = 'FSI'
       TabOrder = 2
-      object lblDotnetSdkSite: TLabel
-        Left = 220
-        Top = 19
-        Width = 221
-        Height = 13
-        Caption = 'https://dotnet.microsoft.com/en-us/download'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        OnClick = lblDotnetSdkSiteClick
-        OnMouseEnter = lblDotnetSdkSiteMouseEnter
-        OnMouseLeave = lblDotnetSdkSiteMouseLeave
-      end
-      object Label2: TLabel
-        Left = 447
-        Top = 19
-        Width = 4
-        Height = 13
-        Caption = ')'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
-      object chkUseDotnetFsi: TCheckBox
-        Left = 16
-        Top = 18
-        Width = 200
-        Height = 17
-        Caption = 'Use dotnet fsi (requires the .NET SDK:'
-        Checked = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        State = cbChecked
-        TabOrder = 1
-        OnClick = chkUseDotnetFsiClick
-      end
       object pnlCustomFSI: TPanel
         Left = 3
         Top = 34
@@ -139,6 +93,50 @@ object FrmConfiguration: TFrmConfiguration
           Enabled = False
           TabOrder = 2
           OnClick = cmdSelectBinaryClick
+        end
+      end
+      object pnlDotNetFSI: TPanel
+        Left = 16
+        Top = 18
+        Width = 532
+        Height = 24
+        BevelOuter = bvNone
+        TabOrder = 1
+        object lblDotnetSdkSite: TLabel
+          AlignWithMargins = True
+          Left = 212
+          Top = 4
+          Width = 320
+          Height = 24
+          Caption = 'https://dotnet.microsoft.com/en-us/download'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlue
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsUnderline]
+          ParentFont = False
+          OnClick = lblDotnetSdkSiteClick
+          OnMouseEnter = lblDotnetSdkSiteMouseEnter
+          OnMouseLeave = lblDotnetSdkSiteMouseLeave
+        end
+        object chkUseDotnetFsi: TCheckBox
+          AlignWithMargins = True
+          Left = 3
+          Top = 3
+          Width = 206
+          Height = 18
+          Align = alLeft
+          Caption = 'Use dotnet fsi - requires the .NET SDK:'
+          Checked = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          State = cbChecked
+          TabOrder = 0
+          OnClick = chkUseDotnetFsiClick
         end
       end
     end

@@ -61,7 +61,7 @@ type
     chkEchoText: TCheckBox;
     chkUseDotnetFsi: TCheckBox;
     lblDotnetSdkSite: TLabel;
-    Label2: TLabel;
+    pnlDotNetFSI: TPanel;
     procedure FormShow(Sender: TObject);
     procedure chkUseDotnetFsiClick(Sender: TObject);
     procedure chkConvertToTabsClick(Sender: TObject);
