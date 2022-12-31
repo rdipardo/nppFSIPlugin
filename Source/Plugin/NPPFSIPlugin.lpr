@@ -150,15 +150,8 @@ end;
 /// Show the About window
 /// </summary>
 procedure ShowAbout; cdecl;
-var
-  aboutForm: TFrmAbout;
 begin
-  aboutForm := TFrmAbout.Create;
-  try
-    aboutForm.ShowModal;
-  finally
-    aboutForm.Free;
-  end;
+  TFrmAbout.ShowModal;
 end;
 {$ENDREGION}
 {$REGION 'Helper Methods'}

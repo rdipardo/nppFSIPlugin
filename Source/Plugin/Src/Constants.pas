@@ -63,11 +63,12 @@ const
   /// Name!
   /// </summary>
   FSI_PLUGIN_AUTHOR = 'Prapin Peethambaran';
+  FSI_PLUGIN_MAINTAINER = 'Robert Di Pardo';
 
   /// <summary>
   /// App url
   /// </summary>
-  FSI_PLUGIN_URL = 'http://github.com/ppv/NPPFSIPlugin';
+  FSI_PLUGIN_URL = 'https://github.com/rdipardo/NPPFSIPlugin';
 
   // config file related
   CONFIG_FSI_SECTION_NAME = 'FSI';

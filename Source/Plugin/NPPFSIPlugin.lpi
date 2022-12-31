@@ -23,10 +23,8 @@
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="1"/>
-      <RevisionNr Value="1"/>
-      <Attributes pvaSpecialBuild="True"/>
-      <StringTable FileDescription="F# Interactive Plugin For Notepad++" LegalCopyright="Copyright 2010 Prapin Peethambaran" ProductVersion="0.1.1.0"/>
+      <MinorVersionNr Value="2"/>
+      <StringTable Comments="Updated for x64 Notepad++ by Robert Di Pardo, Copyright 2022" FileDescription="F# Interactive Plugin for Notepad++" InternalName="$NameOnly($(ProjFile))" LegalCopyright="Copyright 2010 Prapin Peethambaran" OriginalFilename="$NameOnly($(ProjFile)).dll" ProductName="$NameOnly($(ProjFile))" ProductVersion="0.2.0.0"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>

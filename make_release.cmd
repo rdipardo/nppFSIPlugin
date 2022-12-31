@@ -4,7 +4,7 @@
 ::
 SETLOCAL
 
-set "VERSION=0.1.1.1-pre"
+set "VERSION=0.2.0.0"
 set "PLUGIN=NPPFSIPlugin"
 set "BIN_DIR=.\Source\Plugin\Bin"
 set "PLUGIN_DLL=%BIN_DIR%\i386-win32\Release\%PLUGIN%.dll"

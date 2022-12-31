@@ -29,37 +29,50 @@ unit AboutForm;
 interface
 
 type
-  TFrmAbout = class
-    procedure ShowModal;
+  TFrmAbout = object
+    class procedure ShowModal; static;
   private
-    function getBuildNumber: String;
+    class function getBuildNumber: String;
   end;
 
 implementation
 
 uses
   // standard units
-  Windows, SysUtils,
+  Windows, SysUtils, ShellAPI, Controls, Dialogs,
   // plugin units
   Constants
   ;
 
-procedure TFrmAbout.ShowModal;
+class procedure TFrmAbout.ShowModal;
 const
   arch = {$IFDEF CPUx64}64{$ELSE}32{$ENDIF};
   lblFmt = '%-12s';
 var
   msgText: String;
+  dlgResult: Integer;
 begin
-  msgText := Format(#169' %s'#13#10,[FSI_PLUGIN_AUTHOR]);
-  msgText := Concat(msgText, Format(lblFmt+'%s (%d-bit)'#13#10, ['Version:', GetBuildNumber, arch]));
-  msgText := Concat(msgText, Format(lblFmt+'%s', ['Web:', FSI_PLUGIN_URL]));
-  MessageBox(0, Pchar(msgText), PChar('About FSI Plugin For Notepad++'), MB_ICONINFORMATION);
+  msgText := Format(lblFmt+'%s (%d-bit)'#13#10, ['Version:', GetBuildNumber, arch]);
+  msgText := Concat(msgText, Format(lblFmt+'%s'#13#10, ['Web:', FSI_PLUGIN_URL]));
+  msgText := Concat(msgText, 'License:'#13#10);
+  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MIT (plugin source code)'#13#10]));
+  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MPL 2.0 (LexFSharp, Utf8IniFiles units)'#13#10]));
+  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' GPL 3.0 (Notepad++ API)'#13#10]));
+  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' LGPL 3.0 (Scintilla API)'#13#10#13#10]));
+  msgText := Concat(msgText, Format(#$00A9' 2010 %s (v0.1.0.0 - v0.1.1.0)'#13#10, [FSI_PLUGIN_AUTHOR]));
+  msgText := Concat(msgText, Format(#$00A9' 2022 %s (v0.2.0.0)'#13#10#13#10, [FSI_PLUGIN_MAINTAINER]));
+  msgText := Concat(msgText, 'Using the Lazarus Component Library (LCL)'#13#10);
+  msgText := Concat(msgText, 'Licensed under the FPC modified LGPL Version 2'#13#10#13#10);
+  msgText := Concat(msgText, UTF8Encode('Also using RichMemo, '#$00A9' Dmitry Boyarintsev'#13#10));
+  msgText := Concat(msgText, 'Same license as the LCL'#13#10);
+  dlgResult := (MessageDlg('About FSI Plugin For Notepad++', msgText, mtInformation, [mbOk, mbHelp], 0));
+  if not (dlgResult in [mrOk, mrCancel]) then
+    ShellAPI.ShellExecute(0, 'Open', PChar(FSI_PLUGIN_URL), Nil, Nil, SW_SHOWNORMAL);
 end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function TFrmAbout.getBuildNumber: String;
+class function TFrmAbout.getBuildNumber: String;
 var
   fileVersionInfoSize, dummy: Cardinal;
   buffer: PByte;
