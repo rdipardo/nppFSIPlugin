@@ -270,7 +270,7 @@ end;
 
 procedure TFrmFSIHost.QuitFSI;
 begin
-  if Assigned(_fsiViewer) then
+  if Assigned(_fsiViewer) and _fsiViewer.IsConsoleRunning(False) then
       _fsiViewer.SendText(PChar('#quit ;;' + #13#10), false, false);
 end;
 

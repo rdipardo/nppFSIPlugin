@@ -78,7 +78,6 @@ type
     /// directly to the editor.
     /// </summary>
     function isEditorCaretInAValidPos: Boolean;
-    function isConsoleRunning: Boolean;
 
     /// <summary>
     /// Modify richedit's windowproc to handle tab key presses.
@@ -127,6 +126,7 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure updateEditableAreaStart(ScrollTo: Boolean = False);
+    function IsConsoleRunning(echo: Boolean = True): Boolean;
   public
 
     /// <summary>
@@ -142,7 +142,7 @@ type
     /// <summary>
     /// Send text to FSI.
     /// </summary>
-    procedure SendText(const selText: WideString; addDelimiter, appendEditor: Boolean);
+    procedure SendText(const selText: WideString; addDelimiter, appendEditor: Boolean; echoErr: Boolean = True);
 
     /// <summary>
     /// Add text to editor.
@@ -195,6 +195,8 @@ end;
 
 destructor TFSIViewer.Destroy;
 begin
+  _pipedConsole.OnError := Nil;
+  _pipedConsole.OnOutput := Nil;
   Stop;
 
   if Assigned(_pipedConsole) then
@@ -233,11 +235,11 @@ begin
     _pipedConsole.Stop(0);
 end;
 
-procedure TFSIViewer.SendText(const selText: WideString; addDelimiter, appendEditor: Boolean);
+procedure TFSIViewer.SendText(const selText: WideString; addDelimiter, appendEditor, echoErr: Boolean);
 var
   finalText, lastChars, text: String;
 begin
-  if (not isConsoleRunning) then
+  if (not isConsoleRunning(echoErr)) then
     Exit;
 
   text := {$IFDEF FPC}UTF8Encode{$ENDIF}(selText);
@@ -382,10 +384,10 @@ begin
     _defEditorWndProc(Message);
 end;
 
-function TFSIViewer.isConsoleRunning: Boolean;
+function TFSIViewer.IsConsoleRunning(echo: Boolean): Boolean;
 begin
   _editor.ReadOnly := (not _pipedConsole.Running);
-  if _editor.ReadOnly then begin
+  if _editor.ReadOnly and echo then begin
     AddToEditor(Format(#13#10'Process terminated with code %d'#13#10,
       [_pipedConsole.LastError]), clRed, TColor($4763FF));
     updateEditableAreaStart(True);
