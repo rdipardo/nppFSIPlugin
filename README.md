@@ -2,7 +2,7 @@
 
 ![Built with Free Pascal][fpc] [![cci-badge][]][cci-status]
 
-![NPPFSIPlugin-v0.2.0.0-x64-dark](https://i.ibb.co/3mL08J2/NPPFSIPlugin-v0-2-x64-Black-Board-theme.png)
+![NPPFSIPlugin-v0.2.0.0-x64-dark](https://raw.githubusercontent.com/rdipardo/NPPFSIPlugin/media/rel/NPPFSIPlugin-v0.2-x64..png)
 
 ## Usage
 

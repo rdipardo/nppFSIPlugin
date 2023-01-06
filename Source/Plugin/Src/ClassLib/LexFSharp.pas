@@ -96,6 +96,7 @@ begin
 
     // set properties
     // SetProperty('fold'); { should be unnecessary }
+    SetProperty('fold.compact', '0');
     SetProperty('fold.fsharp.comment.stream', GetProperty(lexerIniFile,
       'FOLD_COMMENTS'));
     SetProperty('fold.fsharp.comment.multiline', GetProperty(lexerIniFile,
