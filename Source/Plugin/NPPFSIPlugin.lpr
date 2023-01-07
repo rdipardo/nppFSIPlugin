@@ -112,18 +112,27 @@ end;
 /// </summary>
 procedure DoOnFSIFormClose();
 begin
+  SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[FSI_INVOKE_CMD_ID]._cmdID, 0);
   FSIHostForm := Nil;
 end;
 /// <summary>
-/// Load the FSI window and show it.
+/// Toggle the FSI window.
 /// </summary>
-procedure LoadFSI; cdecl;
+procedure ToggleFSI; cdecl;
 begin
   if not Assigned(FSIHostForm) then
   begin
     Application.CreateForm(TFrmFSIHost, FSIHostForm);
     FSIHostForm.OnClose := DoOnFSIFormClose;
   end;
+
+  if FSIHostForm.Visible then
+  begin
+    FSIHostForm.Close;
+    Exit;
+  end;
+
+  SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[FSI_INVOKE_CMD_ID]._cmdID, 1);
   FSIHostForm.Show;
 end;
 /// <summary>
@@ -183,7 +192,7 @@ procedure LoadPlugin;
 begin
   if (not PluginLoaded) then
   begin
-    RegisterPluginFunction(FSI_INVOKE_CMD_ID, FSI_PLUGIN_LOAD_MENU, LoadFSI, false, MakeShortcutKey(false,
+    RegisterPluginFunction(FSI_INVOKE_CMD_ID, FSI_PLUGIN_LOAD_MENU, ToggleFSI, false, MakeShortcutKey(false,
       true, false, $54));
     RegisterPluginFunction(FSI_SEND_TEXT_CMD_ID, FSI_PLUGIN_SEND_TEXT_MENU, SendText, false, MakeShortcutKey(false,
       true, false, VK_RETURN));

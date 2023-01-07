@@ -107,10 +107,6 @@ begin
     _formRegData := Nil;
   end;
 
-  QuitFSI;
-  // make sure the configuration reflects any changed options
-  // so they're saved to disk
-  _fsiViewer.Config.LoadFromConfigFile;
   _fsiViewer.Free;
 
   inherited;
@@ -124,12 +120,6 @@ procedure TFrmFSIHost.Show;
  begin
    if not Assigned(_fsiViewer) then
     createFSI;
-
-   if (_fsiViewer.Editor.Lines.Count > 0) then
-   begin
-     QuitFSI;
-     _fsiViewer.Editor.Clear;
-   end;
 
    _configOK := _fsiViewer.Start;
 
@@ -195,6 +185,11 @@ end;
 
 procedure TFrmFSIHost.DoClose(var Action: TCloseAction);
 begin
+  QuitFSI;
+  // make sure the configuration reflects any changed options
+  // so they're saved to disk
+  _fsiViewer.Config.LoadFromConfigFile;
+  HideDialog(Handle);
   inherited;
 
   Action := caHide;

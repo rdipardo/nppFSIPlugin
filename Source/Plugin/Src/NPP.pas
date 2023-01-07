@@ -132,6 +132,7 @@ type
   /// Show a plugin dialog.
   /// </summary>
   procedure ShowDialog(dialogHandle: HWND);
+  procedure HideDialog(dialogHandle: HWND);
 
   /// <summary>
   /// Initializes an instance of TDarkModeColors with the editor's active dark mode styles.
@@ -216,7 +217,12 @@ end;
 
 procedure ShowDialog(dialogHandle: HWND);
 begin
-  SendMessage(NppData._nppHandle, NPPM_DMMSHOW, 0, WPARAM(dialogHandle));
+  SendMessage(NppData._nppHandle, NPPM_DMMSHOW, 0, LPARAM(dialogHandle));
+end;
+
+procedure HideDialog(dialogHandle: HWND);
+begin
+  SendMessage(NppData._nppHandle, NPPM_DMMHIDE, 0, LPARAM(dialogHandle));
 end;
 
 procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList; var tbBmp: TBitmap);
