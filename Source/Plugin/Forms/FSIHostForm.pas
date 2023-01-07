@@ -75,7 +75,7 @@ implementation
 
 uses
   // standard units
-  SysUtils, StdCtrls, Controls, Dialogs, Graphics, System.UITypes,
+  SysUtils, StdCtrls, Controls, Dialogs, Graphics, System.UITypes, Windows,
   // plugin units
   Constants, Config;
 
@@ -224,8 +224,9 @@ begin
   _formRegData := PTbData(AllocMem(SizeOf(TTbData)));
   _formRegData.hClient := Handle;
   _formRegData.dlgID := FSI_INVOKE_CMD_ID;
-  _formRegData.uMask := DWS_DF_CONT_BOTTOM;
-  _formRegData.hIconTab := 0;
+  _formRegData.uMask := DWS_DF_CONT_BOTTOM or DWS_ICONTAB;
+  _formRegData.hIconTab := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
+    (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
   lenTitle := SizeOf(Char) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
   lenModName := SizeOf(Char) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1);
   GetMem(_formRegData.pszName, lenTitle);
