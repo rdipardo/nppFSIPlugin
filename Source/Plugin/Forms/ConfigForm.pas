@@ -62,6 +62,14 @@ type
     chkUseDotnetFsi: TCheckBox;
     lblDotnetSdkSite: TLabel;
     pnlDotNetFSI: TPanel;
+    chkFoldCompact: TCheckBox;
+    chkFolding: TCheckBox;
+    chkFoldOpenStatements: TCheckBox;
+    chkFoldPreprocessor: TCheckBox;
+    chkFoldComments: TCheckBox;
+    chkFoldMultiLineComments: TCheckBox;
+    grpLexerProps: TGroupBox;
+    pnlFoldOptions: TPanel;
     procedure FormShow(Sender: TObject);
     procedure chkUseDotnetFsiClick(Sender: TObject);
     procedure chkConvertToTabsClick(Sender: TObject);
@@ -72,10 +80,13 @@ type
     procedure lblDotnetSdkSiteClick(Sender: TObject);
     procedure lblDotnetSdkSiteMouseEnter(Sender: TObject);
     procedure lblDotnetSdkSiteMouseLeave(Sender: TObject);
+    procedure chkFoldingChange(Sender: TObject);
+    procedure updateFoldingOption(Sender: TObject);
     procedure {$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF}; override;
   private
     procedure initialize;
     procedure doOnConvertToTabsCheckBoxStateChange;
+    procedure toggleFoldOptions;
     procedure saveConfiguration;
   end;
 
@@ -151,6 +162,17 @@ begin
   chkConvertToTabs.Checked := _config.ConvertTabsToSpacesInFSIEditor;
   txtTabLength.Text := IntToStr(_config.TabLength);
   chkEchoText.Checked := _config.EchoNPPTextInEditor;
+  with TLexerProperties do
+  begin
+    chkFolding.Checked := Fold;
+    chkFoldCompact.Checked := FoldCompact;
+    chkFoldComments.Checked := FoldComments;
+    chkFoldMultiLineComments.Checked := FoldMultiLineComments;
+    chkFoldOpenStatements.Checked := FoldOpenStatements;
+    chkFoldPreprocessor.Checked := FoldPreprocessor;
+  end;
+
+  toggleFoldOptions;
 end;
 
 procedure TFrmConfiguration.doOnConvertToTabsCheckBoxStateChange;
@@ -170,8 +192,27 @@ begin
   else
     _config.TabLength := DEFAULT_TAB_LENGTH;
   _config.EchoNPPTextInEditor := chkEchoText.Checked;
+  with TLexerProperties do
+  begin
+    Fold := chkFolding.Checked;
+    FoldCompact := chkFoldCompact.Checked;
+    FoldComments := chkFoldComments.Checked;
+    FoldMultiLineComments := chkFoldMultiLineComments.Checked;
+    FoldOpenStatements := chkFoldOpenStatements.Checked;
+    FoldPreprocessor := chkFoldPreprocessor.Checked;
+  end;
 
   _config.SaveToConfigFile;
+end;
+
+procedure TFrmConfiguration.toggleFoldOptions;
+var
+  i: integer;
+begin
+  for i := 0 to pnlFoldOptions.ControlCount - 1 do
+  begin
+    pnlFoldOptions.Controls[i].Enabled := chkFolding.Checked;
+  end;
 end;
 
 procedure TFrmConfiguration.lblDotnetSdkSiteClick(Sender: TObject);
@@ -191,6 +232,25 @@ end;
 procedure TFrmConfiguration.lblDotnetSdkSiteMouseLeave(Sender: TObject);
 begin
   lblDotnetSdkSite.Cursor := crDefault;
+end;
+
+procedure TFrmConfiguration.updateFoldingOption(Sender: TObject);
+var
+  i, nOptions, nDisabled: integer;
+begin
+  nOptions := pnlFoldOptions.ControlCount;
+  nDisabled := 0;
+  for i := 0 to nOptions - 1 do
+  begin
+    if (not TCheckBox(pnlFoldOptions.Controls[i]).Checked) then
+      Inc(nDisabled);
+  end;
+  chkFolding.Checked := (nOptions > nDisabled);
+end;
+
+procedure TFrmConfiguration.chkFoldingChange(Sender: TObject);
+begin
+  toggleFoldOptions;
 end;
 
 procedure TFrmConfiguration.{$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF};

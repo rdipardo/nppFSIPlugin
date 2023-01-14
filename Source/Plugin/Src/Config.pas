@@ -5,6 +5,7 @@ unit Config;
 // Description: Plugin config management.
 //
 // Copyright 2010 Prapin Peethambaran
+// Copyright 2023 Robert Di Pardo (TLexerProperties)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +29,8 @@ unit Config;
 
 interface
 
+uses Utf8IniFiles;
+
 type
 
   /// <summary>
@@ -35,7 +38,7 @@ type
   /// </summary>
   TConfiguration = class
   private
-    _configFile: String;
+    _configFile: WideString;
     _useDotnet: Boolean;
     _fsiPath: String;
     _fsiArgs: String;
@@ -51,7 +54,7 @@ type
     procedure LoadFromConfigFile;
     procedure SaveToConfigFile;
   public
-    property ConfigFile: String read _configFile;
+    property ConfigFile: WideString read _configFile;
     property UseDotnet: Boolean read _useDotnet write _useDotnet;
     property FSIPath: String read _fsiPath write _fsiPath;
     property FSIArgs: String read _fsiArgs write _fsiArgs;
@@ -60,15 +63,41 @@ type
     property EchoNPPTextInEditor: Boolean read _echoNPPTextInEditor write _echoNPPTextInEditor;
   end;
 
+  TPropertyInt = Boolean;
+
+  TLexerProperties = class
+  private
+    class function GetXMLConfig: WideString; static;
+    class function GetXMLSourcePath: WideString; static;
+    class function GetINIConfig: WideString; static;
+    class function GetCurrentFileExt: WideString;
+    class function GetProperty(const config: TUtf8IniFile; const Key: string;
+      DefVal: TPropertyInt = True): TPropertyInt;
+    class procedure SetProperty(const Key: string; Value: TPropertyInt);
+  public
+    Fold: TPropertyInt; static;
+    FoldCompact: TPropertyInt; static;
+    FoldComments: TPropertyInt; static;
+    FoldMultiLineComments: TPropertyInt; static;
+    FoldOpenStatements: TPropertyInt; static;
+    FoldPreprocessor: TPropertyInt; static;
+    class procedure CreateStyler; static;
+    class procedure SetLexer; static;
+    class procedure LoadProperties;
+    class procedure SaveProperties(const config: TUtf8IniFile);
+    class property INIConfig: WideString read GetINIConfig;
+    class property XMLConfig: WideString read GetXMLConfig;
+  end;
+
 implementation
 
 uses
   // standard units
-  SysUtils,
+  SysUtils, Windows,
   // NPP interface
   NPP,
   // plugin units
-  Constants, Utf8IniFiles;
+  Constants, ModulePath;
 
 { TConfiguration }
 
@@ -109,6 +138,7 @@ begin
       configINI.Free;
     end;
   end;
+  TLexerProperties.LoadProperties;
 end;
 
 procedure TConfiguration.SaveToConfigFile;
@@ -123,6 +153,7 @@ begin
     configINI.WriteBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, _convertTabsToSpacesInFSIEditor);
     configINI.WriteInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, _tabLength);
     configINI.WriteBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_ECHO_NPP_TEXT_KEY_NAME, _echoNPPTextInEditor);
+    TLexerProperties.SaveProperties(configINI);
   finally
     configINI.Free;
   end;
@@ -134,15 +165,121 @@ end;
 
 procedure TConfiguration.initializeConfiguration;
 begin
-  _configFile := Format('%s%s%s', [GetPluginConfigDirectory, PathDelim, FSI_PLUGIN_CONFIG_FILE_NAME]);
+  _configFile := TLexerProperties.INIConfig;
   _useDotnet := True;
   _fsiPath := EmptyStr;
   _fsiArgs := EmptyStr;
   _convertTabsToSpacesInFSIEditor := True;
   _tabLength := DEFAULT_TAB_LENGTH;
   _echoNPPTextInEditor := True;
+  TLexerProperties.LoadProperties;
 end;
 
 {$ENDREGION}
+
+{ TLexerProperties }
+
+class procedure TLexerProperties.CreateStyler;
+begin
+  if (not FileExists(XMLConfig)) then
+    TModulePath.CopyFile(GetXMLSourcePath, XMLConfig);
+end;
+
+class procedure TLexerProperties.SetLexer;
+const
+  SCLEX_FSHARP = 132; { lexilla/include/SciLexer.h }
+var
+  statusBarText, ext: WideString;
+begin
+  if SendMessageW(GetActiveEditorHandle, SCI_GETLEXER, 0, 0) <> SCLEX_FSHARP then
+    Exit;
+
+  ext := GetCurrentFileExt;
+  if WideSameText(ext, '.fsx') or WideSameText(ext, '.fsscript') then
+    statusBarText := 'F# script file'
+  else if WideSameText(ext, '.fsi') then
+    statusBarText := 'F# signature file'
+  else
+    statusBarText := 'F# source file';
+
+  SendMessageW(NppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE,
+    LPARAM(PWChar(statusBarText)));
+
+  LoadProperties;
+  SetProperty('fold', Fold);
+  SetProperty('fold.compact', FoldCompact);
+  SetProperty('fold.fsharp.comment.stream', FoldComments);
+  SetProperty('fold.fsharp.comment.multiline', FoldMultiLineComments);
+  SetProperty('fold.fsharp.imports', FoldOpenStatements);
+  SetProperty('fold.fsharp.preprocessor', FoldPreprocessor);
+end;
+
+class procedure TLexerProperties.LoadProperties;
+var
+  configINI: TUtf8IniFile;
+begin
+  try
+    configINI := TUtf8IniFile.Create(INIConfig);
+
+    Fold := GetProperty(configINI, 'CODE_FOLDING');
+    FoldCompact := GetProperty(configINI, 'FOLD_EMPTY_LINES', False);
+    FoldComments := GetProperty(configINI, 'FOLD_COMMENTS');
+    FoldMultiLineComments := GetProperty(configINI, 'FOLD_MULTILINE_COMMENTS');
+    FoldOpenStatements := GetProperty(configINI, 'FOLD_OPEN_STATEMENTS');
+    FoldPreprocessor := GetProperty(configINI, 'FOLD_PREPROCESSOR');
+  finally
+    FreeAndNil(configINI);
+  end;
+end;
+
+class procedure TLexerProperties.SaveProperties(const config: TUtf8IniFile);
+begin
+  config.WriteBool('LEXER_PROPERTIES', 'CODE_FOLDING', Fold);
+  config.WriteBool('LEXER_PROPERTIES', 'FOLD_EMPTY_LINES', FoldCompact);
+  config.WriteBool('LEXER_PROPERTIES', 'FOLD_COMMENTS', FoldComments);
+  config.WriteBool('LEXER_PROPERTIES', 'FOLD_MULTILINE_COMMENTS', FoldMultiLineComments);
+  config.WriteBool('LEXER_PROPERTIES', 'FOLD_OPEN_STATEMENTS', FoldOpenStatements);
+  config.WriteBool('LEXER_PROPERTIES', 'FOLD_PREPROCESSOR', FoldPreprocessor);
+end;
+
+class function TLexerProperties.GetXMLConfig: WideString; static;
+begin
+  Result := WideFormat('%s%s%s', [GetUserConfigDirectory, PathDelim,
+    ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')]);
+end;
+
+class function TLexerProperties.GetXMLSourcePath: WideString; static;
+begin
+  Result := WideFormat('%s%s%s%s', [TModulePath.DLL, 'Config', PathDelim,
+    ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')]);
+end;
+
+class function TLexerProperties.GetINIConfig: WideString;
+begin
+  Result := WideFormat('%s%s%s', [GetPluginConfigDirectory, PathDelim,
+    ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.ini')]);
+end;
+
+class function TLexerProperties.GetProperty(const config: TUtf8IniFile;
+  const Key: string; DefVal: TPropertyInt): TPropertyInt;
+begin
+  Result := config.ReadBool('LEXER_PROPERTIES', Key, DefVal);
+end;
+
+class procedure TLexerProperties.SetProperty(const Key: string; Value: TPropertyInt);
+begin
+  SendMessageW(GetActiveEditorHandle, SCI_SETPROPERTY, WPARAM(PChar(Key)),
+    LPARAM(PChar(BoolToStr(Value, '1', '0'))));
+end;
+
+class function TLexerProperties.GetCurrentFileExt: WideString;
+const
+  extLen = 16;
+var
+  extBuffer: array [0..extLen] of widechar;
+begin
+  SendMessageW(NppData._nppHandle, NPPM_GETEXTPART, extLen, LPARAM(@extBuffer[0]));
+  SetString(Result, PWChar(@extBuffer[0]), StrLen(PWChar(@extBuffer[0])));
+end;
 
 end.

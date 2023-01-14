@@ -8,6 +8,7 @@
 *.pas     text   eol=crlf
 *.inc     text   eol=crlf
 *.ini     text   eol=crlf
+*.xml     text   eol=crlf
 *.rc      text   eol=crlf
 *.bat     text   eol=crlf
 *.cmd     text   eol=crlf

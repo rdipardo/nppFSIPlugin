@@ -106,6 +106,11 @@ type
   /// <summary>
   /// Get the dir where NPP stores the config information of its plugins.
   /// </summary>
+  function GetUserConfigDirectory: String;
+
+  /// <summary>
+  /// Get the unique config directory of *this* plugin.
+  /// </summary>
   function GetPluginConfigDirectory: String;
 
   /// <summary>
@@ -140,7 +145,7 @@ type
   procedure GetDarkModeColors( PColors: PDarkModeColors);
 
   procedure SetToolBarIcon(const pluginFuncList: PTPluginFuncList; var tbBmp: TBitmap);
-
+  function GetILexerPtr(const LexerName: string): NativeInt;
   procedure SetILexer(const LexerName: string);
 
 var
@@ -153,6 +158,11 @@ uses
   Constants,
   // standard delphi units
   SysUtils {$IFNDEF FPC}, Imaging.pngimage{$ENDIF};
+
+function GetUserConfigDirectory: String;
+begin
+  Result := ExtractFileDir(GetPluginConfigDirectory);
+end;
 
 function GetPluginConfigDirectory: String;
 var
@@ -271,11 +281,13 @@ begin
 end;
 
 procedure SetILexer(const LexerName: string);
-var
-  lexerPtr: NativeInt;
 begin
-  lexerPtr := SendMessage(NppData._nppHandle, NPPM_CREATELEXER, 0, LPARAM(PCHAR(LexerName)));
-  SendMessage(GetActiveEditorHandle, SCI_SETILEXER, 0, lexerPtr);
+  SendMessage(GetActiveEditorHandle, SCI_SETILEXER, 0, GetILexerPtr(LexerName));
+end;
+
+function GetILexerPtr(const LexerName: string): NativeInt;
+begin
+  Result := SendMessage(NppData._nppHandle, NPPM_CREATELEXER, 0, LPARAM(PCHAR(LexerName)));
 end;
 
 function GetNppVersion: Cardinal;

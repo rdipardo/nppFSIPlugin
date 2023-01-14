@@ -50,11 +50,6 @@ const
   FSI_PLUGIN_MODULE_FILENAME = 'NPPFSIPlugin.dll';
 
   /// <summary>
-  /// Name of file that stores configuration information
-  /// </summary>
-  FSI_PLUGIN_CONFIG_FILE_NAME = 'NPPFSIPlugin.ini';
-
-  /// <summary>
   /// Default number of spaces used when converting tabs to spaces.
   /// </summary>
   DEFAULT_TAB_LENGTH = 4;

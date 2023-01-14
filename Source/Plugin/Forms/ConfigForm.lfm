@@ -141,13 +141,13 @@ object FrmConfiguration: TFrmConfiguration
     end
     object grpEditorSettings: TGroupBox
       Left = 10
-      Top = 152
-      Width = 740
       Height = 134
+      Top = 152
+      Width = 326
       Anchors = [akLeft, akTop, akRight, akBottom]
       Caption = 'Editor'
       ClientHeight = 112
-      ClientWidth = 736
+      ClientWidth = 322
       TabOrder = 3
       object lblConvertTabsToSpaces: TLabel
         Left = 20
@@ -236,6 +236,81 @@ object FrmConfiguration: TFrmConfiguration
       Caption = 'Cancel'
       ModalResult = 2
       TabOrder = 1
+    end
+    object grpLexerProps: TGroupBox
+      Left = 344
+      Height = 134
+      Top = 152
+      Width = 406
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      Caption = 'Source Code Folding'
+      ClientHeight = 112
+      ClientWidth = 402
+      TabOrder = 4
+      object pnlFoldOptions: TPanel
+        Left = 0
+        Height = 104
+        Top = 8
+        Width = 398
+        BevelOuter = bvNone
+        ClientHeight = 104
+        ClientWidth = 398
+        TabOrder = 1
+        object chkFoldComments: TCheckBox
+          Left = 8
+          Height = 23
+          Top = 32
+          Width = 118
+          Caption = 'Fold comments'
+          OnChange = updateFoldingOption
+          TabOrder = 0
+        end
+        object chkFoldMultiLineComments: TCheckBox
+          Left = 8
+          Height = 23
+          Top = 64
+          Width = 141
+          Caption = 'Fold line comments'
+          OnChange = updateFoldingOption
+          TabOrder = 1
+        end
+        object chkFoldOpenStatements: TCheckBox
+          Left = 168
+          Height = 23
+          Top = 32
+          Width = 168
+          Caption = 'Fold "open" statements'
+          OnChange = updateFoldingOption
+          TabOrder = 2
+        end
+        object chkFoldPreprocessor: TCheckBox
+          Left = 168
+          Height = 23
+          Top = 64
+          Width = 194
+          Caption = 'Fold preprocessor directives'
+          OnChange = updateFoldingOption
+          TabOrder = 3
+        end
+        object chkFoldCompact: TCheckBox
+          Left = 168
+          Height = 23
+          Top = 0
+          Width = 122
+          Caption = 'Fold empty lines'
+          OnChange = updateFoldingOption
+          TabOrder = 4
+        end
+      end
+      object chkFolding: TCheckBox
+        Left = 8
+        Height = 23
+        Top = 8
+        Width = 108
+        Caption = 'Enable folding'
+        OnChange = chkFoldingChange
+        TabOrder = 0
+      end
     end
   end
   object dlgFSIBinarySelect: TOpenDialog

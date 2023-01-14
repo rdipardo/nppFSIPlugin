@@ -112,11 +112,11 @@
         <IsPartOfProject Value="True"/>
       </Unit5>
       <Unit6>
-        <Filename Value="Src/ClassLib/Utf8IniFiles.pas"/>
+        <Filename Value="Src/ILexerExports.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
       <Unit7>
-        <Filename Value="Src/ClassLib/LexFSharp.pas"/>
+        <Filename Value="Src/ClassLib/Utf8IniFiles.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit7>
       <Unit8>
