@@ -164,12 +164,12 @@ begin
   chkEchoText.Checked := _config.EchoNPPTextInEditor;
   with TLexerProperties do
   begin
-    chkFolding.Checked := Fold;
     chkFoldCompact.Checked := FoldCompact;
     chkFoldComments.Checked := FoldComments;
     chkFoldMultiLineComments.Checked := FoldMultiLineComments;
     chkFoldOpenStatements.Checked := FoldOpenStatements;
     chkFoldPreprocessor.Checked := FoldPreprocessor;
+    chkFolding.Checked := Fold;
   end;
 
   toggleFoldOptions;

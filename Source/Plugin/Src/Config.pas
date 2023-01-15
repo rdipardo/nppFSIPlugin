@@ -33,18 +33,21 @@ uses Utf8IniFiles;
 
 type
 
+  TPropertyInt = Boolean;
+
   /// <summary>
   /// Stores, retrieves and manages configuration for the plugin.
   /// </summary>
   TConfiguration = class
   private
     _configFile: WideString;
-    _useDotnet: Boolean;
+    _useDotnet: TPropertyInt;
     _fsiPath: String;
     _fsiArgs: String;
-    _convertTabsToSpacesInFSIEditor: Boolean;
+    _convertTabsToSpacesInFSIEditor: TPropertyInt;
     _tabLength: Integer;
-    _echoNPPTextInEditor: Boolean;
+    _echoNPPTextInEditor: TPropertyInt;
+    _initialFoldState: TPropertyInt;
   private
     procedure initializeConfiguration;
   public
@@ -62,8 +65,6 @@ type
     property TabLength: Integer read _tabLength write _tabLength;
     property EchoNPPTextInEditor: Boolean read _echoNPPTextInEditor write _echoNPPTextInEditor;
   end;
-
-  TPropertyInt = Boolean;
 
   TLexerProperties = class
   private
@@ -111,8 +112,6 @@ end;
 
 destructor TConfiguration.Destroy;
 begin
-  SaveToConfigFile;
-
   inherited;
 end;
 
@@ -139,6 +138,7 @@ begin
     end;
   end;
   TLexerProperties.LoadProperties;
+  _initialFoldState := TLexerProperties.Fold;
 end;
 
 procedure TConfiguration.SaveToConfigFile;
@@ -157,6 +157,10 @@ begin
   finally
     configINI.Free;
   end;
+  TLexerProperties.SetLexer;
+  if (_initialFoldState = True) and (not TLexerProperties.Fold) then
+    MessageBoxW(NppData._nppHandle, PWchar('Reload F# files to apply changes.'),
+      PWchar('File Reload Required'), MB_ICONINFORMATION);
 end;
 
 {$ENDREGION}
