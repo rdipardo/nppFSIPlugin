@@ -1,0 +1,16 @@
+
+* 0.2.1.0 (2023-01-15)
+** Changed: lexical styles can now be set with N++'s builtin Style Configurator
+** Changed: lexer properties can now be set with the plugin's configuration GUI
+** Changed: the toolbar button shows the open/closed state of the FSI console window, which can now be toggled
+** Changed: status bar text uniquely identifies F# source files, scripts, and signature files
+** Added: the FSI console window has an icon, visible when minimized while another docked panel has focus
+
+* 0.2.0.0 (2022-12-31)
+** Fixed: cleaned up bit rot, memory leaks, etc.
+** Changed: refactored all units for Free Pascal compatibility and dropped Delphi build targets
+** Changed: made .NET FSI easier to select as the preferred F# interactive program
+** Added: enabled binary compatibility with x86_64 builds of Notepad++
+** Added: activated Lexilla's F# lexer for multiple F# file types
+
+###. vim: syntax=textile

@@ -2,7 +2,7 @@
 
 ![Built with Free Pascal][fpc] [![cci-badge][]][cci-status]
 
-![NPPFSIPlugin-v0.2.1.0-x64](https://raw.githubusercontent.com/rdipardo/NPPFSIPlugin/media/pre/NPPFSIPlugin-v0.2.1-pre-x64.png)
+![NPPFSIPlugin-v0.2.1.0-x64](https://raw.githubusercontent.com/rdipardo/NPPFSIPlugin/media/rel/NPPFSIPlugin-v0.2.1-x64.png)
 
 ## Usage
 
@@ -49,7 +49,10 @@ Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
   + Locate the `plugins` folder where `notepad++.exe` is installed
   + Create a folder named `NPPFSIPlugin`
 
-- Move the `NPPFSIPlugin.dll` module and `Config` subfolder into the `NPPFSIPlugin` folder
+- Move the `NPPFSIPlugin.dll` module and `Config` subfolder into the `NPPFSIPlugin` folder:
+
+  <img src="https://i.ibb.co/WkbVK5G/NPPFSIPlugin-v021-installation.png" alt="plugin-install-dirs" border="0" width="375">
+
 - Restart Notepad++ if it’s already running
 
 ## Acknowledgements
