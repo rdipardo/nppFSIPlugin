@@ -15,6 +15,7 @@ function CreateLexer(const Name: PAnsiChar): NativeInt; stdcall;
 procedure GetLexerName({%H-}LexerIndex: Cardinal; Name: PAnsiChar; BufLength: Integer); stdcall;
 
 /// Unused since Npp v8.4, but needed to prevent a load exception in older versions
+function GetLexerFactory({%H-}LexerIndex: Cardinal): NativeInt; stdcall;
 procedure GetLexerStatusText({%H-}LexerIndex: Cardinal; Name: PWideChar; BufLength: Integer); stdcall;
 
 implementation
@@ -38,6 +39,11 @@ const
   lexerName: AnsiString = 'fsharp';
 begin
   StrLCopy(Name, PAnsiChar(lexerName), BufLength);
+end;
+
+function GetLexerFactory({%H-}LexerIndex: Cardinal): NativeInt; stdcall;
+begin
+  Result := 0;
 end;
 
 procedure GetLexerStatusText({%H-}LexerIndex: Cardinal; Name: PWideChar; BufLength: Integer); stdcall;

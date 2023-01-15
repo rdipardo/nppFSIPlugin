@@ -236,6 +236,7 @@ end;
 {$ENDREGION}
 exports
   GetLexerCount,
+  GetLexerFactory,
   GetLexerName,
   GetLexerStatusText,
   CreateLexer,
