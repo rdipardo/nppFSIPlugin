@@ -64,12 +64,12 @@ The [FpcPipes] unit is adapted from source code believed to be in the Public Dom
 The F# Software Foundation logo for F# is an asset of the F# Software Foundation: <https://foundation.fsharp.org/logo>
 
 [Original source code]: https://github.com/ppv/NPPFSIPlugin
-[FpcPipes]: https://github.com/rdipardo/NPPFSIPlugin/blob/master/Source/Plugin/Src/FpcPipes.pas
+[FpcPipes]: https://github.com/rdipardo/nppFSIPlugin/blob/master/Source/Plugin/Src/FpcPipes.pas
 [Lexilla]: https://github.com/ScintillaOrg/lexilla
 [Obsidian theme F# UDL]: https://gist.github.com/rdipardo/e500e0e9053e8556350802cf8ab06583
 [default F# UDL]: https://gist.github.com/rdipardo/ede4aed93542286f36d21051b8b51238
-[release archive]: https://github.com/rdipardo/NPPFSIPlugin/releases
+[release archive]: https://github.com/rdipardo/nppFSIPlugin/releases
 ["transparent" backgrounds]: https://github.com/notepad-plus-plus/notepad-plus-plus/issues/9649#issuecomment-832205177
-[cci-status]: https://circleci.com/gh/rdipardo/NPPFSIPlugin
-[cci-badge]: https://circleci.com/gh/rdipardo/NPPFSIPlugin.svg?style=svg
-[fpc]: https://img.shields.io/github/languages/top/rdipardo/NPPFSIPlugin?style=flat-square&color=lightblue&label=Free%20Pascal
+[cci-status]: https://circleci.com/gh/rdipardo/nppFSIPlugin
+[cci-badge]: https://circleci.com/gh/rdipardo/nppFSIPlugin.svg?style=svg
+[fpc]: https://img.shields.io/github/languages/top/rdipardo/nppFSIPlugin?style=flat-square&color=lightblue&label=Free%20Pascal
