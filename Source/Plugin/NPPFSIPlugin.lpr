@@ -97,6 +97,10 @@ begin
     NPPN_BUFFERACTIVATED, NPPN_LANGCHANGED, NPPN_WORDSTYLESUPDATED: begin
       TLexerProperties.SetLexer;
     end;
+    NPPN_BEFORESHUTDOWN: begin
+      if Assigned(FSIHostForm) then
+        FSIHostForm.Close;
+    end;
   end;
 end;
 /// Get the custom functions defined by the plugin.
@@ -133,8 +137,9 @@ begin
     Exit;
   end;
 
-  SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[FSI_INVOKE_CMD_ID]._cmdID, 1);
   FSIHostForm.Show;
+  if FSIHostForm.Visible then
+    SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[FSI_INVOKE_CMD_ID]._cmdID, 1);
 end;
 /// <summary>
 /// Send text from NPP to FSI.

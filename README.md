@@ -63,7 +63,12 @@ The [FpcPipes] unit is adapted from source code believed to be in the Public Dom
 
 The F# Software Foundation logo for F# is an asset of the F# Software Foundation: <https://foundation.fsharp.org/logo>
 
+## License
+
+[MIT]
+
 [Original source code]: https://github.com/ppv/NPPFSIPlugin
+[MIT]: https://raw.githubusercontent.com/rdipardo/nppFSIPlugin/master/Copyright.txt
 [FpcPipes]: https://github.com/rdipardo/nppFSIPlugin/blob/master/Source/Plugin/Src/FpcPipes.pas
 [Lexilla]: https://github.com/ScintillaOrg/lexilla
 [Obsidian theme F# UDL]: https://gist.github.com/rdipardo/e500e0e9053e8556350802cf8ab06583
