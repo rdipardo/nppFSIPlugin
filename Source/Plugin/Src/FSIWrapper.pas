@@ -434,6 +434,7 @@ begin
     strStream.Free;
   end;
   AddToEditor('> ');
+  updateEditableAreaStart;
 end;
 
 procedure TFSIViewer.doOnEditorKeyDown(sender: TObject; var Key: Word;
