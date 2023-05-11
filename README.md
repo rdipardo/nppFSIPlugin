@@ -30,6 +30,14 @@ For the default or a light theme, use the [default F# UDL].
 Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
 
 ## Installation
+### Plugins Admin
+
+A builtin [plugin manager] is available in Notepad++ versions 7.6 and newer.
+
+Find *Plugins* on the main menu bar and select *Plugins Admin*.
+Check the box beside *F# Interactive* and click *Install*.
+
+### Manual installation
 
 - Download a [release archive]
 - Extract the `NPPFSIPlugin.dll` module and subfolders (`Doc`, `Config`)
@@ -74,6 +82,7 @@ The F# Software Foundation logo for F# is an asset of the F# Software Foundation
 [Obsidian theme F# UDL]: https://gist.github.com/rdipardo/e500e0e9053e8556350802cf8ab06583
 [default F# UDL]: https://gist.github.com/rdipardo/ede4aed93542286f36d21051b8b51238
 [release archive]: https://github.com/rdipardo/nppFSIPlugin/releases
+[plugin manager]: https://npp-user-manual.org/docs/plugins/#install-using-plugins-admin
 ["transparent" backgrounds]: https://github.com/notepad-plus-plus/notepad-plus-plus/issues/9649#issuecomment-832205177
 [cci-status]: https://circleci.com/gh/rdipardo/nppFSIPlugin
 [cci-badge]: https://circleci.com/gh/rdipardo/nppFSIPlugin.svg?style=svg

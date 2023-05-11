@@ -1,7 +1,11 @@
+h3. Releases
 
 * 0.2.1.1 (2023-04-05)
 ** Fixed: close FSI if it's running when the editor shuts down
 ** Fixed: don't highlight the toolbar icon when FSI fails to launch
+
+
+h3. Previews
 
 * 0.2.1.0 (2023-01-15)
 ** Changed: lexical styles can now be set with N++'s builtin Style Configurator
