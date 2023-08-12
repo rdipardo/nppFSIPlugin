@@ -87,6 +87,16 @@ type
   function GetActiveEditorHandle: HWND;
 
   /// <summary>
+  /// Get the full path of the buffer with the given ID.
+  /// </summary>
+  function GetCurrentBufferPath(BuffrN: NativeUInt = 0): String;
+
+  /// <summary>
+  /// Get the extension of the buffer with the given ID.
+  /// </summary>
+  function GetCurrentFileExt(BuffrN: NativeUInt = 0): String;
+
+  /// <summary>
   /// Get selected text, if any, from the active editor in NPP.
   /// </summary>
   function GetSelectedText: String;
@@ -151,6 +161,35 @@ begin
     Result := NppData._scintillaMainHandle
   else
     Result := NppData._scintillaSecondHandle;
+end;
+
+function GetCurrentBufferPath(BuffrN: NativeUInt): String;
+const
+  MAX_PATH_LEN = 1001;
+var
+  NppMsg: Cardinal;
+  PathLen: Integer;
+  PathBuff: array of Char;
+begin
+  Result := '';
+  if BuffrN > 0 then begin
+    NppMsg := NPPM_GETFULLPATHFROMBUFFERID;
+    PathLen := SendMessageW(NppData._nppHandle, NppMsg, BuffrN, 0);
+    if PathLen <= 0 then
+      Exit;
+    SetLength(PathBuff, PathLen + 1);
+    SendMessageW(NppData._nppHandle, NppMsg, BuffrN, LPARAM(@PathBuff[0]));
+  end else begin
+    NppMsg := NPPM_GETFULLCURRENTPATH;
+    SetLength(PathBuff, MAX_PATH_LEN);
+    SendMessageW(NppData._nppHandle, NppMsg, MAX_PATH_LEN, LPARAM(@PathBuff[0]));
+  end;
+  SetString(Result, PChar(@PathBuff[0]), StrLen(PChar(@PathBuff[0])));
+end;
+
+function GetCurrentFileExt(BuffrN: NativeUInt): String;
+begin
+  Result := String(StrRScan(PWideChar(GetCurrentBufferPath(BuffrN)), '.'));
 end;
 
 function GetSelectedText: String;

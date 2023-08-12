@@ -71,7 +71,6 @@ type
     class function GetXMLConfig: WideString; static;
     class function GetXMLSourcePath: WideString; static;
     class function GetINIConfig: WideString; static;
-    class function GetCurrentFileExt: WideString;
     class function GetProperty(const config: TUtf8IniFile; const Key: string;
       DefVal: TPropertyInt = True): TPropertyInt;
     class procedure SetProperty(const Key: string; Value: TPropertyInt);
@@ -198,7 +197,7 @@ begin
   if SendMessageW(GetActiveEditorHandle, SCI_GETLEXER, 0, 0) <> SCLEX_FSHARP then
     Exit;
 
-  ext := GetCurrentFileExt;
+  ext := Npp.GetCurrentFileExt;
   if WideSameText(ext, '.fsx') or WideSameText(ext, '.fsscript') then
     statusBarText := 'F# script file'
   else if WideSameText(ext, '.fsi') then
@@ -274,16 +273,6 @@ class procedure TLexerProperties.SetProperty(const Key: string; Value: TProperty
 begin
   SendMessageW(GetActiveEditorHandle, SCI_SETPROPERTY, WPARAM(PChar(Key)),
     LPARAM(PChar(BoolToStr(Value, '1', '0'))));
-end;
-
-class function TLexerProperties.GetCurrentFileExt: WideString;
-const
-  extLen = 16;
-var
-  extBuffer: array [0..extLen] of widechar;
-begin
-  SendMessageW(NppData._nppHandle, NPPM_GETEXTPART, extLen, LPARAM(@extBuffer[0]));
-  SetString(Result, PWChar(@extBuffer[0]), StrLen(PWChar(@extBuffer[0])));
 end;
 
 end.
