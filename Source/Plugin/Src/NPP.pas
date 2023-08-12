@@ -31,45 +31,13 @@ interface
 
 uses
   // std delphi units
-  Windows, Messages, Graphics;
+  Windows, Messages, Graphics, Constants;
 
 {$I 'Include\Scintilla.inc'}
 {$I 'Include\Npp.inc'}
 {$I 'Include\DarkMode.inc'}
 {$I 'Include\Docking.inc'}
 {$I 'Include\DockingResource.inc'}
-
-const
-
-  /// <summary>
-  /// ID of function that invokes the FSI plugin.
-  /// </summary>
-  FSI_INVOKE_CMD_ID = 0;
-
-  /// <summary>
-  /// ID of the functions that sends text to the FSI plugin.
-  /// </summary>
-  FSI_SEND_TEXT_CMD_ID = 1;
-
-  /// <summary>
-  /// ID of a separator menu item.
-  /// </summary>
-  FSI_SEP_1_CMD_ID = 2;
-
-  /// <summary>
-  /// ID of function that invokes the configuration dialog.
-  /// </summary>
-  FSI_CONFIG_CMD_ID = 3;
-
-  /// <summary>
-  /// ID of function that invokes the about dialog.
-  /// </summary>
-  FSI_ABOUT_CMD_ID = 4;
-
-  /// <summary>
-  /// Number of public functions exposed by FSI.
-  /// </summary>
-  FSI_PLUGIN_FUNC_COUNT = 5;
 
 type
 
@@ -155,7 +123,6 @@ var
 implementation
 
 uses
-  Constants,
   // standard delphi units
   SysUtils {$IFNDEF FPC}, Imaging.pngimage{$ENDIF};
 
@@ -273,10 +240,10 @@ begin
 
   if tbIconsDM.hToolbarIconDarkMode <> 0 then
     SendMessage(NppData._nppHandle, NPPM_ADDTOOLBARICON_FORDARKMODE,
-      funcList[FSI_INVOKE_CMD_ID]._cmdID, LPARAM(@tbIconsDM))
+      funcList[Ord(Low(TFsiCmdID))]._cmdID, LPARAM(@tbIconsDM))
   else begin
     SendMessage(NppData._nppHandle, NPPM_ADDTOOLBARICON,
-      funcList[FSI_INVOKE_CMD_ID]._cmdID, LPARAM(@tbIcons))
+      funcList[Ord(Low(TFsiCmdID))]._cmdID, LPARAM(@tbIcons))
   end;
 end;
 

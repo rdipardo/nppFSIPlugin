@@ -32,17 +32,53 @@ const
 
   FSI_PLUGIN_NAME = 'F# Interactive';
   FSI_PLUGIN_WND_TITLE = 'FSI';
-  FSI_PLUGIN_LOAD_MENU = 'Load FSI';
-  FSI_PLUGIN_SEND_TEXT_MENU = 'Send Text';
-  FSI_PLUGIN_CONFIG_MENU = 'Options';
-  FSI_PLUGIN_ABOUT_MENU = 'About';
+  FSI_PLUGIN_MENU_TITLES: array[0..4] of WideString = (
+    'Load FSI',
+    'Send Text',
+    '-',
+    'Options',
+    'About'
+  );
   FSI_PLUGIN_EDITOR_CLEAR_MENU = 'Clear';
   FSI_PLUGIN_EDITOR_COPY_MENU = 'Copy';
   FSI_PLUGIN_EDITOR_CANCELEVAL_MENU = 'Cancel Evaluation';
   FSI_PLUGIN_START_FAILE_MSG = 'Failed to start FSI. Please make sure F# is installed and the' +
                                ' FSI binary path configuration is set properly';
 
+type TFsiCmdID = (
+
+  /// <summary>
+  /// ID of function that invokes the FSI plugin.
+  /// </summary>
+  FSI_INVOKE_CMD_ID = 0,
+
+  /// <summary>
+  /// ID of the functions that sends text to the FSI plugin.
+  /// </summary>
+  FSI_SEND_TEXT_CMD_ID,
+
+  /// <summary>
+  /// ID of a separator menu item.
+  /// </summary>
+  FSI_SEP_1_CMD_ID,
+
+  /// <summary>
+  /// ID of function that invokes the configuration dialog.
+  /// </summary>
+  FSI_CONFIG_CMD_ID,
+
+  /// <summary>
+  /// ID of function that invokes the about dialog.
+  /// </summary>
+  FSI_ABOUT_CMD_ID
+);
+
 const
+
+  /// <summary>
+  /// Number of public functions exposed by FSI.
+  /// </summary>
+  FSI_PLUGIN_FUNC_COUNT = Ord(High(TFsiCmdID)) + 1;
 
   /// <summary>
   /// Name of dll containing the plugin
@@ -75,46 +111,6 @@ const
   CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME = 'TAB_LENGTH';
   CONFIG_FSIEDITOR_ECHO_NPP_TEXT_KEY_NAME = 'ECHO_NPP_TEXT';
 
-  // lexer keyword lists
-  FSHARP_KEYWORDS_1 = '"' +
-  'abstract and as assert async atomic base begin break checked class component const ' +
-  'constraint constructor continue default delegate do done downcast downto eager elif ' +
-  'else end event exception extern external false finally fixed for fun function functor ' +
-  'global if in include inherit inline interface internal lazy let match member method ' +
-  'mixin module mutable namespace new null object of open or override parallel private ' +
-  'process protected public pure rec return sealed select static struct tailcall task ' +
-  'then to trait true try type upcast use val virtual volatile void when while with yield"';
-
-  FSHARP_KEYWORDS_2= '"' +
-  'abs acos add allPairs append asin atan atan2 average averageBy base1 base2 blit bprintf cache ' +
-  'cast ceil choose chunkBySize collect compareWith concat contains containsKey copy cos cosh ' +
-  'count countBy create createBased delay difference distinct distinctBy empty eprintf eprintfn ' +
-  'except exists exists2 exactlyOne failwith failwithf fill filter find findBack findIndex ' +
-  'findIndexBack findKey floor fold fold2 foldBack foldBack2 forall forall2 fprintf fprintfn fst ' +
-  'get groupBy head ignore indexed init initBased initInfinite insertAt insertManyAt intersect ' +
-  'intersectMany invalidArg isEmpty isProperSubset isProperSuperset isSubset isSuperset item iter ' +
-  'iter2 iteri iteri2 kbprintf kfprintf kprintf ksprintf last length length1 length2 length3 length4 ' +
-  'map map2 map3 mapFold mapFoldBack mapi mapi2 max maxBy maxElement min minBy minElement nameof not ' +
-  'ofArray ofList ofSeq pairwise partition permute pick pown printf printfn raise readonly rebase ' +
-  'reduce reduceBack remove removeAt removeManyAt replicate rev round scan scanBack seq set sin ' +
-  'singleton sinh skip skipWhile snd sort sortBy sortByDescending sortDescending sortInPlace ' +
-  'sortInPlaceBy sortInPlaceWith sortWith splitAt splitInto sprintf sqrt sub sum sumBy tail take ' +
-  'takeWhile tan tanh toArray toList toSeq transpose truncate tryExactlyOne tryFind tryFindBack ' +
-  'tryFindIndex tryFindIndexBack tryHead tryItem tryFindKey tryLast tryPick typeof unfold union ' +
-  'unionMany unzip unzip3 updateAt where windowed zeroCreate zeroCreateBased zip zip3"';
-
-  FSHARP_KEYWORDS_3= '"' +
-  'array bigint bool byte byref char comparison decimal double enum equality exn float float32 ' +
-  'inref int int8 int16 int32 int64 list nativeint nativeptr None obj Ok option Option outref ref ' +
-  'Result sbyte Some single string unmanaged unativeint uint uint8 uint16 uint32 uint64 unit void ' +
-  'voidptr voption"';
-
-  FSHARP_KEYWORDS_4='"' +
-  'ArgumentException Array Array2D Array3D Array4D BigInteger Boolean Byte Char Collections Console ' +
-  'Core CultureInfo DateTime Decimal Diagnostics Double Environment Error Exception Expr Float FSharp ' +
-  'Globalization Int16 Int32 Int64 IntPtr IO Linq List Map Math Microsoft NumberStyles Object Path ' +
-  'Parallel Patterns Printf Quotations Random Regex ResizeArray SByte Seq Set Single String System ' +
-  'UInt16 UInt32 UInt64 UIntPtr"';
 
 implementation
 

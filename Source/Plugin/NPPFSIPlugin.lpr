@@ -117,7 +117,7 @@ end;
 /// </summary>
 procedure DoOnFSIFormClose();
 begin
-  SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[FSI_INVOKE_CMD_ID]._cmdID, 0);
+  SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[Ord(FSI_INVOKE_CMD_ID)]._cmdID, 0);
   FSIHostForm := Nil;
 end;
 /// <summary>
@@ -139,7 +139,7 @@ begin
 
   FSIHostForm.Show;
   if FSIHostForm.Visible then
-    SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[FSI_INVOKE_CMD_ID]._cmdID, 1);
+    SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[Ord(FSI_INVOKE_CMD_ID)]._cmdID, 1);
 end;
 /// <summary>
 /// Send text from NPP to FSI.
@@ -195,16 +195,31 @@ end;
 /// Loads plugin by registering all custom funcs exposed by the FSI plugin.
 ///
 procedure LoadPlugin;
+var
+  Id: TFsiCmdID;
+  Cmd: TPluginProc;
+  PSk: PShortcutKey;
+  Title: String;
 begin
   if (not PluginLoaded) then
   begin
-    RegisterPluginFunction(FSI_INVOKE_CMD_ID, FSI_PLUGIN_LOAD_MENU, ToggleFSI, false, MakeShortcutKey(false,
-      true, false, $54));
-    RegisterPluginFunction(FSI_SEND_TEXT_CMD_ID, FSI_PLUGIN_SEND_TEXT_MENU, SendText, false, MakeShortcutKey(false,
-      true, false, VK_RETURN));
-    RegisterPluginFunction(FSI_SEP_1_CMD_ID, '-', Nil, false, Nil);
-    RegisterPluginFunction(FSI_CONFIG_CMD_ID, FSI_PLUGIN_CONFIG_MENU, ShowConfig, false, Nil);
-    RegisterPluginFunction(FSI_ABOUT_CMD_ID, FSI_PLUGIN_ABOUT_MENU, ShowAbout, false, Nil);
+    for Id := Low(TFsiCmdID) to High(TFsiCmdID) do begin
+      Title := FSI_PLUGIN_MENU_TITLES[Ord(Id)];
+      Cmd := Nil; PSk := Nil;
+      case Id of
+        FSI_INVOKE_CMD_ID: begin
+          Cmd := ToggleFSI;
+          PSk := MakeShortcutKey(false, true, false, $54);
+        end;
+        FSI_SEND_TEXT_CMD_ID: begin
+          Cmd := SendText;
+          PSk := MakeShortcutKey(false, true, false, VK_RETURN);
+        end;
+        FSI_CONFIG_CMD_ID : Cmd := ShowConfig;
+        FSI_ABOUT_CMD_ID  : Cmd := ShowAbout;
+      end;
+      RegisterPluginFunction(Ord(Id), Title, Cmd, false, PSk);
+    end;
     PluginLoaded := true;
   end;
 end;

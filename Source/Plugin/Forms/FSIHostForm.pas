@@ -223,7 +223,7 @@ var
 begin
   _formRegData := PTbData(AllocMem(SizeOf(TTbData)));
   _formRegData.hClient := Handle;
-  _formRegData.dlgID := FSI_INVOKE_CMD_ID;
+  _formRegData.dlgID := Ord(FSI_INVOKE_CMD_ID);
   _formRegData.uMask := DWS_DF_CONT_BOTTOM or DWS_ICONTAB;
   _formRegData.hIconTab := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
     (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
