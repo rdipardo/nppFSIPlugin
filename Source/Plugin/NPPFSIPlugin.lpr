@@ -80,6 +80,7 @@ begin
 end;
 /// Handle Notifications from Scintilla.
 ///
+procedure ToggleSendTextCmd(Disable: Boolean = False); forward;
 procedure beNotified(msg: PSCNotification); cdecl;
 var
   sciMsg: TSCNotification;
@@ -89,6 +90,7 @@ begin
     NPPN_TBMODIFICATION: begin
       Bmp := TBitMap.Create;
       SetToolBarIcon(@PluginFuncs, Bmp);
+      ToggleSendTextCmd(True);
     end;
     NPPN_DARKMODECHANGED: begin
       if Assigned(FSIHostForm) then
@@ -100,6 +102,11 @@ begin
     NPPN_BEFORESHUTDOWN: begin
       if Assigned(FSIHostForm) then
         FSIHostForm.Close;
+    end;
+    SCN_UPDATEUI: begin
+      if SC_UPDATE_SELECTION = (sciMsg.updated and (SC_UPDATE_SELECTION or SC_UPDATE_CONTENT or SC_UPDATE_V_SCROLL or SC_UPDATE_H_SCROLL))
+      then
+        ToggleSendTextCmd;
     end;
   end;
 end;
@@ -118,6 +125,7 @@ end;
 procedure DoOnFSIFormClose();
 begin
   SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[Ord(FSI_INVOKE_CMD_ID)]._cmdID, 0);
+  ToggleSendTextCmd(True);
   FSIHostForm := Nil;
 end;
 /// <summary>
@@ -138,6 +146,7 @@ begin
   end;
 
   FSIHostForm.Show;
+  ToggleSendTextCmd;
   if FSIHostForm.Visible then
     SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[Ord(FSI_INVOKE_CMD_ID)]._cmdID, 1);
 end;
@@ -241,6 +250,22 @@ begin
       Dispose(PluginFuncs[i]._PShKey);
   end;
   PluginLoaded := false;
+end;
+/// (Dis/en)able the command to evaluate selected text in the FSI console.
+///
+procedure ToggleSendTextCmd(Disable: Boolean);
+var
+  NppMenu: HMENU;
+  CmdId: Cardinal;
+begin
+  NppMenu := GetMenu(Npp.NppData._nppHandle);
+  CmdId := PluginFuncs[Ord(FSI_SEND_TEXT_CMD_ID)]._cmdID;
+  if Disable or Boolean(SendMessage(Npp.GetActiveEditorHandle, SCI_GETSELECTIONEMPTY, 0, 0)) then
+    EnableMenuItem(NppMenu, CmdId, MF_BYCOMMAND or MF_DISABLED or MF_GRAYED)
+  else begin
+    if Assigned(FSIHostForm) and FSIHostForm.Visible then
+      EnableMenuItem(NppMenu, CmdId, MF_BYCOMMAND or MF_ENABLED);
+  end;
 end;
 {$ENDREGION}
 {$REGION 'DLL Proc'}
