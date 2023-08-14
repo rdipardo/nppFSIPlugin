@@ -66,6 +66,7 @@ type
   public
     procedure Show;
     procedure SendSelectedTextInNPPToFSI;
+    procedure LoadFileInFSI(EchoFilePath: Boolean = True);
     procedure ToggleDarkMode;
   public
     property OnClose: TFSIHostCloseEvent read _onClose write _onClose;
@@ -147,6 +148,11 @@ begin
   // reload options in case they've changed
   _fsiViewer.Config.LoadFromConfigFile;
   _fsiViewer.SendText(selText, true, _fsiViewer.Config.EchoNPPTextInEditor);
+end;
+
+procedure TFrmFSIHost.LoadFileInFSI(EchoFilePath: Boolean);
+begin
+  _fsiViewer.SendText(WideFormat('#load @"%s"', [Npp.GetCurrentBufferPath]), True, EchoFilePath);
 end;
 
 procedure TFrmFSIHost.ToggleDarkMode;

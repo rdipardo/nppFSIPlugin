@@ -32,9 +32,10 @@ const
 
   FSI_PLUGIN_NAME = 'F# Interactive';
   FSI_PLUGIN_WND_TITLE = 'FSI';
-  FSI_PLUGIN_MENU_TITLES: array[0..4] of WideString = (
-    'Load FSI',
-    'Send Text',
+  FSI_PLUGIN_MENU_TITLES: array[0..5] of WideString = (
+    'Start FSI',
+    'Send text',
+    'Load current file in FSI',
     '-',
     'Options',
     'About'
@@ -56,6 +57,9 @@ type TFsiCmdID = (
   /// ID of the functions that sends text to the FSI plugin.
   /// </summary>
   FSI_SEND_TEXT_CMD_ID,
+
+  /// ID of command to '#load' the current buffer in FSI.
+  FSI_LOAD_FILE_CMD_ID,
 
   /// <summary>
   /// ID of a separator menu item.

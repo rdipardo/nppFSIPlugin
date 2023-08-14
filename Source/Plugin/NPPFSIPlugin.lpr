@@ -84,6 +84,29 @@ procedure ToggleSendTextCmd(Disable: Boolean = False); forward;
 procedure beNotified(msg: PSCNotification); cdecl;
 var
   sciMsg: TSCNotification;
+  /// (Dis/en)able command to '#load' current buffer based on file extention
+  procedure ToggleLoadFileCmd;
+  var
+    NppMenu: HMENU;
+    BuffExt: WideString;
+    LoadCmdId, LoadCmdStatus: Cardinal;
+    LoadCmdEnabled, IsFSharp: Boolean;
+  begin
+    BuffExt := Npp.GetCurrentFileExt(sciMsg.nmhdr.idFrom);
+    NppMenu := GetMenu(Npp.NppData._nppHandle);
+    LoadCmdId := PluginFuncs[Ord(FSI_LOAD_FILE_CMD_ID)]._cmdID;
+    if WideCompareStr('', BuffExt) = 0 then begin
+      EnableMenuItem(NppMenu, loadCmdId, MF_BYCOMMAND or MF_DISABLED or MF_GRAYED);
+      Exit;
+    end;
+    LoadCmdStatus := GetMenuState(NppMenu, loadCmdId, MF_BYCOMMAND);
+    LoadCmdEnabled := ((loadCmdStatus and (MF_DISABLED or MF_GRAYED)) = 0);
+    IsFSharp := WideSameText('.fs', Copy(BuffExt, 1, 3));
+    if (not IsFSharp) and LoadCmdEnabled then begin
+      EnableMenuItem(NppMenu, loadCmdId, MF_BYCOMMAND or MF_DISABLED or MF_GRAYED);
+    end else if IsFSharp and not LoadCmdEnabled then
+      EnableMenuItem(NppMenu, loadCmdId, MF_BYCOMMAND or MF_ENABLED);
+  end;
 begin
   sciMsg := TSCNotification(msg^);
   case sciMsg.nmhdr.code of
@@ -91,6 +114,7 @@ begin
       Bmp := TBitMap.Create;
       SetToolBarIcon(@PluginFuncs, Bmp);
       ToggleSendTextCmd(True);
+      ToggleLoadFileCmd;
     end;
     NPPN_DARKMODECHANGED: begin
       if Assigned(FSIHostForm) then
@@ -98,6 +122,10 @@ begin
     end;
     NPPN_BUFFERACTIVATED, NPPN_LANGCHANGED, NPPN_WORDSTYLESUPDATED: begin
       TLexerProperties.SetLexer;
+      if sciMsg.nmhdr.code = NPPN_BUFFERACTIVATED then ToggleLoadFileCmd;
+    end;
+    NPPN_FILERENAMED: begin
+      ToggleLoadFileCmd;
     end;
     NPPN_BEFORESHUTDOWN: begin
       if Assigned(FSIHostForm) then
@@ -149,6 +177,17 @@ begin
   ToggleSendTextCmd;
   if FSIHostForm.Visible then
     SendMessage(Npp.NppData._nppHandle, NPPM_SETMENUITEMCHECK, PluginFuncs[Ord(FSI_INVOKE_CMD_ID)]._cmdID, 1);
+end;
+/// <summary>
+/// Call '#load' with the current file name, launching FSI if needed.
+/// </summary>
+procedure LoadFile; cdecl;
+begin
+  if (not Assigned(FSIHostForm)) or (not FSIHostForm.Visible) then begin
+    ToggleFSI;
+    FSIHostForm.LoadFileInFSI(False);
+  end else
+    FSIHostForm.LoadFileInFSI;
 end;
 /// <summary>
 /// Send text from NPP to FSI.
@@ -223,6 +262,9 @@ begin
         FSI_SEND_TEXT_CMD_ID: begin
           Cmd := SendText;
           PSk := MakeShortcutKey(false, true, false, VK_RETURN);
+        end;
+        FSI_LOAD_FILE_CMD_ID: begin
+          Cmd := LoadFile;
         end;
         FSI_CONFIG_CMD_ID : Cmd := ShowConfig;
         FSI_ABOUT_CMD_ID  : Cmd := ShowAbout;
