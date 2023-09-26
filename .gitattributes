@@ -13,3 +13,6 @@
 *.bat     text   eol=crlf
 *.cmd     text   eol=crlf
 *.sh      text   eol=lf
+*.bmp     binary
+*.ico     binary
+*.png     binary
