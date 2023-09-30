@@ -86,6 +86,7 @@
       </Item1>
       <Item2>
         <PackageName Value="richmemopackage"/>
+        <DefaultFilename Value="../RichMemo/richmemopackage.lpk" Prefer="True"/>
       </Item2>
     </RequiredPackages>
     <Units Count="11">

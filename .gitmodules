@@ -1,3 +1,6 @@
 [submodule "Includes"]
 	path = Source/Interface
 	url = https://bitbucket.org/rdipardo/delphiplugintemplate.git
+[submodule "RichMemo"]
+	path = Source/RichMemo
+	url = https://github.com/skalogryz/richmemo.git

@@ -16,3 +16,5 @@
 *.bmp     binary
 *.ico     binary
 *.png     binary
+Source/Interface  -text   -diff
+Source/RichMemo   -text   -diff
