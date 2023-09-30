@@ -20,6 +20,7 @@ set "ASSETS=.\%BIN_DIR%\Config"
 
 del /S /Q /F %BIN_DIR%\*.zip 2>NUL:
 xcopy /DIY %CONFIG_DIR%\*.xml %ASSETS%
+xcopy /DIY .\Source\Interface\Source\Include\LICENSE* %DOCS%
 xcopy /DIY *.txt %DOCS%
 xcopy /DIY README* %DOCS%
 7z a -tzip "%SLUG%" "%PLUGIN_DLL%" %DOCS% %ASSETS% -y

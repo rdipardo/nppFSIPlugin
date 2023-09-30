@@ -4,6 +4,24 @@ unit AboutForm;
 // Unit: AboutForm
 // Description: Source for the About dialog
 //
+// Ported to Free Pascal by Robert Di Pardo, Copyright 2022, 2023
+//
+// This program is free software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation, either version
+// 3 of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be
+// useful, but WITHOUT ANY WARRANTY; without even the implied
+// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General
+// Public License along with this program. If not, see
+// <https://www.gnu.org/licenses/>.
+//
+// This software incorporates work covered by the following copyright and permission notice:
+//
 // Copyright 2010 Prapin Peethambaran
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -53,11 +71,11 @@ var
   dlgResult: Integer;
 begin
   msgText := Format(lblFmt+'%s (%d-bit)'#13#10, ['Version:', GetBuildNumber, arch]);
-  msgText := Concat(msgText, Format(lblFmt+'%s'#13#10, ['Web:', FSI_PLUGIN_URL]));
-  msgText := Concat(msgText, 'License:'#13#10);
-  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MIT (plugin source code)'#13#10]));
+  msgText := Concat(msgText, Format(lblFmt+'%s'#13#10#13#10, ['Web:', FSI_PLUGIN_URL]));
+  msgText := Concat(msgText, 'Licensed under the GNU General Public License, Version 3 or later'#13#10#13#10);
+  msgText := Concat(msgText, 'Some source code is covered by these additional licenses:'#13#10);
+  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MIT (Prapin Peethambaran''s original Delphi units)'#13#10]));
   msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MPL 2.0 (ModulePath, Utf8IniFiles units)'#13#10]));
-  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' GPL 3.0 (Notepad++ API)'#13#10]));
   msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' LGPL 3.0 (Scintilla API)'#13#10#13#10]));
   msgText := Concat(msgText, Format(#$00A9' 2010 %s (v0.1.0.0 - v0.1.1.0)'#13#10, [FSI_PLUGIN_AUTHOR]));
   msgText := Concat(msgText, Format(#$00A9' 2022, 2023 %s (v0.2.0.0 - v%s)'#13#10#13#10, [FSI_PLUGIN_MAINTAINER, GetBuildNumber]));
@@ -65,7 +83,7 @@ begin
   msgText := Concat(msgText, 'Licensed under the FPC modified LGPL Version 2'#13#10#13#10);
   msgText := Concat(msgText, UTF8Encode('Also using RichMemo, '#$00A9' Dmitry Boyarintsev'#13#10));
   msgText := Concat(msgText, 'Same license as the LCL'#13#10);
-  dlgResult := (MessageDlg('About FSI Plugin For Notepad++', msgText, mtInformation, [mbOk, mbHelp], 0));
+  dlgResult := (MessageDlg('About ' + FSI_PLUGIN_NAME, msgText, mtInformation, [mbOk, mbHelp], 0));
   if not (dlgResult in [mrOk, mrCancel]) then
     ShellAPI.ShellExecute(0, 'Open', PChar(FSI_PLUGIN_URL), Nil, Nil, SW_SHOWNORMAL);
 end;

@@ -1,8 +1,27 @@
+{
+  Ported to Free Pascal by Robert Di Pardo, Copyright 2022, 2023
+
+  This program is free software: you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version
+  3 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE. See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General
+  Public License along with this program. If not, see
+  <https://www.gnu.org/licenses/>.
+
+  This software incorporates work covered by the following copyright and permission notice:
+}
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 Author:       Russell Libby, updated by François PIETTE @ OverByte
 Creation:     Mar 30, 2003
-Last update:  Nov 26, 2022
+Last update:  Sep 30, 2023
 Description:  Pipe components by Russell Libby
               See blog article at http://francois-piette.blogspot.be
 Version:      1.02
@@ -84,8 +103,11 @@ unit FpcPipes;
 //                                Made event parameter HPIPE a type THandle otherwise there type mismatches
 //                                in event handler signatures.
 //
-//                  26.11.2022  - Robert Di Pardo <dipardo.r@gmail.com>
+//                  11.26.2022  - Robert Di Pardo <dipardo.r@gmail.com>
 //                                Adapted unit for Free Pascal.
+//
+//                  09.30.2023  - *idem*
+//                                Added the GPLv3 license header.
 //
 // Description : Set of client and server named pipe components for Delphi & Free Pascal, as
 // well a console pipe redirection component.

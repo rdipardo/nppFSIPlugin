@@ -73,10 +73,11 @@ The F# Software Foundation logo for F# is an asset of the F# Software Foundation
 
 ## License
 
-[MIT]
+Distributed under the terms of the GNU General Public License, Version 3 or later,
+in addition to the rights of past contributors mentioned in [Copyright.txt].
 
 [Original source code]: https://github.com/ppv/NPPFSIPlugin
-[MIT]: https://raw.githubusercontent.com/rdipardo/nppFSIPlugin/master/Copyright.txt
+[Copyright.txt]: https://raw.githubusercontent.com/rdipardo/nppFSIPlugin/master/Copyright.txt
 [FpcPipes]: https://github.com/rdipardo/nppFSIPlugin/blob/master/Source/Plugin/Src/FpcPipes.pas
 [Lexilla]: https://github.com/ScintillaOrg/lexilla
 [Obsidian theme F# UDL]: https://gist.github.com/rdipardo/e500e0e9053e8556350802cf8ab06583
