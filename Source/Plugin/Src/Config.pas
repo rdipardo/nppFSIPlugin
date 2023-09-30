@@ -158,7 +158,7 @@ begin
   end;
   TLexerProperties.SetLexer;
   if (_initialFoldState = True) and (not TLexerProperties.Fold) then
-    MessageBoxW(NppData._nppHandle, PWchar('Reload F# files to apply changes.'),
+    MessageBoxW(NppData.nppHandle, PWchar('Reload F# files to apply changes.'),
       PWchar('File Reload Required'), MB_ICONINFORMATION);
 end;
 
@@ -205,7 +205,7 @@ begin
   else
     statusBarText := 'F# source file';
 
-  SendMessageW(NppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE,
+  SendMessageW(NppData.nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE,
     LPARAM(PWChar(statusBarText)));
 
   LoadProperties;

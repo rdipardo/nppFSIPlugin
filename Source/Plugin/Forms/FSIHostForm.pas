@@ -50,7 +50,7 @@ type
   TFrmFSIHost = class(TForm)
   private
     _configOK: Boolean;
-    _formRegData: PTbData;
+    _formRegData: PToolbarData;
     _fsiViewer: TFSIViewer;
     _onClose: TFSIHostCloseEvent;
   private
@@ -100,11 +100,11 @@ destructor TFrmFSIHost.Destroy;
 begin
   if Assigned(_formRegData) then
   begin
-    FreeMem(_formRegData.pszName, SizeOf(Char) * (Length(_formRegData.pszName) + 1));
-    FreeMem(_formRegData.pszModuleName, SizeOf(Char) * (Length(_formRegData.pszModuleName) + 1));
-    if Assigned(_formRegData.pszAddInfo) and (StrLen(_formRegData.pszAddInfo) <> 0) then
-      FreeMem(_formRegData.pszAddInfo, SizeOf(Char) * (Length(_formRegData.pszAddInfo) + 1));
-    FreeMem(_formRegData, SizeOf(TTbData));
+    FreeMem(_formRegData.Title, SizeOf(nppChar) * (Length(_formRegData.Title) + 1));
+    FreeMem(_formRegData.ModuleName, SizeOf(nppChar) * (Length(_formRegData.ModuleName) + 1));
+    if Assigned(_formRegData.AdditionalInfo) and (StrLen(_formRegData.AdditionalInfo) <> 0) then
+      FreeMem(_formRegData.AdditionalInfo, SizeOf(nppChar) * (Length(_formRegData.AdditionalInfo) + 1));
+    FreeMem(_formRegData, SizeOf(TToolbarData));
     _formRegData := Nil;
   end;
 
@@ -206,7 +206,7 @@ end;
 
 procedure TFrmFSIHost.WMNotify(var msg: TWMNotify);
 begin
-  if (Npp.NppData._nppHandle = msg.NMHdr.hwndFrom) then
+  if (Npp.NppData.nppHandle = msg.NMHdr.hwndFrom) then
   begin
     msg.Result := 0;
 
@@ -227,26 +227,26 @@ procedure TFrmFSIHost.registerForm;
 var
   lenTitle, lenModName: Cardinal;
 begin
-  _formRegData := PTbData(AllocMem(SizeOf(TTbData)));
-  _formRegData.hClient := Handle;
+  _formRegData := PToolbarData(AllocMem(SizeOf(TToolbarData)));
+  _formRegData.ClientHandle := Handle;
   _formRegData.dlgID := Ord(FSI_INVOKE_CMD_ID);
-  _formRegData.uMask := DWS_DF_CONT_BOTTOM or DWS_ICONTAB;
-  _formRegData.hIconTab := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
+  _formRegData.Mask := DWS_DF_CONT_BOTTOM or DWS_ICONTAB;
+  _formRegData.IconTab := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
     (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
-  lenTitle := SizeOf(Char) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
-  lenModName := SizeOf(Char) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1);
-  GetMem(_formRegData.pszName, lenTitle);
-  GetMem(_formRegData.pszModuleName, lenModName);
-  StrLCopy(_formRegData.pszName, PChar(FSI_PLUGIN_WND_TITLE), lenTitle);
-  StrLCopy(_formRegData.pszModuleName, PChar(FSI_PLUGIN_MODULE_FILENAME), lenModName);
+  lenTitle := SizeOf(NppChar) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
+  lenModName := SizeOf(NppChar) * (Length(FSI_PLUGIN_MODULE_FILENAME) + 1);
+  GetMem(_formRegData.Title, lenTitle);
+  GetMem(_formRegData.ModuleName, lenModName);
+  StrLCopy(_formRegData.Title, nppPChar(FSI_PLUGIN_WND_TITLE), lenTitle);
+  StrLCopy(_formRegData.ModuleName, nppPChar(FSI_PLUGIN_MODULE_FILENAME), lenModName);
   try
     SendDockDialogMsg(_formRegData);
   except
-    FreeMem(_formRegData.pszName, lenTitle);
-    FreeMem(_formRegData.pszModuleName, lenModName);
-    if Assigned(_formRegData.pszAddInfo) and (StrLen(_formRegData.pszAddInfo) <> 0) then
-      FreeMem(_formRegData.pszAddInfo, SizeOf(Char) * (Length(_formRegData.pszAddInfo) + 1));
-    FreeMem(_formRegData, SizeOf(TTbData));
+    FreeMem(_formRegData.Title, lenTitle);
+    FreeMem(_formRegData.ModuleName, lenModName);
+    if Assigned(_formRegData.AdditionalInfo) and (StrLen(_formRegData.AdditionalInfo) <> 0) then
+      FreeMem(_formRegData.AdditionalInfo, SizeOf(NppChar) * (Length(_formRegData.AdditionalInfo) + 1));
+    FreeMem(_formRegData, SizeOf(TToolbarData));
     _formRegData := Nil;
   end;
 end;
