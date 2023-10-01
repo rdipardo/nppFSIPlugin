@@ -50,8 +50,8 @@ interface
 uses
   // standard units
   Classes, Forms, Messages,
-  // NPP interface unit
-  NPP,
+  // plugin units
+  NppPlugin, NppDockingForms,
   // FSI wrapper unit
   FSIWrapper;
 
@@ -96,7 +96,7 @@ uses
   // standard units
   SysUtils, StdCtrls, Controls, Dialogs, Graphics, System.UITypes, Windows,
   // plugin units
-  Constants, Config;
+  Constants, Config, FSIPlugin;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -151,7 +151,7 @@ procedure TFrmFSIHost.Show;
 
       ToggleDarkMode;
       Visible := true;
-      ShowDialog(Handle);
+      Npp.ShowDialog(Handle);
    end;
 end;
 
@@ -159,7 +159,7 @@ procedure TFrmFSIHost.SendSelectedTextInNPPToFSI;
 var
   selText: String;
 begin
-  selText := GetSelectedText;
+  selText := Npp.GetSelectedText;
   if Length(selText) = 0 then
     Exit;
 
@@ -175,7 +175,7 @@ end;
 
 procedure TFrmFSIHost.ToggleDarkMode;
 var
-  DarkModeColors: Npp.TDarkModeColors;
+  DarkModeColors: NppPlugin.TDarkModeColors;
   currentBuffer:{$IFDEF FPC}AnsiString{$ELSE}String{$ENDIF};
 begin
   ParentBackground := (not Npp.IsDarkModeEnabled);
@@ -183,7 +183,7 @@ begin
   with _fsiViewer.Editor do begin
     if (not ParentColor) then
     begin
-      DarkModeColors := Default(Npp.TDarkModeColors);
+      DarkModeColors := Default(NppPlugin.TDarkModeColors);
       Npp.GetDarkModeColors(@DarkModeColors);
       Color := TColor(DarkModeColors.SofterBackground);
 {$IFDEF FPC}
@@ -213,7 +213,7 @@ begin
   // make sure the configuration reflects any changed options
   // so they're saved to disk
   _fsiViewer.Config.LoadFromConfigFile;
-  HideDialog(Handle);
+  Npp.HideDialog(Handle);
   inherited;
 
   Action := caHide;
@@ -228,7 +228,7 @@ begin
   begin
     msg.Result := 0;
 
-    if (msg.NMHdr.code = DMN_CLOSE) then
+    if (msg.NMHdr.code = NppDockingForms.DMN_CLOSE) then
     begin
       Close;
     end;
@@ -248,7 +248,7 @@ begin
   _formRegData := PToolbarData(AllocMem(SizeOf(TToolbarData)));
   _formRegData.ClientHandle := Handle;
   _formRegData.dlgID := Ord(FSI_INVOKE_CMD_ID);
-  _formRegData.Mask := DWS_DF_CONT_BOTTOM or DWS_ICONTAB;
+  _formRegData.Mask := NppDockingForms.DWS_DF_CONT_BOTTOM or NppDockingForms.DWS_ICONTAB;
   _formRegData.IconTab := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
     (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
   lenTitle := SizeOf(NppChar) * (Length(FSI_PLUGIN_WND_TITLE) + 1);
@@ -258,7 +258,7 @@ begin
   StrLCopy(_formRegData.Title, nppPChar(FSI_PLUGIN_WND_TITLE), lenTitle);
   StrLCopy(_formRegData.ModuleName, nppPChar(FSI_PLUGIN_MODULE_FILENAME), lenModName);
   try
-    SendDockDialogMsg(_formRegData);
+    Npp.SendDockDialogMsg(_formRegData);
   except
     FreeMem(_formRegData.Title, lenTitle);
     FreeMem(_formRegData.ModuleName, lenModName);

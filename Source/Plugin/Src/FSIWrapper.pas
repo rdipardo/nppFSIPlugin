@@ -200,7 +200,7 @@ uses
   // standard units
   Windows, StrUtils, StdCtrls, SysUtils, Forms,
   // plugin units
-  Constants, Npp;
+  Constants, FSIPlugin;
 
 {$REGION 'Constructor & Destructor' }
 

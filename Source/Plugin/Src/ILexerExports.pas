@@ -35,7 +35,7 @@ procedure GetLexerStatusText({%H-}LexerIndex: Cardinal; Name: PWideChar; BufLeng
 
 implementation
 
-uses SysUtils, Npp;
+uses SysUtils, FSIPlugin;
 
 function GetLexerCount: Integer; stdcall;
 begin
@@ -46,7 +46,7 @@ function CreateLexer(const Name: PAnsiChar): NativeInt; stdcall;
 begin
   Result := 0;
   if SameText(Name, 'fsharp') then
-    Result := GetILexerPtr('fsharp');
+    Result := Npp.GetILexerPtr('fsharp');
 end;
 
 procedure GetLexerName({%H-}LexerIndex: Cardinal; Name: PAnsiChar; BufLength: Integer); stdcall;

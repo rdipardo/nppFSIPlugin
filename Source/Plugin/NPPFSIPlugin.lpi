@@ -38,7 +38,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Src;Forms;Src/ClassLib"/>
+            <OtherUnitFiles Value="Src;Forms;Src/ClassLib;../Interface/Source/Units/Common;../Interface/Source/Forms/Common"/>
             <UnitOutputDirectory Value="Lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)"/>
           </SearchPaths>
           <Parsing>
@@ -149,7 +149,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="Src;Forms;Src/ClassLib"/>
+      <OtherUnitFiles Value="Src;Forms;Src/ClassLib;../Interface/Source/Units/Common;../Interface/Source/Forms/Common"/>
       <UnitOutputDirectory Value="Lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)"/>
     </SearchPaths>
     <Parsing>

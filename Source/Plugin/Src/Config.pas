@@ -112,10 +112,8 @@ implementation
 uses
   // standard units
   SysUtils, Windows,
-  // NPP interface
-  NPP,
   // plugin units
-  Constants, ModulePath;
+  Constants, ModulePath, NppPlugin, FSIPlugin;
 
 { TConfiguration }
 
@@ -176,7 +174,7 @@ begin
   end;
   TLexerProperties.SetLexer;
   if (_initialFoldState = True) and (not TLexerProperties.Fold) then
-    MessageBoxW(NppData.nppHandle, PWchar('Reload F# files to apply changes.'),
+    MessageBoxW(Npp.NppData.nppHandle, PWchar('Reload F# files to apply changes.'),
       PWchar('File Reload Required'), MB_ICONINFORMATION);
 end;
 
@@ -212,7 +210,7 @@ const
 var
   statusBarText, ext: WideString;
 begin
-  if SendMessageW(GetActiveEditorHandle, SCI_GETLEXER, 0, 0) <> SCLEX_FSHARP then
+  if SendMessageW(Npp.CurrentScintilla, NppPlugin.SCI_GETLEXER, 0, 0) <> SCLEX_FSHARP then
     Exit;
 
   ext := Npp.GetCurrentFileExt;
@@ -223,7 +221,7 @@ begin
   else
     statusBarText := 'F# source file';
 
-  SendMessageW(NppData.nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE,
+  SendMessageW(Npp.NppData.nppHandle, NppPlugin.NPPM_SETSTATUSBAR, NppPlugin.STATUSBAR_DOC_TYPE,
     LPARAM(PWChar(statusBarText)));
 
   LoadProperties;
@@ -265,7 +263,7 @@ end;
 
 class function TLexerProperties.GetXMLConfig: WideString; static;
 begin
-  Result := WideFormat('%s%s%s', [GetUserConfigDirectory, PathDelim,
+  Result := WideFormat('%s%s%s', [Npp.GetUserConfigDirectory, PathDelim,
     ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')]);
 end;
 
@@ -277,7 +275,7 @@ end;
 
 class function TLexerProperties.GetINIConfig: WideString;
 begin
-  Result := WideFormat('%s%s%s', [GetPluginConfigDirectory, PathDelim,
+  Result := WideFormat('%s%s%s', [Npp.GetPluginConfigDirectory, PathDelim,
     ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.ini')]);
 end;
 
@@ -289,7 +287,7 @@ end;
 
 class procedure TLexerProperties.SetProperty(const Key: string; Value: TPropertyInt);
 begin
-  SendMessageW(GetActiveEditorHandle, SCI_SETPROPERTY, WPARAM(PChar(Key)),
+  SendMessageW(Npp.CurrentScintilla, NppPlugin.SCI_SETPROPERTY, WPARAM(PChar(Key)),
     LPARAM(PChar(BoolToStr(Value, '1', '0'))));
 end;
 
