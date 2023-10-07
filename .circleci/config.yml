@@ -1,0 +1,16 @@
+version: 2.1
+orbs:
+  win: circleci/windows@5
+jobs:
+  build:
+    executor:
+      name: win/default
+    steps:
+      - checkout
+workflows:
+  push-branch:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /media.*/
