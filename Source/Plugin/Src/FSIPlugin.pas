@@ -80,7 +80,6 @@ type
   private
     FSIHostForm: TFrmFSIHost;
     ConfigForm: TFrmConfiguration;
-    TbBmp: Graphics.TBitMap;
     PluginLoaded: Boolean;
 
     /// (Dis/en)able the command to evaluate selected text in the FSI console.
@@ -169,8 +168,6 @@ begin
     FreeAndNil(FSIHostForm);
   if Assigned(ConfigForm) then
     FreeAndNil(ConfigForm);
-  if Assigned(TbBmp) then
-    FreeAndNil(TbBmp);
 
   PluginLoaded := False;
 
@@ -208,27 +205,36 @@ begin
 end;
 
 procedure TFsiPlugin.DoNppnToolbarModification;
+const
+  hNil = THandle(Nil);
 var
   tbBmpSource: TPortableNetworkGraphic;
   tbIcons: TToolbarIcons;
   tbIconsDM: TTbIconsDarkMode;
+  hHDC: HDC;
+  H, W: Integer;
 begin
-  if not Assigned(TbBmp) then
-    self.TbBmp := Graphics.TBitmap.Create;
   tbBmpSource := TPortableNetworkGraphic.Create;
+  tbBmpSource.HandleType := TBitmapHandleType.bmDDB;
   tbIcons := Default (TToolbarIcons);
   tbIconsDM := Default (TTbIconsDarkMode);
+  hHDC := hNil;
 
   try
+    hHDC := GetDC(hNil);
+    H := MulDiv(16, GetDeviceCaps(hHDC, LOGPIXELSY), 96);
+    W := MulDiv(16, GetDeviceCaps(hHDC, LOGPIXELSX), 96);
     tbBmpSource.LoadFromResourceName(HInstance, 'tbBmpSource');
-    TbBmp.Assign(tbBmpSource);
-    TbBmp.Width := 16;
-    TbBmp.Height := 16;
+    try
+      tbIcons.ToolbarBmp := CopyImage(tbBmpSource.Handle, IMAGE_BITMAP, W, H, LR_COPYDELETEORG);
+    except
+      tbIcons.ToolbarBmp := LoadImage(Hinstance, 'tbBmp', IMAGE_BITMAP, 0, 0, 0);
+    end;
   finally
     FreeAndNil(tbBmpSource);
+    ReleaseDC(hNil, hHDC);
   end;
 
-  tbIcons.ToolbarBmp := TbBmp.handle;
   tbIcons.ToolbarIcon := LoadImage(Hinstance, 'tbIcon', IMAGE_ICON, 0, 0,
     (LR_DEFAULTSIZE or LR_LOADTRANSPARENT));
 
