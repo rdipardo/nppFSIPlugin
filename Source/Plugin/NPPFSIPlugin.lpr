@@ -52,6 +52,9 @@ uses
   DLLExports in 'Src\DLLExports.pas';
 
 {$R *.res}
+{$if NOT DECLARED(useheaptrace)}
+  {$SetPEOptFlags $40}
+{$endif}
 
 exports
   GetLexerCount,

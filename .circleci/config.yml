@@ -3,7 +3,7 @@ version: 2.1
 # Copyright (c) 2022 Robert Di Pardo, MIT License
 #
 orbs:
-  lazarus: rdipardo/lazarus@2
+  lazarus: rdipardo/lazarus@3
   win: circleci/windows@5
 
 references:
@@ -30,7 +30,7 @@ jobs:
         type: string
         default: NPPFSIPlugin
     environment:
-      UPX_VER: 4.2.1
+      UPX_VER: 4.2.2
       UPX_DIR: "C:\\upx"
     steps:
       - checkout

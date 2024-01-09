@@ -50,10 +50,6 @@
           <CodeGeneration>
             <RelocatableUnit Value="True"/>
             <TargetCPU Value="x86_64"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-            <SmallerCode Value="True"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
@@ -72,6 +68,9 @@
           </Other>
         </CompilerOptions>
       </Item2>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="711709357625" Targets="#project,richmemopackage" Modes="Release" Value="-O3s"/>
+      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>

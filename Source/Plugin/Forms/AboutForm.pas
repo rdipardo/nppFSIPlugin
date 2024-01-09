@@ -78,7 +78,7 @@ begin
   msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MPL 2.0 (ModulePath, Utf8IniFiles units)'#13#10]));
   msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' LGPL 3.0 (Scintilla API)'#13#10#13#10]));
   msgText := Concat(msgText, Format(#$00A9' 2010 %s (v0.1.0.0 - v0.1.1.0)'#13#10, [FSI_PLUGIN_AUTHOR]));
-  msgText := Concat(msgText, Format(#$00A9' 2022, 2023 %s (v0.2.0.0 - v%s)'#13#10#13#10, [FSI_PLUGIN_MAINTAINER, GetBuildNumber]));
+  msgText := Concat(msgText, Format(#$00A9' 2022, 2023, 2024 %s (v0.2.0.0 - v%s)'#13#10#13#10, [FSI_PLUGIN_MAINTAINER, GetBuildNumber]));
   msgText := Concat(msgText, 'Using the Lazarus Component Library (LCL)'#13#10);
   msgText := Concat(msgText, 'Licensed under the FPC modified LGPL Version 2'#13#10#13#10);
   msgText := Concat(msgText, UTF8Encode('Also using RichMemo, '#$00A9' Dmitry Boyarintsev'#13#10));
