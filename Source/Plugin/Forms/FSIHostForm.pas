@@ -272,8 +272,6 @@ end;
 procedure TFrmFSIHost.createFSI;
 begin
   _fsiViewer := TFSIViewer.Create;
-  _fsiViewer.Editor.Align := alClient;
-  _fsiViewer.Editor.Parent := self;
   with _fsiViewer.Editor do begin
     Parent := self;
     Align := alClient;
