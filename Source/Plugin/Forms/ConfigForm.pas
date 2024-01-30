@@ -48,18 +48,19 @@ unit ConfigForm;
 interface
 
 uses
-  Forms, Classes, Controls, ExtCtrls, StdCtrls, ComCtrls, Dialogs,
+  NppForms, Classes, Controls, ExtCtrls, StdCtrls, ComCtrls, Dialogs,
   // expose TConfiguration so we can manage the lifetime of a local instance,
   // preventing memory leaks
   Config;
 
 type
-  TFrmConfiguration = class(TForm)
+  TFrmConfiguration = class(TNppForm)
   private
     _config: TConfiguration;
   published
     pnlBase: TPanel;
     pnlCustomFSI: TPanel;
+    pnlTabSettings: TPanel;
     grpFSISettings: TGroupBox;
     grpEditorSettings: TGroupBox;
     cmdSave: TButton;
@@ -70,12 +71,10 @@ type
     txtFSIBinaryArgs: TEdit;
     cmdSelectBinary: TButton;
     chkConvertToTabs: TCheckBox;
-    lblConvertTabsToSpaces: TLabel;
     lblTabLength: TLabel;
     updnTabLength: TUpDown;
     txtTabLength: TEdit;
     dlgFSIBinarySelect: TOpenDialog;
-    lblEchoText: TLabel;
     chkEchoText: TCheckBox;
     chkUseDotnetFsi: TCheckBox;
     lblDotnetSdkSite: TLabel;
@@ -88,6 +87,7 @@ type
     chkFoldMultiLineComments: TCheckBox;
     grpLexerProps: TGroupBox;
     pnlFoldOptions: TPanel;
+    procedure DoCreate; override;
     procedure FormShow(Sender: TObject);
     procedure chkUseDotnetFsiClick(Sender: TObject);
     procedure chkConvertToTabsClick(Sender: TObject);
@@ -100,6 +100,8 @@ type
     procedure lblDotnetSdkSiteMouseLeave(Sender: TObject);
     procedure chkFoldingChange(Sender: TObject);
     procedure updateFoldingOption(Sender: TObject);
+    procedure ToggleDarkMode; override;
+    procedure SubclassAndTheme(DmfMask: Cardinal); override;
     procedure {$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF}; override;
   private
     procedure initialize;
@@ -112,9 +114,9 @@ implementation
 
 uses
   // standard units
-  SysUtils, ShellApi, Windows,
+  SysUtils, ShellApi, Windows, Graphics,
   // plugin units
-  Constants;
+  Constants, FSIPlugin;
 
 {$IFDEF FPC}
 {$R *.lfm}
@@ -124,6 +126,12 @@ uses
 
 
 { TFrmConfiguration }
+
+procedure TFrmConfiguration.DoCreate;
+begin
+  inherited;
+  RegisterForm;
+end;
 
 procedure TFrmConfiguration.FormShow(Sender: TObject);
 begin
@@ -173,7 +181,8 @@ end;
 
 procedure TFrmConfiguration.initialize;
 begin
-  _config := TConfiguration.Create;
+  if not Assigned(_config) then
+    _config := TConfiguration.Create;
   chkUseDotnetFsi.Checked := _config.UseDotnet;
   txtFSIBinary.Text := _config.FSIPath;
   txtFSIBinaryArgs.Text := _config.FSIArgs;
@@ -194,9 +203,13 @@ begin
 end;
 
 procedure TFrmConfiguration.doOnConvertToTabsCheckBoxStateChange;
+var
+  i: integer;
 begin
-  txtTabLength.Enabled := chkConvertToTabs.Checked;
-  updnTabLength.Enabled := chkConvertToTabs.Checked;
+  for i := 0 to pnlTabSettings.ControlCount - 1 do
+  begin
+    pnlTabSettings.Controls[i].Enabled := chkConvertToTabs.Checked;
+  end;
 end;
 
 procedure TFrmConfiguration.saveConfiguration;
@@ -231,6 +244,7 @@ begin
   begin
     pnlFoldOptions.Controls[i].Enabled := chkFolding.Checked;
   end;
+  chkFolding.Enabled := True;
 end;
 
 procedure TFrmConfiguration.lblDotnetSdkSiteClick(Sender: TObject);
@@ -277,6 +291,41 @@ begin
     FreeAndNil(_config);
 
   inherited;
+end;
+
+procedure TFrmConfiguration.ToggleDarkMode;
+begin
+  inherited;
+  if (Self.Font.Color <> clWindowText) then begin
+    txtFSIBinary.TextHint := '';
+    txtFSIBinaryArgs.TextHint := '';
+  end else begin
+    txtFSIBinary.TextHint := txtFSIBinary.Hint;
+    txtFSIBinaryArgs.TextHint := txtFSIBinaryArgs.Hint;
+  end;
+end;
+
+procedure TFrmConfiguration.SubclassAndTheme(DmfMask: Cardinal);
+var
+  DarkModeColors: TDarkModeColors;
+begin
+  inherited SubclassAndTheme(DmfMask);
+  SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.grpFSISettings.Handle);
+  SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.grpEditorSettings.Handle);
+  SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.grpLexerProps.Handle);
+  SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.pnlCustomFSI.Handle);
+  SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.pnlTabSettings.Handle);
+  if Npp.IsDarkModeEnabled then begin
+    DarkModeColors := Default(TDarkModeColors);
+    Npp.GetDarkModeColors(@DarkModeColors);
+    Color := TColor(DarkModeColors.PureBackground);
+    Font.Color := TColor(DarkModeColors.Text);
+    lblDotnetSdkSite.Font.Color := TColor(DMF_COLOR_URL);
+  end else begin
+    Color := clBtnFace;
+    Font.Color := clWindowText;
+    lblDotnetSdkSite.Font.Color := clHighlight;
+  end;
 end;
 
 end.

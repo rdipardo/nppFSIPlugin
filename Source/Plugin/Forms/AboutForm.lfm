@@ -1,0 +1,86 @@
+object FrmAbout: TFrmAbout
+  Left = 813
+  Height = 448
+  Top = 240
+  Width = 548
+  BorderIcons = []
+  BorderStyle = bsDialog
+  Caption = 'About F# Interactive'
+  ClientHeight = 448
+  ClientWidth = 548
+  DesignTimePPI = 144
+  Position = poScreenCenter
+  object pnl: TPanel
+    Left = 72
+    Height = 440
+    Top = 0
+    Width = 460
+    Align = alClient
+    BorderSpacing.Left = 48
+    BorderSpacing.Right = 48
+    BorderSpacing.Bottom = 12
+    BevelOuter = bvNone
+    ClientHeight = 440
+    ClientWidth = 460
+    Font.Height = -16
+    TabOrder = 0
+    object lblRepo: TLabel
+      Left = 0
+      Height = 25
+      Top = 33
+      Width = 460
+      Align = alTop
+      Alignment = taCenter
+      BorderSpacing.Bottom = 16
+      Caption = '%s'
+      Font.Color = clHighlight
+      Font.Style = [fsUnderline]
+      OnClick = lblRepoClick
+      OnMouseEnter = lblRepoMouseEnter
+      OnMouseLeave = lblRepoMouseLeave
+    end
+    object lblGNU: TLabel
+      Left = 0
+      Height = 25
+      Top = 58
+      Width = 460
+      Align = alTop
+      Alignment = taCenter
+      BorderSpacing.Bottom = 8
+      Caption = 'GNU General Public License, Version 3 or later'
+    end
+    object lblCopyright: TLabel
+      Left = 0
+      Height = 306
+      Top = 83
+      Width = 460
+      Align = alTop
+      BorderSpacing.Left = 38
+      Caption = 'Some source code is covered by these additional licenses:'#13#10'    • MIT (Prapin Peethambaran''s original Delphi units)'#13#10'    • MPL 2.0 (ModulePath, VersionInfo, Utf8IniFiles units)'#13#10'    • LGPL 3.0 (Scintilla API)'#13#10#13#10'© 2010 %s (v0.1.0.0 - v0.1.1.0)'#13#10'© 2022, 2023, 2024 %s (v0.2.0.0 - v%s)'#13#10#13#10'Using the Lazarus Component Library (LCL)'#13#10'Licensed under the FPC modified LGPL Version 2'#13#10#13#10'Also using RichMemo, © Dmitry Boyarintsev'#13#10'Same license as the LCL'
+      WordWrap = True
+    end
+    object btnOK: TButton
+      Left = 160
+      Height = 38
+      Top = 348
+      Width = 140
+      Align = alBottom
+      BorderSpacing.Left = 160
+      BorderSpacing.Right = 160
+      Caption = 'OK'
+      TabOrder = 0
+      OnClick = btnOKClick
+    end
+    object lblVersion: TLabel
+      Left = 0
+      Height = 25
+      Top = 0
+      Width = 460
+      Align = alTop
+      Alignment = taCenter
+      BorderSpacing.Bottom = 8
+      Caption = 'Version: %s (%d-bit)'
+      ParentFont = False
+    end
+  end
+end

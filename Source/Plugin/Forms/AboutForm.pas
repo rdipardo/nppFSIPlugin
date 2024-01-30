@@ -4,7 +4,7 @@ unit AboutForm;
 // Unit: AboutForm
 // Description: Source for the About dialog
 //
-// Ported to Free Pascal by Robert Di Pardo, Copyright 2022, 2023
+// Ported to Free Pascal by Robert Di Pardo, Copyright 2022, 2023, 2024
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,9 +46,20 @@ unit AboutForm;
 
 interface
 
+uses
+  NppForms, Classes, StdCtrls, ExtCtrls;
+
 type
-  TFrmAbout = object
-    class procedure ShowModal; static;
+  TFrmAbout = class(TNppForm)
+    pnl: TPanel;
+    btnOK: TButton;
+    lblVersion, lblCopyright, lblGNU, lblRepo: TLabel;
+    constructor Create(AOwner: TComponent); override;
+    procedure SubclassAndTheme(DmfMask: Cardinal); override;
+    procedure btnOKClick({%H-}Sender: TObject);
+    procedure lblRepoClick(Sender: TObject);
+    procedure lblRepoMouseEnter(Sender: TObject);
+    procedure lblRepoMouseLeave(Sender: TObject);
   private
     class function getBuildNumber: String;
   end;
@@ -57,77 +68,73 @@ implementation
 
 uses
   // standard units
-  Windows, SysUtils, ShellAPI, Controls, Dialogs,
+  Windows, SysUtils, ShellAPI, Controls, Graphics,
   // plugin units
+  ModulePath, VersionInfo, FSIPlugin,
   Constants
   ;
 
-class procedure TFrmAbout.ShowModal;
-const
-  arch = {$IFDEF CPUx64}64{$ELSE}32{$ENDIF};
-  lblFmt = '%-12s';
+{$R *.lfm}
+
+constructor TFrmAbout.Create(AOwner: TComponent);
 var
-  msgText: String;
-  dlgResult: Integer;
+  Build: string;
 begin
-  msgText := Format(lblFmt+'%s (%d-bit)'#13#10, ['Version:', GetBuildNumber, arch]);
-  msgText := Concat(msgText, Format(lblFmt+'%s'#13#10#13#10, ['Web:', FSI_PLUGIN_URL]));
-  msgText := Concat(msgText, 'Licensed under the GNU General Public License, Version 3 or later'#13#10#13#10);
-  msgText := Concat(msgText, 'Some source code is covered by these additional licenses:'#13#10);
-  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MIT (Prapin Peethambaran''s original Delphi units)'#13#10]));
-  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' MPL 2.0 (ModulePath, Utf8IniFiles units)'#13#10]));
-  msgText := Concat(msgText, Format(lblFmt+'%s', ['', #$2022' LGPL 3.0 (Scintilla API)'#13#10#13#10]));
-  msgText := Concat(msgText, Format(#$00A9' 2010 %s (v0.1.0.0 - v0.1.1.0)'#13#10, [FSI_PLUGIN_AUTHOR]));
-  msgText := Concat(msgText, Format(#$00A9' 2022, 2023, 2024 %s (v0.2.0.0 - v%s)'#13#10#13#10, [FSI_PLUGIN_MAINTAINER, GetBuildNumber]));
-  msgText := Concat(msgText, 'Using the Lazarus Component Library (LCL)'#13#10);
-  msgText := Concat(msgText, 'Licensed under the FPC modified LGPL Version 2'#13#10#13#10);
-  msgText := Concat(msgText, UTF8Encode('Also using RichMemo, '#$00A9' Dmitry Boyarintsev'#13#10));
-  msgText := Concat(msgText, 'Same license as the LCL'#13#10);
-  dlgResult := (MessageDlg('About ' + FSI_PLUGIN_NAME, msgText, mtInformation, [mbOk, mbHelp], 0));
-  if not (dlgResult in [mrOk, mrCancel]) then
-    ShellAPI.ShellExecute(0, 'Open', PChar(FSI_PLUGIN_URL), Nil, Nil, SW_SHOWNORMAL);
+  inherited Create(AOwner);
+  Build := GetBuildNumber();
+  lblRepo.Caption := FSI_PLUGIN_URL;
+  lblVersion.Caption := Format(lblVersion.Caption, [Build, {$IFDEF CPUx64}64{$ELSE}32{$ENDIF}]);
+  lblCopyright.Caption := Format(lblCopyright.Caption, [FSI_PLUGIN_AUTHOR, FSI_PLUGIN_MAINTAINER, Build]);
 end;
 
-{$WARN SYMBOL_PLATFORM OFF}
-
-class function TFrmAbout.getBuildNumber: String;
-var
-  fileVersionInfoSize, dummy: Cardinal;
-  buffer: PByte;
-  fileInfo: PVSFixedFileInfo;
-  vsVersionInfoStart: PByte;
+procedure TFrmAbout.lblRepoClick(Sender: TObject);
 begin
-  fileVersionInfoSize := GetFileVersionInfoSize(PChar(FSI_PLUGIN_MODULE_FILENAME), dummy);
+    ShellAPI.ShellExecute(0, 'Open', PChar(TLabel(Sender).Caption), Nil, Nil, SW_SHOWNORMAL);
+end;
 
-  if (fileVersionInfoSize > 0) then
-  begin
-    buffer := AllocMem(fileVersionInfoSize);
-    try
-      if (Win32Check(GetFileVersionInfo(PChar(FSI_PLUGIN_MODULE_FILENAME), 0, fileVersionInfoSize, buffer))) then
-      begin
-        // the next step should be a call to VerQueryValue to get the file version; but calling
-        // this function will cause an access violation in Win 7 systems; so this is a workaround
-        // until a better solution can be found:
-        // calculations are based on the VS_VERSIONINFO Structure
-        // 36 = SizeOf(wLength) + SizeOf(wValueLength) + SizeOf(wType) + (SizeOf(Char) * Length('VS_VERSION_INFO'))
-        // (4 - (DWORD(vsVersionInfoStart) mod 4)) = the padding length
-        vsVersionInfoStart := buffer;
-        fileInfo := PVSFixedFileInfo(vsVersionInfoStart + 36 + (4 - (DWORD(vsVersionInfoStart) mod 4)));
+procedure TFrmAbout.btnOKClick({%H-}Sender: TObject);
+begin
+  ModalResult := mrOk;
+end;
 
-        with fileInfo^ do
-        begin
-          Result := IntToStr(dwFileVersionMS shr 16);
-          Result := Result + '.' + IntToStr(dwFileVersionMS and $FFFF);
-          Result := Result + '.' + IntToStr(dwFileVersionLS shr 16);
-          Result := Result + '.' + IntToStr(dwFileVersionLS and $FFFF);
-        end;
-      end;
-    finally
-      FreeMem(buffer);
-    end;
+procedure TFrmAbout.lblRepoMouseEnter(Sender: TObject);
+begin
+  TLabel(Sender).Cursor := crHandPoint;
+end;
+
+procedure TFrmAbout.lblRepoMouseLeave(Sender: TObject);
+begin
+  TLabel(Sender).Cursor := crDefault;
+end;
+
+procedure TFrmAbout.SubclassAndTheme(DmfMask: Cardinal);
+var
+  DarkModeColors: TDarkModeColors;
+begin
+  inherited SubclassAndTheme(DmfMask);
+  if Npp.IsDarkModeEnabled then begin
+    DarkModeColors := Default(TDarkModeColors);
+    Npp.GetDarkModeColors(@DarkModeColors);
+    pnl.Font.Color := TColor(DarkModeColors.Text);
+    lblRepo.Font.Color := TColor(DMF_COLOR_URL);
+  end else begin
+    pnl.Font.Color := clWindowText;
+    lblRepo.Font.Color := clHighlight;
+  end;
+  lblVersion.Font.Color := pnl.Font.Color;
+end;
+
+class function TFrmAbout.getBuildNumber: string;
+var
+  FvInfo: TFileVersionInfo;
+begin
+  try
+    FvInfo := TFileVersionInfo.Create(TModulePath.DLLFullName);
+    Result := Format('%d.%d.%d.%d', [FvInfo.MajorVersion, FvInfo.MinorVersion,
+      FvInfo.Revision, FvInfo.Build]);
+  finally
+    FreeAndNil(FvInfo);
   end;
 end;
-
-{$WARN SYMBOL_PLATFORM ON}
 
 end.

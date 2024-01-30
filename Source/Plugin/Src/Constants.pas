@@ -46,6 +46,11 @@ unit Constants;
 
 interface
 
+uses NppPlugin;
+
+type
+  TDarkModeColors = NppPlugin.TDarkModeColors;
+
 const
 
   FSI_PLUGIN_NAME = 'F# Interactive';
@@ -133,7 +138,16 @@ const
   CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME = 'TAB_LENGTH';
   CONFIG_FSIEDITOR_ECHO_NPP_TEXT_KEY_NAME = 'ECHO_NPP_TEXT';
 
+  NPPM_DARKMODESUBCLASSANDTHEME = NppPlugin.NPPM_DARKMODESUBCLASSANDTHEME;
+  DMF_COLOR_URL = $00BFFF;
+
+var
+  dmfInit, dmfHandleChange: Cardinal;
 
 implementation
+
+initialization
+  dmfInit := NppPlugin.dmfInit;
+  dmfHandleChange := NppPlugin.dmfHandleChange
 
 end.

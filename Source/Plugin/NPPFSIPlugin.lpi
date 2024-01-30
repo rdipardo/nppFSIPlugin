@@ -82,6 +82,7 @@
     <RequiredPackages Count="2">
       <Item1>
         <PackageName Value="LCL"/>
+        <MinVersion Major="3" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="richmemopackage"/>
@@ -138,6 +139,9 @@
       <Unit10>
         <Filename Value="Forms/AboutForm.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FrmAbout"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit10>
     </Units>
   </ProjectOptions>

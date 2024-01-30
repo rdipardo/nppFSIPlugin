@@ -55,7 +55,7 @@ type
     procedure SetILexer(const LexerName: string);
 
     /// Get the general config directory for all plugins.
-    property GetUserConfigDirectory: String read GetPluginsConfigDir;
+    property GetUserConfigDirectory: nppString read GetPluginsConfigDir;
     /// Get the unique config directory of *this* plugin.
     function GetPluginConfigDirectory: String;
     /// Get the full path of the buffer with the given ID.
@@ -193,6 +193,8 @@ begin
     NPPN_DARKMODECHANGED: begin
       if Assigned(FSIHostForm) then
         FSIHostForm.ToggleDarkMode;
+      if Assigned(ConfigForm) then
+        ConfigForm.ToggleDarkMode;
     end;
     NPPN_BUFFERACTIVATED, NPPN_LANGCHANGED, NPPN_WORDSTYLESUPDATED: begin
       TLexerProperties.SetLexer;
@@ -249,7 +251,7 @@ begin
     SendNppMessage(NPPM_ADDTOOLBARICON_FORDARKMODE,
       CmdIdFromDlgId(Ord(Low(TFsiCmdID))), @tbIconsDM)
   else begin
-    SendNppMessage(NPPM_ADDTOOLBARICON,
+    SendNppMessage(NPPM_ADDTOOLBARICON_DEPRECATED,
       CmdIdFromDlgId(Ord(Low(TFsiCmdID))), @tbIcons)
   end;
 
@@ -463,18 +465,26 @@ end;
 procedure TFsiPlugin.ShowConfig;
 begin
   if not Assigned(configForm) then
-    Application.CreateForm(TFrmConfiguration, configForm);
+    configForm := TFrmConfiguration.Create(self);
 
   configForm.ShowModal;
 end;
 
 procedure TFsiPlugin.ShowAbout;
+var
+  Frm: TFrmAbout;
 begin
-  TFrmAbout.ShowModal;
+  try
+    Frm := TFrmAbout.Create(self);
+    Frm.ShowModal;
+  finally
+    Frm.Free;
+  end;
 end;
 {$ENDREGION}
 
 initialization
+  Application.CaptureExceptions := True;
 {$IFDEF VER3_2}
   Application.Scaled := True;
 {$ENDIF}

@@ -94,7 +94,7 @@ implementation
 
 uses
   // standard units
-  SysUtils, StdCtrls, Controls, Dialogs, Graphics, System.UITypes, Windows,
+  SysUtils, StdCtrls, Controls, Dialogs, Graphics, System.UITypes, Types, Windows,
   // plugin units
   Constants, Config, FSIPlugin;
 
@@ -136,6 +136,8 @@ end;
 {$REGION 'Public Mehtods'}
 
 procedure TFrmFSIHost.Show;
+const  MemoPadding = 12;
+var    MemoBounds: TRect;
  begin
    if not Assigned(_fsiViewer) then
     createFSI;
@@ -151,6 +153,9 @@ procedure TFrmFSIHost.Show;
 
       ToggleDarkMode;
       Visible := true;
+      { https://forum.lazarus.freepascal.org/index.php/topic,44911.msg316147.html#msg316147 }
+      MemoBounds := Types.Rect(MemoPadding , 0, _fsiViewer.Editor.ClientWidth-MemoPadding, _fsiViewer.Editor.ClientHeight);
+      SendMessage(_fsiViewer.Editor.Handle, EM_SETRECT, 0, LPARAM(@MemoBounds));
       Npp.ShowDialog(Handle);
    end;
 end;
@@ -280,9 +285,6 @@ begin
     Height := 10;
     ScrollBars := ssBoth;
     ReadOnly := False;
-{$IFNDEF FPC}
-    AlignWithMargins := True;
-{$ENDIF}
   end;
 end;
 

@@ -502,7 +502,8 @@ begin
     else if (Key = VK_LEFT) then
     begin
       if ((_editor.CaretPos.Y = _editableAreaStartCoord.Y) and
-          (_editor.CaretPos.X <= _editableAreaStartCoord.X)) then
+          (_editor.CaretPos.X <= _editableAreaStartCoord.X)) or
+         ((_editor.CaretPos.X - _editor.SelLength - 1) < _editableAreaStartCoord.X) then
         Key := 0;
     end
     else if (Key = VK_BACK) or (Key = VK_DELETE) then
@@ -540,7 +541,7 @@ end;
 
 procedure TFSIViewer.doOnEditorChange(Sender: TObject);
 begin
-  if (_editor.GetTextLen = 0) then doOnEditorClearContextMenuClick(Sender);
+  if _editor.CanUndo and (_editor.GetTextLen = 0) then doOnEditorClearContextMenuClick(Sender);
 end;
 
 procedure TFSIViewer.doOnEditorClearContextMenuClick(sender: TObject);
