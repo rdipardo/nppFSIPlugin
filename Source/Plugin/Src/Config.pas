@@ -107,6 +107,8 @@ type
     class property XMLConfig: WideString read GetXMLConfig;
   end;
 
+procedure CopyFile(const SrcPath, DestPath: WideString);
+
 implementation
 
 uses
@@ -201,7 +203,7 @@ end;
 class procedure TLexerProperties.CreateStyler;
 begin
   if (not FileExists(XMLConfig)) then
-    TModulePath.CopyFile(GetXMLSourcePath, XMLConfig);
+    CopyFile(GetXMLSourcePath, XMLConfig);
 end;
 
 class procedure TLexerProperties.SetLexer;
@@ -289,6 +291,44 @@ class procedure TLexerProperties.SetProperty(const Key: string; Value: TProperty
 begin
   SendMessageW(Npp.CurrentScintilla, NppPlugin.SCI_SETPROPERTY, WPARAM(PChar(Key)),
     LPARAM(PChar(BoolToStr(Value, '1', '0'))));
+end;
+
+{ ------------------------------------------------------------------------------------------------ }
+procedure CopyFile(const SrcPath, DestPath: WideString);
+var
+  hSrc, hDest: THandle;
+  Text: TBytes;
+  bytesWritten: LongInt;
+  DestDir: WideString;
+begin
+  bytesWritten := -1;
+  try
+    try
+      hSrc := FileOpen(SrcPath, fmOpenRead or fmShareDenyWrite);
+      if hSrc <> THandle(-1) then
+      begin
+        DestDir := ExtractFileDir(DestPath);
+        if (not DirectoryExists(DestDir)) and (not CreateDir(DestDir)) then
+            raise Exception.Create(Format('Directory "%s" is not writable', [UTF8Encode(DestDir)]));
+        Text := GetFileContents(hSrc);
+        hDest := FileCreate(DestPath);
+        if (hDest <> THandle(-1)) and (Length(Text) > 0) then
+          bytesWritten := FileWrite(hDest, RawByteString(Text)[1], Length(Text));
+      end;
+      if (bytesWritten = -1) then
+        MessageBoxW(0, PWideChar(WideFormat('Could not copy "%s" to "%s"',
+          [SrcPath, DestPath])),
+          PWideChar('File System Error'), MB_ICONERROR);
+    finally
+      FileClose(hSrc);
+      FileClose(hDest);
+    end;
+  except
+    on E: Exception do
+    begin
+      MessageBoxW(0, PWideChar(UTF8Decode(E.Message)), PWideChar('Error'), MB_ICONERROR);
+    end;
+  end;
 end;
 
 end.
