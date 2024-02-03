@@ -268,7 +268,10 @@ end;
 procedure TFsiPlugin.DoNppnShutdown;
 begin
   if Assigned(FSIHostForm) then
+  begin
+    SendNppMessage(NPPM_MODELESSDIALOG, MODELESSDIALOGREMOVE, FSIHostForm.Handle);
     FSIHostForm.Close;
+  end;
 end;
 {$ENDREGION}
 
@@ -430,6 +433,7 @@ begin
   if not Assigned(FSIHostForm) then
   begin
     Application.CreateForm(TFrmFSIHost, FSIHostForm);
+    SendNppMessage(NPPM_MODELESSDIALOG, MODELESSDIALOGADD, FSIHostForm.Handle);
     FSIHostForm.OnClose := DoOnFSIFormClose;
   end;
 
