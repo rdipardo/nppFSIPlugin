@@ -34,7 +34,7 @@ object FrmAbout: TFrmAbout
       BorderSpacing.Bottom = 16
       Caption = '%s'
       Font.Color = clHighlight
-      Font.Style = [fsUnderline]
+      Font.Style = []
       OnClick = lblRepoClick
       OnMouseEnter = lblRepoMouseEnter
       OnMouseLeave = lblRepoMouseLeave

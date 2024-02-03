@@ -237,6 +237,8 @@ begin
   if _config.UseDotnet then begin
     cmd := 'C:\Windows\System32\cmd.exe';
     args := '/c dotnet fsi';
+    if _config.UseArgs then
+      args := Concat(args, ' ' + _config.FSIArgs);
   end else begin
     cmd := _config.FSIPath;
     args := _config.FSIArgs;

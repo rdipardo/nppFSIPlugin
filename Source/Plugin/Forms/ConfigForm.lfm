@@ -1,88 +1,89 @@
 object FrmConfiguration: TFrmConfiguration
-  Left = 595
-  Height = 408
-  Top = 127
+  Left = 558
+  Height = 435
+  Top = 211
   Width = 913
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Configuration'
-  ClientHeight = 408
+  ClientHeight = 435
   ClientWidth = 913
-  Color = clBtnFace
   DesignTimePPI = 144
-  Font.Color = clWindowText
-  Font.Height = -17
-  Position = poScreenCenter
   OnShow = FormShow
-  object pnlBase: TPanel
+  Position = poScreenCenter
+  object pnlBase: TPanel[0]
     Left = 0
-    Height = 408
+    Height = 435
     Top = 0
     Width = 913
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 408
+    ClientHeight = 435
     ClientWidth = 913
     ParentBackground = False
+    TabOrder = 0
     object grpFSISettings: TGroupBox
       Left = 12
-      Height = 163
+      Height = 190
       Top = 10
       Width = 888
       Anchors = [akTop, akLeft, akRight]
       Caption = 'FSI'
-      ClientHeight = 137
+      ClientHeight = 165
       ClientWidth = 884
       ParentBackground = False
+      TabOrder = 2
       object pnlCustomFSI: TPanel
-        Left = 5
+        Left = 0
         Height = 85
-        Top = 38
+        Top = 68
         Width = 874
         BevelOuter = bvNone
         ClientHeight = 85
         ClientWidth = 874
         ParentBackground = False
-        TabOrder = 0
+        TabOrder = 1
         object lblFSIBinaryArgs: TLabel
-          Left = 24
-          Height = 21
-          Top = 54
-          Width = 87
+          Left = 18
+          Height = 20
+          Top = 48
+          Width = 82
           Caption = 'Arguments:'
           Enabled = False
           ParentColor = False
         end
         object lblFSIBinaryPath: TLabel
-          Left = 19
-          Height = 21
+          Left = 18
+          Height = 20
           Top = 12
-          Width = 90
+          Width = 85
           Caption = 'Binary Path:'
           Enabled = False
           ParentColor = False
         end
         object txtFSIBinary: TEdit
           Left = 118
-          Height = 29
+          Height = 28
+          Hint = 'Full file path of fsi.exe'
           Top = 10
           Width = 701
           Anchors = [akTop, akLeft, akRight]
           Enabled = False
-          TabOrder = 1
-          Hint = 'Full file path of fsi.exe'
+          ParentShowHint = False
           ShowHint = True
+          TabOrder = 1
         end
         object txtFSIBinaryArgs: TEdit
           Left = 118
-          Height = 29
+          Height = 28
+          Hint = 'Command-line arguments for fsi.exe'
           Top = 48
           Width = 701
           Anchors = [akTop, akLeft, akRight]
           Enabled = False
-          TabOrder = 2
-          Hint = 'Command-line arguments for fsi.exe'
+          ParentShowHint = False
           ShowHint = True
+          TabOrder = 2
         end
         object cmdSelectBinary: TButton
           Left = 829
@@ -109,7 +110,7 @@ object FrmConfiguration: TFrmConfiguration
         object lblDotnetSdkSite: TLabel
           Left = 314
           Height = 29
-          Top = 2
+          Top = 4
           Width = 346
           Alignment = taRightJustify
           AutoSize = False
@@ -117,7 +118,7 @@ object FrmConfiguration: TFrmConfiguration
           Font.Color = clHighlight
           Font.Height = -17
           Font.Name = 'Tahoma'
-          Font.Style = [fsUnderline]
+          Font.Style = []
           ParentColor = False
           ParentFont = False
           OnClick = lblDotnetSdkSiteClick
@@ -138,18 +139,30 @@ object FrmConfiguration: TFrmConfiguration
           ParentFont = False
           State = cbChecked
           TabOrder = 0
-          OnClick = chkUseDotnetFsiClick
+          OnChange = chkUseDotnetFsiClick
         end
+      end
+      object chkPassArgsToDotnetFsi: TCheckBox
+        Left = 24
+        Height = 25
+        Top = 40
+        Width = 238
+        Caption = 'Pass arguments to dotnet fsi'
+        Font.Height = -17
+        Font.Name = 'Tahoma'
+        ParentFont = False
+        TabOrder = 2
+        OnChange = chkUseArgsChanged
       end
     end
     object grpEditorSettings: TGroupBox
       Left = 12
-      Height = 161
-      Top = 182
+      Height = 164
+      Top = 208
       Width = 391
       Anchors = [akTop, akLeft, akRight, akBottom]
       Caption = 'Editor'
-      ClientHeight = 135
+      ClientHeight = 164
       ClientWidth = 387
       ParentBackground = False
       TabOrder = 3
@@ -165,15 +178,15 @@ object FrmConfiguration: TFrmConfiguration
         TabOrder = 1
         object lblTabLength: TLabel
           Left = 5
-          Height = 21
+          Height = 20
           Top = 2
-          Width = 89
+          Width = 85
           Caption = 'Tab Length:'
           ParentColor = False
         end
         object txtTabLength: TEdit
           Left = 132
-          Height = 29
+          Height = 28
           Top = 0
           Width = 46
           MaxLength = 2
@@ -182,7 +195,7 @@ object FrmConfiguration: TFrmConfiguration
         end
         object updnTabLength: TUpDown
           Left = 178
-          Height = 29
+          Height = 28
           Top = 0
           Width = 35
           Associate = txtTabLength
@@ -195,29 +208,29 @@ object FrmConfiguration: TFrmConfiguration
       end
       object chkConvertToTabs: TCheckBox
         Left = 24
-        Height = 25
+        Height = 24
         Top = 12
-        Width = 195
+        Width = 188
         Caption = 'Convert tabs to spaces'
         TabOrder = 0
-        OnClick = chkConvertToTabsClick
+        OnChange = chkConvertToTabsClick
         OnKeyUp = chkConvertToTabsKeyUp
       end
       object chkEchoText: TCheckBox
         Left = 24
-        Height = 25
+        Height = 24
         Top = 95
-        Width = 234
+        Width = 223
         Caption = 'Echo text from NPP in editor'
         TabOrder = 2
-        OnClick = chkConvertToTabsClick
+        OnChange = chkConvertToTabsClick
         OnKeyUp = chkConvertToTabsKeyUp
       end
     end
     object cmdSave: TButton
-      Left = 672
+      Left = 656
       Height = 38
-      Top = 352
+      Top = 380
       Width = 113
       Anchors = [akRight, akBottom]
       Caption = 'Save'
@@ -227,9 +240,9 @@ object FrmConfiguration: TFrmConfiguration
       OnClick = cmdSaveClick
     end
     object cmdCancel: TButton
-      Left = 787
+      Left = 784
       Height = 38
-      Top = 352
+      Top = 380
       Width = 113
       Anchors = [akRight, akBottom]
       Cancel = True
@@ -240,75 +253,75 @@ object FrmConfiguration: TFrmConfiguration
     end
     object grpLexerProps: TGroupBox
       Left = 413
-      Height = 161
-      Top = 182
+      Height = 164
+      Top = 208
       Width = 487
       Anchors = [akTop, akLeft, akRight, akBottom]
       Caption = 'Source Code Folding'
-      ClientHeight = 135
+      ClientHeight = 164
       ClientWidth = 483
       ParentBackground = False
       TabOrder = 4
       object pnlFoldOptions: TPanel
         Left = 0
-        Height = 124
+        Height = 108
         Top = 10
         Width = 478
         BevelOuter = bvNone
-        ClientHeight = 124
+        ClientHeight = 108
         ClientWidth = 478
         ParentBackground = False
         TabOrder = 0
         object chkFoldComments: TCheckBox
           Left = 10
-          Height = 25
+          Height = 24
           Top = 38
-          Width = 138
+          Width = 134
           Caption = 'Fold comments'
           TabOrder = 1
           OnChange = updateFoldingOption
         end
         object chkFoldMultiLineComments: TCheckBox
           Left = 10
-          Height = 25
+          Height = 24
           Top = 77
-          Width = 169
+          Width = 162
           Caption = 'Fold line comments'
           TabOrder = 2
           OnChange = updateFoldingOption
         end
         object chkFoldOpenStatements: TCheckBox
           Left = 202
-          Height = 25
+          Height = 24
           Top = 38
-          Width = 200
+          Width = 192
           Caption = 'Fold "open" statements'
           TabOrder = 4
           OnChange = updateFoldingOption
         end
         object chkFoldPreprocessor: TCheckBox
           Left = 202
-          Height = 25
+          Height = 24
           Top = 77
-          Width = 233
+          Width = 223
           Caption = 'Fold preprocessor directives'
           TabOrder = 5
           OnChange = updateFoldingOption
         end
         object chkFoldCompact: TCheckBox
           Left = 202
-          Height = 25
+          Height = 24
           Top = 0
-          Width = 146
+          Width = 139
           Caption = 'Fold empty lines'
           TabOrder = 3
           OnChange = updateFoldingOption
         end
         object chkFolding: TCheckBox
           Left = 10
-          Height = 25
+          Height = 24
           Top = 0
-          Width = 129
+          Width = 126
           Caption = 'Enable folding'
           TabOrder = 0
           OnChange = chkFoldingChange
@@ -316,11 +329,11 @@ object FrmConfiguration: TFrmConfiguration
       end
     end
   end
-  object dlgFSIBinarySelect: TOpenDialog
+  object dlgFSIBinarySelect: TOpenDialog[1]
     DefaultExt = '.exe'
     Filter = 'EXE|*.exe;*.bat;*.cmd'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofDontAddToRecent]
-    Left = 19
-    Top = 346
+    Left = 16
+    Top = 392
   end
 end

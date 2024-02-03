@@ -60,28 +60,26 @@ type
   private
     _configFile: WideString;
     _useDotnet: TPropertyInt;
+    _passArgsToDotnetFsi: TPropertyInt;
     _fsiPath: String;
     _fsiArgs: String;
     _convertTabsToSpacesInFSIEditor: TPropertyInt;
     _tabLength: Integer;
     _echoNPPTextInEditor: TPropertyInt;
     _initialFoldState: TPropertyInt;
-  private
-    procedure initializeConfiguration;
   public
     constructor Create;
     destructor Destroy; override;
-  public
     procedure LoadFromConfigFile;
     procedure SaveToConfigFile;
-  public
     property ConfigFile: WideString read _configFile;
-    property UseDotnet: Boolean read _useDotnet write _useDotnet;
+    property UseDotnet: TPropertyInt read _useDotnet write _useDotnet;
+    property UseArgs: TPropertyInt read _passArgsToDotnetFsi write _passArgsToDotnetFsi;
     property FSIPath: String read _fsiPath write _fsiPath;
     property FSIArgs: String read _fsiArgs write _fsiArgs;
-    property ConvertTabsToSpacesInFSIEditor: Boolean read _convertTabsToSpacesInFSIEditor write _convertTabsToSpacesInFSIEditor;
+    property ConvertTabsToSpacesInFSIEditor: TPropertyInt read _convertTabsToSpacesInFSIEditor write _convertTabsToSpacesInFSIEditor;
     property TabLength: Integer read _tabLength write _tabLength;
-    property EchoNPPTextInEditor: Boolean read _echoNPPTextInEditor write _echoNPPTextInEditor;
+    property EchoNPPTextInEditor: TPropertyInt read _echoNPPTextInEditor write _echoNPPTextInEditor;
   end;
 
   TLexerProperties = class
@@ -123,7 +121,7 @@ uses
 
 constructor TConfiguration.Create;
 begin
-  initializeConfiguration;
+  _configFile := TLexerProperties.INIConfig;
   loadFromConfigFile;
 end;
 
@@ -140,11 +138,10 @@ procedure TConfiguration.LoadFromConfigFile;
 var
   configINI: TUtf8IniFile;
 begin
-  if FileExists(_configFile) then
-  begin
     configINI := TUtf8IniFile.Create(_configFile);
     try
       _useDotnet := configINI.ReadBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_USE_DOTNET_FSI, True);
+      _passArgsToDotnetFsi := configINI.ReadBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_PASS_ARGS_TO_DOTNET_FSI, False);
       _fsiPath := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, EmptyStr);
       _fsiArgs := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARYARGS_KEY_NAME, EmptyStr);
       _convertTabsToSpacesInFSIEditor := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
@@ -153,7 +150,6 @@ begin
     finally
       configINI.Free;
     end;
-  end;
   TLexerProperties.LoadProperties;
   _initialFoldState := TLexerProperties.Fold;
 end;
@@ -165,6 +161,7 @@ begin
   configINI := TUtf8IniFile.Create(_configFile);
   try
     configINI.WriteBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_USE_DOTNET_FSI, _useDotnet);
+    configINI.WriteBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_PASS_ARGS_TO_DOTNET_FSI, _passArgsToDotnetFsi);
     configINI.WriteString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, _fsiPath);
     configINI.WriteString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARYARGS_KEY_NAME, _fsiArgs);
     configINI.WriteBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, _convertTabsToSpacesInFSIEditor);
@@ -179,23 +176,6 @@ begin
     MessageBoxW(Npp.NppData.nppHandle, PWchar('Reload F# files to apply changes.'),
       PWchar('File Reload Required'), MB_ICONINFORMATION);
 end;
-
-{$ENDREGION}
-
-{$REGION 'Private methods'}
-
-procedure TConfiguration.initializeConfiguration;
-begin
-  _configFile := TLexerProperties.INIConfig;
-  _useDotnet := True;
-  _fsiPath := EmptyStr;
-  _fsiArgs := EmptyStr;
-  _convertTabsToSpacesInFSIEditor := True;
-  _tabLength := DEFAULT_TAB_LENGTH;
-  _echoNPPTextInEditor := True;
-  TLexerProperties.LoadProperties;
-end;
-
 {$ENDREGION}
 
 { TLexerProperties }
@@ -265,20 +245,17 @@ end;
 
 class function TLexerProperties.GetXMLConfig: WideString; static;
 begin
-  Result := WideFormat('%s%s%s', [Npp.GetUserConfigDirectory, PathDelim,
-    ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')]);
+  Result := ChangeFilePath(nppString(ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')), Npp.GetUserConfigDirectory);
 end;
 
 class function TLexerProperties.GetXMLSourcePath: WideString; static;
 begin
-  Result := WideFormat('%s%s%s%s', [TModulePath.DLL, 'Config', PathDelim,
-    ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')]);
+  Result := ChangeFilePath(nppString(ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.xml')), TModulePath.DLL + 'Config');
 end;
 
 class function TLexerProperties.GetINIConfig: WideString;
 begin
-  Result := WideFormat('%s%s%s', [Npp.GetPluginConfigDirectory, PathDelim,
-    ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '.ini')]);
+  Result := ChangeFilePath('options.ini', Npp.GetPluginConfigDirectory);
 end;
 
 class function TLexerProperties.GetProperty(const config: TUtf8IniFile;

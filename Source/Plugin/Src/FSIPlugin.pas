@@ -303,7 +303,7 @@ end;
 {$REGION 'Editor methods'}
 function TFsiPlugin.GetPluginConfigDirectory: String;
 begin
-  Result := WideFormat('%s%s%s', [GetPluginsConfigDir, PathDelim, ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '')]);
+  Result := IncludeTrailingPathDelimiter(GetPluginsConfigDir) + ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '');
 end;
 
 function TFsiPlugin.GetCurrentBufferPath(BuffrN: NativeUInt): String;

@@ -77,6 +77,7 @@ type
     dlgFSIBinarySelect: TOpenDialog;
     chkEchoText: TCheckBox;
     chkUseDotnetFsi: TCheckBox;
+    chkPassArgsToDotnetFsi: TCheckBox;
     lblDotnetSdkSite: TLabel;
     pnlDotNetFSI: TPanel;
     chkFoldCompact: TCheckBox;
@@ -90,6 +91,7 @@ type
     procedure DoCreate; override;
     procedure FormShow(Sender: TObject);
     procedure chkUseDotnetFsiClick(Sender: TObject);
+    procedure chkUseArgsChanged(Sender: TObject);
     procedure chkConvertToTabsClick(Sender: TObject);
     procedure chkConvertToTabsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure cmdSelectBinaryClick(Sender: TObject);
@@ -147,6 +149,15 @@ begin
   begin
     pnlCustomFSI.controls[i].Enabled := (not chkUseDotnetFsi.Checked);
   end;
+  chkPassArgsToDotnetFsi.Enabled := chkUseDotnetFsi.Checked;
+  if chkPassArgsToDotnetFsi.Enabled then
+    chkUseArgsChanged(chkPassArgsToDotnetFsi);
+end;
+
+procedure TFrmConfiguration.chkUseArgsChanged(Sender: TObject);
+begin
+  lblFSIBinaryArgs.Enabled := TCheckBox(Sender).Checked;
+  txtFSIBinaryArgs.Enabled := TCheckBox(Sender).Checked;
 end;
 
 procedure TFrmConfiguration.chkConvertToTabsClick(Sender: TObject);
@@ -184,6 +195,7 @@ begin
   if not Assigned(_config) then
     _config := TConfiguration.Create;
   chkUseDotnetFsi.Checked := _config.UseDotnet;
+  chkPassArgsToDotnetFsi.Checked := _config.UseArgs;
   txtFSIBinary.Text := _config.FSIPath;
   txtFSIBinaryArgs.Text := _config.FSIArgs;
   chkConvertToTabs.Checked := _config.ConvertTabsToSpacesInFSIEditor;
@@ -215,6 +227,7 @@ end;
 procedure TFrmConfiguration.saveConfiguration;
 begin
   _config.UseDotnet := chkUseDotnetFsi.Checked;
+  _config.UseArgs := chkPassArgsToDotnetFsi.Checked;
   _config.FSIPath := txtFSIBinary.Text;
   _config.FSIArgs := txtFSIBinaryArgs.Text;
   _config.ConvertTabsToSpacesInFSIEditor := chkConvertToTabs.Checked;
@@ -259,11 +272,19 @@ end;
 procedure TFrmConfiguration.lblDotnetSdkSiteMouseEnter(Sender: TObject);
 begin
   lblDotnetSdkSite.Cursor := crHandPoint;
+  TLabel(Sender).Font.Style := [fsUnderline];
+  if Npp.IsDarkModeEnabled then
+    TLabel(Sender).Font.Color := TColor(DMF_COLOR_URL_ACTIVE);
 end;
 
 procedure TFrmConfiguration.lblDotnetSdkSiteMouseLeave(Sender: TObject);
 begin
   lblDotnetSdkSite.Cursor := crDefault;
+  TLabel(Sender).Font.Style := [];
+  if Npp.IsDarkModeEnabled then
+    TLabel(Sender).Font.Color := TColor(DMF_COLOR_URL)
+  else
+    TLabel(Sender).Font.Color := clHighlight;
 end;
 
 procedure TFrmConfiguration.updateFoldingOption(Sender: TObject);

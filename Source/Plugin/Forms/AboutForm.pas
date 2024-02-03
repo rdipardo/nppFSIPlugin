@@ -90,6 +90,7 @@ end;
 procedure TFrmAbout.lblRepoClick(Sender: TObject);
 begin
     ShellAPI.ShellExecute(0, 'Open', PChar(TLabel(Sender).Caption), Nil, Nil, SW_SHOWNORMAL);
+    ModalResult := mrCancel;
 end;
 
 procedure TFrmAbout.btnOKClick({%H-}Sender: TObject);
@@ -100,11 +101,19 @@ end;
 procedure TFrmAbout.lblRepoMouseEnter(Sender: TObject);
 begin
   TLabel(Sender).Cursor := crHandPoint;
+  TLabel(Sender).Font.Style := [fsUnderline];
+  if Npp.IsDarkModeEnabled then
+    TLabel(Sender).Font.Color := TColor(DMF_COLOR_URL_ACTIVE);
 end;
 
 procedure TFrmAbout.lblRepoMouseLeave(Sender: TObject);
 begin
   TLabel(Sender).Cursor := crDefault;
+  TLabel(Sender).Font.Style := [];
+  if Npp.IsDarkModeEnabled then
+    TLabel(Sender).Font.Color := TColor(DMF_COLOR_URL)
+  else
+    TLabel(Sender).Font.Color := clHighlight;
 end;
 
 procedure TFrmAbout.SubclassAndTheme(DmfMask: Cardinal);
