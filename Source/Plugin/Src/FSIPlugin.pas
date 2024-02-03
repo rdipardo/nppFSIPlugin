@@ -200,7 +200,7 @@ begin
       TLexerProperties.SetLexer;
       if sciMsg.nmhdr.code = NPPN_BUFFERACTIVATED then ToggleLoadFileCmd(sciMsg.nmhdr.idFrom);
     end;
-    NPPN_FILERENAMED: begin
+    NPPN_FILESAVED: begin
       ToggleLoadFileCmd(sciMsg.nmhdr.idFrom);
     end;
   end;
