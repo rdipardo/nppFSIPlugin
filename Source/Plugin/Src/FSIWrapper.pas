@@ -52,6 +52,7 @@ uses
   {$IFDEF FPC}RichMemo, RichMemoHelpers,{$ENDIF}
   // windows pipes wrapper
   FpcPipes,
+  CustomLogger,
   // configuration manager
   Config;
 
@@ -68,13 +69,16 @@ type
     _config: TConfiguration;
     _editor: TRichEdit;
     _pipedConsole: TPipeConsole;
+    _logger: TCustomLogger;
     _editableAreaStartCoord: TPoint;
     _editableAreaStartPos: Integer;
     _defEditorWndProc: TWndMethod;
     _onSendText: TNotifyEvent;
     _onResultOutput: TNotifyEvent;
     _onErrorOutput: TNotifyEvent;
-  private
+    procedure SetSelection;
+    procedure TrimSelection;
+    procedure WritePrompt(ClearFirst: Boolean = False);
 
     /// <summary>
     /// Create an instance of FSI and also the pipes needed to interact with it.
@@ -138,6 +142,11 @@ type
     /// Check for non-empty text selection and enable "Copy" menu item if true
     /// </summary>
     procedure doOnContextMenuPopup(sender: TObject);
+
+    /// <summary>
+    /// Fill the REPL prompt from the user's input history.
+    /// </summary>
+    procedure LoadFromHistory(Direction: TScrollDirection);
   public
     constructor Create;
     destructor Destroy; override;
@@ -175,6 +184,7 @@ type
     /// Get the instance of the editor that interfaces with FSI.
     /// </summary>
     property Editor: TRichEdit read _editor;
+    property Logger: TCustomLogger read _logger;
 
     /// <summary>
     /// Event raised when text is sent to FSI.
@@ -217,6 +227,8 @@ begin
 
   if Assigned(_pipedConsole) then
     FreeAndNil(_pipedConsole);
+  if Assigned(_logger) then
+    FreeAndNil(_logger);
   if Assigned(_editor) then
     FreeAndNil(_editor);
   if Assigned(_config) then
@@ -293,6 +305,7 @@ begin
       if (appendEditor) then
         AddToEditor(finalText);
       _pipedConsole.Write(finalText[1], SizeOf(Char) * Length(finalText));
+      _logger.Add(Trim(finalText));
     end;
 
     if Assigned(_onSendText) then
@@ -340,6 +353,7 @@ begin
   _pipedConsole := TPipeConsole.Create(Nil);
   _pipedConsole.OnOutput := doOnPipeOutput;
   _pipedConsole.OnError := doOnPipeError;
+  _logger := TCustomLogger.Create(IncludeTrailingPathDelimiter(Npp.GetPluginConfigDirectory) + 'fsi_history.txt');
 end;
 
 procedure TFSIViewer.createContextMenu;
@@ -462,15 +476,14 @@ begin
   finally
     strStream.Free;
   end;
-  AddToEditor('> ');
-  updateEditableAreaStart;
+  WritePrompt;
 end;
 
 procedure TFSIViewer.doOnEditorKeyDown(sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
   newText: WideString;
-  IsCtrl, IsShift: Boolean;
+  IsCtrl, IsShift, DelimiterNeeded: Boolean;
 begin
   if (not isConsoleRunning) then
     Exit;
@@ -485,21 +498,33 @@ begin
   end
   else if (isEditorCaretInAValidPos) then
   begin
+    TrimSelection;
     if (Key = VK_RETURN) then
     begin
-      _editor.SelStart := _editableAreaStartPos;
-      _editor.SelLength := _editor.GetTextLen - _editableAreaStartPos;
+      SetSelection;
       newText := {$IFDEF FPC}UTF8Decode{$ENDIF}(_editor.SelText);
       updateEditableAreaStart;
       if WideSameText(Copy(newText, 0, 2), '> ') then
         newText := Copy(newText, 2);
       newText := newText + #13#10;
-      SendText(newText, false, false);
+      if WideSameText(newText, #13#10) then
+        // send a simple RETURN for multi-line input or paging
+        DelimiterNeeded := True
+      else
+        DelimiterNeeded := False;
+      SendText(newText, DelimiterNeeded, false);
     end
-    else if (Key = VK_UP) then
+    else if (Key in [VK_UP, VK_DOWN]) then
     begin
-      if (_editor.CaretPos.Y = _editableAreaStartCoord.Y) then
+      if (_editor.CaretPos.Y >= _editableAreaStartCoord.Y) then
+      begin
+        if (_editor.SelLength = 0) then
+          case Key of
+            VK_UP: LoadFromHistory(sdBack);
+            VK_DOWN: LoadFromHistory(sdForward);
+          end;
         Key := 0;
+      end;
     end
     else if (Key = VK_LEFT) then
     begin
@@ -536,7 +561,9 @@ begin
     begin
       if Key in [VK_INSERT, VK_DELETE] then
         MessageBeep(MB_ICONWARNING);
-    end;
+    end // do not restrict caret movement via arrow keys
+    else if (Key in [VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN]) then
+      Exit;
     Key := 0;
   end;
 end;
@@ -548,18 +575,18 @@ end;
 
 procedure TFSIViewer.doOnEditorClearContextMenuClick(sender: TObject);
 begin
-    _editor.Clear;
-    AddToEditor('> ');
-    updateEditableAreaStart;
+    WritePrompt(True);
 end;
 
 procedure TFSIViewer.doOnEditorCutContextMenuClick(Sender: TObject);
 begin
+  TrimSelection;
   _editor.CutToClipboard;
 end;
 
 procedure TFSIViewer.doOnEditorCopyContextMenuClick(sender: TObject);
 begin
+  TrimSelection;
   _editor.CopyToClipboard;
   updateEditableAreaStart;
 end;
@@ -587,5 +614,33 @@ begin
 end;
 
 {$ENDREGION}
+
+procedure TFSIViewer.LoadFromHistory(Direction: TScrollDirection);
+begin
+  SetSelection;
+  _editor.ClearSelection;
+  AddToEditor(_logger.Scroll(Direction));
+  _editor.SelStart := _editor.GetTextLen;
+  _editor.SelLength := 0;
+end;
+
+procedure TFSIViewer.WritePrompt(ClearFirst: Boolean);
+begin
+    if ClearFirst then _editor.Clear;
+    AddToEditor('> ');
+    updateEditableAreaStart;
+end;
+
+procedure TFSIViewer.TrimSelection;
+begin
+  if SameStr(Copy(_editor.SelText, 0, 2), '> ') and (_editor.SelStart < _editableAreaStartPos) then
+    SetSelection;
+end;
+
+procedure TFSIViewer.SetSelection;
+begin
+  _editor.SelStart := _editableAreaStartPos;
+  _editor.SelLength := _editor.GetTextLen - _editableAreaStartPos;
+end;
 
 end.

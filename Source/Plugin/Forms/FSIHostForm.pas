@@ -218,6 +218,7 @@ begin
   // make sure the configuration reflects any changed options
   // so they're saved to disk
   _fsiViewer.Config.LoadFromConfigFile;
+  _fsiViewer.Logger.ToFile;
   Npp.HideDialog(Handle);
   inherited;
 
