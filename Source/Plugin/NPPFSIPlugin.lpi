@@ -24,9 +24,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="1"/>
-      <StringTable Comments="Updated for x64 Notepad++ by Robert Di Pardo, Copyright 2023" FileDescription="F# source code lexer and IPC client for F# Interactive" InternalName="$NameOnly($(ProjFile))" LegalCopyright="Copyright 2010 Prapin Peethambaran" OriginalFilename="$NameOnly($(ProjFile)).dll" ProductName="$NameOnly($(ProjFile))" ProductVersion="0.2.1.1"/>
+      <RevisionNr Value="2"/>
+      <StringTable Comments="Updated for x64 Notepad++ by Robert Di Pardo, Copyright 2024" FileDescription="F# source code lexer and IPC client for F# Interactive" InternalName="$NameOnly($(ProjFile))" LegalCopyright="Copyright 2010 Prapin Peethambaran" OriginalFilename="$NameOnly($(ProjFile)).dll" ProductName="$NameOnly($(ProjFile))" ProductVersion="0.2.2.0"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>
@@ -89,7 +88,7 @@
         <DefaultFilename Value="../RichMemo/richmemopackage.lpk" Prefer="True"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="10">
       <Unit0>
         <Filename Value="NPPFSIPlugin.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -99,50 +98,46 @@
         <IsPartOfProject Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="Src/NPP.pas"/>
+        <Filename Value="Src/FSIWrapper.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
       <Unit3>
-        <Filename Value="Src/FSIWrapper.pas"/>
+        <Filename Value="Src/Constants.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
       <Unit4>
-        <Filename Value="Src/Constants.pas"/>
+        <Filename Value="Src/Config.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit4>
       <Unit5>
-        <Filename Value="Src/Config.pas"/>
+        <Filename Value="Src/ILexerExports.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit5>
       <Unit6>
-        <Filename Value="Src/ILexerExports.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="Src/ClassLib/Utf8IniFiles.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit7>
-      <Unit8>
         <Filename Value="Forms/FSIHostForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FrmFSIHost"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit8>
-      <Unit9>
+      </Unit6>
+      <Unit7>
         <Filename Value="Forms/ConfigForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FrmConfiguration"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit9>
-      <Unit10>
+      </Unit7>
+      <Unit8>
         <Filename Value="Forms/AboutForm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FrmAbout"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit10>
+      </Unit8>
+      <Unit9>
+        <Filename Value="Src/DLLExports.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

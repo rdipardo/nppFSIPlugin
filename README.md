@@ -2,17 +2,22 @@
 
 ![Built with Free Pascal][fpc] [![cci-badge][]][cci-status]
 
-![NPPFSIPlugin-v0.2.1.0-x64](https://raw.githubusercontent.com/rdipardo/NPPFSIPlugin/media/rel/NPPFSIPlugin-v0.2.1-x64.png)
+![NPPFSIPlugin-v0.2.2.0-x64](https://raw.githubusercontent.com/rdipardo/NPPFSIPlugin/media/rel/nppFSIPlugin-v0.2.2-x64.png)
 
 ## Usage
 
 | Default shortcut                 | Command                                |
 | :------------------------------- | :------------------------------------- |
-| Alt + T                          | open the FSI console window            |
+| Alt + Shift + F12                | open/close the FSI console window      |
 | Alt + Enter (with text selected) | evaluate the active selection in FSI   |
+| *none*                           | pass the current file to FSI's `#load` directive [^1] |
 
-*Note*
-Console output can be selected and copied to the clipboard using the context menu; right-click the console window to open it.
+[^1]: Also starts a new FSI session if one is not currently active.
+
+> [!Note]
+> Console output can be selected and copied to the clipboard by right-clicking in the console window.
+
+
 
 ## F# Syntax Highlighting
 ### Notepad++ 8.4.3 and later
@@ -26,8 +31,8 @@ or the `userDefineLangs` folder of a portable Notepad++ installation.
 
 For the default or a light theme, use the [default F# UDL].
 
-*Note*
-Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
+> [!Note]
+> Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
 
 ## Installation
 ### Plugins Admin
@@ -87,4 +92,4 @@ in addition to the rights of past contributors mentioned in [Copyright.txt].
 ["transparent" backgrounds]: https://github.com/notepad-plus-plus/notepad-plus-plus/issues/9649#issuecomment-832205177
 [cci-status]: https://circleci.com/gh/rdipardo/nppFSIPlugin
 [cci-badge]: https://circleci.com/gh/rdipardo/nppFSIPlugin.svg?style=svg
-[fpc]: https://img.shields.io/github/languages/top/rdipardo/nppFSIPlugin?style=flat-square&color=lightblue&label=Free%20Pascal
+[fpc]: https://img.shields.io/github/languages/top/rdipardo/nppFSIPlugin?style=flat-square&color=lightblue&label=Free%20Pascal&logo=lazarus

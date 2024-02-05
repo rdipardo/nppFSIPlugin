@@ -143,7 +143,7 @@ begin
       case Id of
         FSI_INVOKE_CMD_ID: begin
           Cmd := _toggleFSI;
-          PSk := MakeShortcutKey(False, True, False, $54);
+          PSk := MakeShortcutKey(False, True, True, $7B);
         end;
         FSI_SEND_TEXT_CMD_ID: begin
           Cmd := _sendText;

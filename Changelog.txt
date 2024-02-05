@@ -1,5 +1,16 @@
 h3. Releases
 
+* 0.2.2.0 (2024-02-05)
+** Fixed: avoid calling NPPM_CREATELEXER in Notepad++ versions 8.4.1/2 by checking for zero-padded version words
+** Fixed: dynamically size the standard bitmap icon so it always fills the toolbar slot
+** Changed: the source code is now licensed under the GPLv3
+** Changed: implementation units have been rewritten for better modularity
+** Added: FSI input history is saved to disk and can be scrolled using arrow keys
+** Added: .NET FSI can be started with command-line parameters
+** Added: the active source file can be passed to FSI's '#load' directive
+** Added: the console window's context menu now has options to cut and paste
+** Added: in Notepad++ versions 8.5.4 and newer, all plugin dialogs follow the active dark mode theme
+
 * 0.2.1.1 (2023-04-05)
 ** Fixed: close FSI if it's running when the editor shuts down
 ** Fixed: don't highlight the toolbar icon when FSI fails to launch

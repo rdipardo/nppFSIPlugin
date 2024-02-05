@@ -4,7 +4,7 @@
 ::
 SETLOCAL
 
-set "VERSION=0.2.1.1"
+set "VERSION=0.2.2.0"
 set "PLUGIN=NPPFSIPlugin"
 set "BIN_DIR=.\Source\Plugin\Bin"
 set "CONFIG_DIR=.\Source\Plugin\Config"
