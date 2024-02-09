@@ -1,7 +1,7 @@
 h3. Releases
 
 * 0.2.2.0 (2024-02-05)
-** Fixed: avoid calling NPPM_CREATELEXER in Notepad++ versions 8.4.1/2 by checking for zero-padded version words
+** -Fixed: avoid calling NPPM_CREATELEXER in Notepad++ versions 8.4.1/2 by checking for zero-padded version words-
 ** Fixed: dynamically size the standard bitmap icon so it always fills the toolbar slot
 ** Changed: the source code is now licensed under the GPLv3
 ** Changed: implementation units have been rewritten for better modularity
