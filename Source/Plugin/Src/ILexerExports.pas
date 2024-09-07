@@ -45,13 +45,13 @@ end;
 function CreateLexer(const Name: PAnsiChar): NativeInt; stdcall;
 begin
   Result := 0;
-  if SameText(Name, 'fsharp') then
+  if SameText(Name, 'F#') then
     Result := Npp.GetILexerPtr('fsharp');
 end;
 
 procedure GetLexerName({%H-}LexerIndex: Cardinal; Name: PAnsiChar; BufLength: Integer); stdcall;
 const
-  lexerName: AnsiString = 'fsharp';
+  lexerName: AnsiString = 'F#';
 begin
   StrLCopy(Name, PAnsiChar(lexerName), BufLength);
 end;
