@@ -58,10 +58,6 @@ type
     property GetUserConfigDirectory: nppString read GetPluginsConfigDir;
     /// Get the unique config directory of *this* plugin.
     function GetPluginConfigDirectory: String;
-    /// Get the full path of the buffer with the given ID.
-    function GetCurrentBufferPath(BuffrN: NativeUInt = 0): String;
-    /// Get the extension of the buffer with the given ID.
-    function GetCurrentFileExt(BuffrN: NativeUInt = 0): String;
     /// Get the active selection from the current edit window.
     function GetSelectedText: String;
     /// Register a docked window.
@@ -304,36 +300,6 @@ end;
 function TFsiPlugin.GetPluginConfigDirectory: String;
 begin
   Result := IncludeTrailingPathDelimiter(GetPluginsConfigDir) + ChangeFileExt(FSI_PLUGIN_MODULE_FILENAME, '');
-end;
-
-function TFsiPlugin.GetCurrentBufferPath(BuffrN: NativeUInt): String;
-const
-  MAX_PATH_LEN = 1001;
-var
-  NppMsg: Cardinal;
-  PathLen: Integer;
-  PathBuff: array of Char;
-begin
-  Result := '';
-  PathBuff := [#$0000];
-  if BuffrN > 0 then begin
-    NppMsg := NPPM_GETFULLPATHFROMBUFFERID;
-    PathLen := SendNppMessage(NppMsg, BuffrN, 0);
-    if PathLen <= 0 then
-      Exit;
-    SetLength(PathBuff, PathLen + 1);
-    SendNppMessage(NppMsg, BuffrN, @PathBuff[0]);
-  end else begin
-    NppMsg := NPPM_GETFULLCURRENTPATH;
-    SetLength(PathBuff, MAX_PATH_LEN);
-    SendNppMessage(NppMsg, MAX_PATH_LEN, @PathBuff[0]);
-  end;
-  SetString(Result, PChar(@PathBuff[0]), StrLen(PChar(@PathBuff[0])));
-end;
-
-function TFsiPlugin.GetCurrentFileExt(BuffrN: NativeUInt): String;
-begin
-  Result := String(StrRScan(PWideChar(GetCurrentBufferPath(BuffrN)), '.'));
 end;
 
 function TFsiPlugin.GetSelectedText: String;
