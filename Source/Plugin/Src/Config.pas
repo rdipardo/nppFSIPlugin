@@ -87,6 +87,7 @@ type
     class function GetXMLConfig: WideString; static;
     class function GetXMLSourcePath: WideString; static;
     class function GetINIConfig: WideString; static;
+    class function StylerNeedsUpdate: boolean;
     class function GetProperty(const config: TUtf8IniFile; const Key: string;
       DefVal: TPropertyInt = True): TPropertyInt;
     class procedure SetProperty(const Key: string; Value: TPropertyInt);
@@ -111,7 +112,7 @@ implementation
 
 uses
   // standard units
-  SysUtils, Windows,
+  Classes, SysUtils, Windows, Dom, XmlRead,
   // plugin units
   Constants, ModulePath, NppPlugin, FSIPlugin;
 
@@ -183,7 +184,12 @@ end;
 class procedure TLexerProperties.CreateStyler;
 begin
   if (not FileExists(XMLConfig)) then
+    CopyFile(GetXMLSourcePath, XMLConfig)
+  else if Npp.SupportsILexer and StylerNeedsUpdate then
+  begin
+    CopyFile(XMLConfig, XMLConfig + '.bak');
     CopyFile(GetXMLSourcePath, XMLConfig);
+  end;
 end;
 
 class procedure TLexerProperties.SetLexer;
@@ -268,6 +274,62 @@ class procedure TLexerProperties.SetProperty(const Key: string; Value: TProperty
 begin
   SendMessageW(Npp.CurrentScintilla, NppPlugin.SCI_SETPROPERTY, WPARAM(PChar(Key)),
     LPARAM(PChar(BoolToStr(Value, '1', '0'))));
+end;
+
+class function TLexerProperties.StylerNeedsUpdate: boolean;
+var
+  Doc: TXMLDocument;
+  Root, LangNode: TDOMNode;
+  hXMLFile: THandle;
+  fStream: TStream;
+begin
+  Doc := nil;
+  fStream := nil;
+  Result := False;
+  try
+    hXMLFile := FileOpen(XMLConfig, fmOpenRead);
+    if hXMLFile <> THandle(-1) then
+    begin
+      fStream := THandleStream.Create(hXMLFile);
+      try
+        ReadXMLFile(Doc, fStream);
+      except
+        on E: Exception do
+        begin
+          MessageBoxW(0,
+            PWideChar(WideFormat('Cannot read %s.%sPlease remove the file and restart Notepad++',
+            [XMLConfig, #13#10#13#10])),
+            PWideChar(FSI_PLUGIN_NAME), MB_ICONERROR);
+        end;
+      end;
+      if Assigned(Doc) then
+      begin
+        Root := Doc.DocumentElement.FirstChild;
+        while Assigned(Root) do
+        begin
+          if UnicodeSameText(Root.NodeName, 'language') then
+          begin
+            if Assigned(Root.Attributes) then
+            begin
+              LangNode := Root.Attributes.GetNamedItem('name');
+              if Assigned(LangNode) then
+              begin
+                Result := not UnicodeSameText(LangNode.NodeValue, 'F#');
+                Break;
+              end;
+            end;
+          end;
+          Root := Root.FirstChild;
+        end;
+      end;
+    end;
+  finally
+    FileClose(hXMLFile);
+    if Assigned(Doc) then
+      FreeAndNil(Doc);
+    if Assigned(fStream) then
+      FreeAndNil(fStream);
+  end;
 end;
 
 { ------------------------------------------------------------------------------------------------ }
