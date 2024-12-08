@@ -29,13 +29,13 @@ type
   { Extends TStringList with simple bidirectional searching. }
   TCustomLogger = class(TStringList)
   private
-    FStringsFilePath: WideString;
+    FStringsFilePath: UnicodeString;
     FCursor: integer;
     function GetStr(const Index: Integer): String;
-    procedure FromFile(const FilePath: WideString);
+    procedure FromFile(const FilePath: UnicodeString);
   public
     constructor Create; overload;
-    constructor Create(const FilePath: WideString); overload;
+    constructor Create(const FilePath: UnicodeString); overload;
     function Add(const Item: String): integer; override;
     function Scroll(Direction: TScrollDirection): String;
     procedure ToFile;
@@ -50,11 +50,11 @@ constructor TCustomLogger.Create;
 begin
   inherited;
   CaseSensitive := True;
-  FStringsFilePath := EmptyWideStr;
+  FStringsFilePath := '';
   FCursor := 0;
 end;
 
-constructor TCustomLogger.Create(const FilePath: WideString);
+constructor TCustomLogger.Create(const FilePath: UnicodeString);
 begin
   Create;
   FromFile(FilePath);
@@ -116,7 +116,7 @@ begin
   end;
 end;
 
-procedure TCustomLogger.FromFile(const FilePath: WideString);
+procedure TCustomLogger.FromFile(const FilePath: UnicodeString);
 var
   hFStream: THandleStream;
   hSrc: THandle;

@@ -43,8 +43,6 @@ unit FSIHostForm;
 // THE SOFTWARE.
 //
 // =============================================================================
-{$IFDEF FPC}{$mode delphiunicode}{$ENDIF}
-
 interface
 
 uses
@@ -162,7 +160,7 @@ end;
 
 procedure TFrmFSIHost.SendSelectedTextInNPPToFSI;
 var
-  selText: String;
+  selText: UnicodeString;
 begin
   selText := Npp.GetSelectedText;
   if Length(selText) = 0 then
@@ -175,7 +173,7 @@ end;
 
 procedure TFrmFSIHost.LoadFileInFSI(EchoFilePath: Boolean);
 begin
-  _fsiViewer.SendText(WideFormat('#load @"%s"', [Npp.GetCurrentBufferPath]), True, EchoFilePath);
+  _fsiViewer.SendText(UnicodeFormat('#load @"%s"', [Npp.GetCurrentBufferPath]), True, EchoFilePath);
 end;
 
 procedure TFrmFSIHost.ToggleDarkMode;
@@ -292,7 +290,7 @@ end;
 procedure TFrmFSIHost.QuitFSI;
 begin
   if Assigned(_fsiViewer) and _fsiViewer.IsConsoleRunning(False) then
-      _fsiViewer.SendText(PChar('#quit ;;' + #13#10), false, false);
+      _fsiViewer.SendText('#quit ;;'#13#10, false, false);
 end;
 
 {$ENDREGION}

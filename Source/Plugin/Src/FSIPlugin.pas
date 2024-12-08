@@ -364,20 +364,20 @@ end;
 procedure TFsiPlugin.ToggleLoadFileCmd(BuffrN: NativeUInt);
 var
   NppMenu: HMENU;
-  BuffExt: WideString;
+  BuffExt: NppString;
   LoadCmdId, LoadCmdStatus: Cardinal;
   LoadCmdEnabled, IsFSharp: Boolean;
 begin
   BuffExt := GetCurrentFileExt(BuffrN);
   NppMenu := GetMenu(NppData.nppHandle);
   LoadCmdId := CmdIdFromDlgId(Ord(FSI_LOAD_FILE_CMD_ID));
-  if WideCompareStr('', BuffExt) = 0 then begin
+  if UnicodeCompareStr('', BuffExt) = 0 then begin
     EnableMenuItem(NppMenu, loadCmdId, MF_BYCOMMAND or MF_DISABLED or MF_GRAYED);
     Exit;
   end;
   LoadCmdStatus := GetMenuState(NppMenu, loadCmdId, MF_BYCOMMAND);
   LoadCmdEnabled := ((loadCmdStatus and (MF_DISABLED or MF_GRAYED)) = 0);
-  IsFSharp := WideSameText('.fs', Copy(BuffExt, 1, 3));
+  IsFSharp := UnicodeSameText('.fs', Copy(BuffExt, 1, 3));
   if (not IsFSharp) and LoadCmdEnabled then begin
     EnableMenuItem(NppMenu, loadCmdId, MF_BYCOMMAND or MF_DISABLED or MF_GRAYED);
   end else if IsFSharp and not LoadCmdEnabled then

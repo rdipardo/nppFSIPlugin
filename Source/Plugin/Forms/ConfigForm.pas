@@ -43,8 +43,6 @@ unit ConfigForm;
 // THE SOFTWARE.
 //
 // =============================================================================
-{$IFDEF FPC}{$mode delphiunicode}{$ENDIF}
-
 interface
 
 uses
@@ -261,11 +259,8 @@ begin
 end;
 
 procedure TFrmConfiguration.lblDotnetSdkSiteClick(Sender: TObject);
-var
-  url: String;
 begin
-  url := {$IFDEF FPC}UTF8Decode{$ENDIF}(lblDotnetSdkSite.Caption);
-  ShellAPI.ShellExecute(0, 'Open', PChar(url), Nil, Nil, SW_SHOWNORMAL);
+  ShellAPI.ShellExecute(0, 'Open', @lblDotnetSdkSite.Caption[1], Nil, Nil, SW_SHOWNORMAL);
   cmdSaveClick(Sender);
 end;
 

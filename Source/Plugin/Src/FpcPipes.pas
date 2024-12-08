@@ -294,7 +294,7 @@ type
 
   TPipeWrite = packed record
      Buffer : PChar;
-     Count : Integer;
+     Count : LongWord;
   end;
 
   // Data write message block
@@ -3465,7 +3465,7 @@ end;
 procedure TWriteQueue.EnqueueMultiPacket(PipeWrite : PPipeWrite);
 var
     lpData : PChar;
-    dwSize : Integer;
+    dwSize : LongWord;
 begin
   // Access the mutex
   WaitForSingleObject(FMutex, INFINITE);

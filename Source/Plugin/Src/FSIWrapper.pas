@@ -167,7 +167,7 @@ type
     /// <summary>
     /// Send text to FSI.
     /// </summary>
-    procedure SendText(const selText: WideString; addDelimiter, appendEditor: Boolean; echoErr: Boolean = True);
+    procedure SendText(const selText: UnicodeString; addDelimiter, appendEditor: Boolean; echoErr: Boolean = True);
 
     /// <summary>
     /// Add text to editor.
@@ -265,7 +265,7 @@ begin
     _pipedConsole.Stop(0);
 end;
 
-procedure TFSIViewer.SendText(const selText: WideString; addDelimiter, appendEditor, echoErr: Boolean);
+procedure TFSIViewer.SendText(const selText: UnicodeString; addDelimiter, appendEditor, echoErr: Boolean);
 var
   finalText, lastChars, text: String;
 begin
@@ -482,7 +482,7 @@ end;
 procedure TFSIViewer.doOnEditorKeyDown(sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
-  newText: WideString;
+  newText: UnicodeString;
   IsCtrl, IsShift, DelimiterNeeded: Boolean;
 begin
   if (not isConsoleRunning) then
@@ -504,10 +504,10 @@ begin
       SetSelection;
       newText := {$IFDEF FPC}UTF8Decode{$ENDIF}(_editor.SelText);
       updateEditableAreaStart;
-      if WideSameText(Copy(newText, 0, 2), '> ') then
+      if UnicodeSameText(Copy(newText, 0, 2), '> ') then
         newText := Copy(newText, 2);
       newText := newText + #13#10;
-      if WideSameText(newText, #13#10) then
+      if UnicodeSameText(newText, #13#10) then
         // send a simple RETURN for multi-line input or paging
         DelimiterNeeded := True
       else

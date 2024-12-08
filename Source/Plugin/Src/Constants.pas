@@ -55,7 +55,7 @@ const
 
   FSI_PLUGIN_NAME = 'F# Interactive';
   FSI_PLUGIN_WND_TITLE = 'FSI';
-  FSI_PLUGIN_MENU_TITLES: array[0..5] of WideString = (
+  FSI_PLUGIN_MENU_TITLES: array[0..5] of NppString = (
     'Start FSI',
     'Send text',
     'Load current file in FSI',
