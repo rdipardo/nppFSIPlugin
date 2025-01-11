@@ -34,6 +34,33 @@ For the default or a light theme, use the [default F# UDL].
 > [!Note]
 > Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
 
+## How to configure tab settings for F# source files
+### Notepad++ preferences menu
+
+With the plugin loaded, modify your [indentation preferences](https://npp-user-manual.org/docs/preferences/#indentation)
+for F# (or "fsharp", if using version 0.2.2.0 and older).
+
+> [!Important]
+> Your choices will *not* be saved when you exit Notepad++
+
+### XML configuration file
+
+To make 4 spaces the default tab setting for F# files when Notepad++ starts, do the following:
+
+- Open `NPPFSIPlugin.xml` in `%AppData%\plugins\Config` or `$(PORTABLE_NPP_DIR)\plugins\Config`
+
+- Add the attribute `tabSettings="132"` to the node `/NotepadPlus/Languages/Language[@name="F#"]`
+  (or `/NotepadPlus/Languages/Language[@name="fsharp"]`, if using version 0.2.2.0 and older)
+
+  For example:
+
+  ```diff
+  - <Language name="F#" ext="fs fsi fsx fsscript" commentLine="//" commentStart="(*" commentEnd="*)">
+  + <Language name="F#" ext="fs fsi fsx fsscript" tabSettings="132" commentLine="//" commentStart="(*" commentEnd="*)">
+  ```
+
+  The "magic" number 132 is explained [here](https://github.com/notepad-plus-plus/notepad-plus-plus/issues/5506#issuecomment-483255006).
+
 ## Installation
 ### Plugins Admin
 

@@ -98,6 +98,8 @@ type
     FoldMultiLineComments: TPropertyInt; static;
     FoldOpenStatements: TPropertyInt; static;
     FoldPreprocessor: TPropertyInt; static;
+    IndentWithSpaces: TPropertyInt; static;
+    IndentWidth: SmallInt; static;
     class procedure CreateStyler; static;
     class procedure SetLexer; static;
     class procedure LoadProperties;
@@ -219,6 +221,8 @@ begin
   SetProperty('fold.fsharp.comment.multiline', FoldMultiLineComments);
   SetProperty('fold.fsharp.imports', FoldOpenStatements);
   SetProperty('fold.fsharp.preprocessor', FoldPreprocessor);
+  SendMessage(Npp.CurrentScintilla, SCI_SETUSETABS, (not IndentWithSpaces).ToInteger(), 0);
+  SendMessage(Npp.CurrentScintilla, SCI_SETTABWIDTH, IndentWidth, 0);
 end;
 
 class procedure TLexerProperties.LoadProperties;
@@ -234,6 +238,8 @@ begin
     FoldMultiLineComments := GetProperty(configINI, 'FOLD_MULTILINE_COMMENTS');
     FoldOpenStatements := GetProperty(configINI, 'FOLD_OPEN_STATEMENTS');
     FoldPreprocessor := GetProperty(configINI, 'FOLD_PREPROCESSOR');
+    IndentWithSpaces := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
+    IndentWidth := configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH);
   finally
     FreeAndNil(configINI);
   end;
