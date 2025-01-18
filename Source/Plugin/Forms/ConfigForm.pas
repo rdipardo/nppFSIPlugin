@@ -47,6 +47,7 @@ interface
 
 uses
   NppForms, Classes, Controls, ExtCtrls, StdCtrls, ComCtrls, Dialogs,
+  Graphics, ColorBox,
   // expose TConfiguration so we can manage the lifetime of a local instance,
   // preventing memory leaks
   Config;
@@ -61,6 +62,12 @@ type
     pnlTabSettings: TPanel;
     grpFSISettings: TGroupBox;
     grpEditorSettings: TGroupBox;
+    cbStdOut: TColorBox;
+    cbStdErr: TColorBox;
+    lblStdOutColor: TLabel;
+    lblStdErrColor: TLabel;
+    pnlStdErrColor: TPanel;
+    pnlStdOutColor: TPanel;
     cmdSave: TButton;
     cmdCancel: TButton;
     lblFSIBinaryPath: TLabel;
@@ -92,6 +99,8 @@ type
     procedure chkUseArgsChanged(Sender: TObject);
     procedure chkConvertToTabsClick(Sender: TObject);
     procedure chkConvertToTabsKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure cbStdOutChanged(Sender: TObject);
+    procedure cbStdErrChanged(Sender: TObject);
     procedure cmdSelectBinaryClick(Sender: TObject);
     procedure cmdSaveClick(Sender: TObject);
     procedure cmdCancelClick(Sender: TObject);
@@ -102,11 +111,15 @@ type
     procedure updateFoldingOption(Sender: TObject);
     procedure ToggleDarkMode; override;
     procedure SubclassAndTheme(DmfMask: Cardinal); override;
+    procedure HandleCloseQuery({%H-}Sender: TObject; var CanClose: Boolean); override;
     procedure {$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF}; override;
   private
     procedure initialize;
     procedure doOnConvertToTabsCheckBoxStateChange;
     procedure toggleFoldOptions;
+    procedure setCurrentEditorColors;
+    procedure setDefaultEditorColor(const Colors: TColorBox; NewDefault: TColor;
+      MakeCurrent: Boolean = False);
     procedure saveConfiguration;
   end;
 
@@ -114,7 +127,7 @@ implementation
 
 uses
   // standard units
-  SysUtils, ShellApi, Windows, Graphics,
+  SysUtils, ShellApi, Windows, UxTheme,
   // plugin units
   Constants, FSIPlugin;
 
@@ -168,6 +181,28 @@ begin
   doOnConvertToTabsCheckBoxStateChange;
 end;
 
+procedure TFrmConfiguration.cbStdOutChanged(Sender: TObject);
+var
+  NewColor: TColor;
+begin
+  NewColor := TColor(TColorBox(Sender).Selected);
+  if Npp.IsDarkModeEnabled then
+    _config.EditorTextColorDark := NewColor
+  else
+    _config.EditorTextColor := NewColor
+end;
+
+procedure TFrmConfiguration.cbStdErrChanged(Sender: TObject);
+var
+  NewColor: TColor;
+begin
+  NewColor := TColor(TColorBox(Sender).Selected);
+  if Npp.IsDarkModeEnabled then
+    _config.EditorErrorColorDark := NewColor
+  else
+    _config.EditorErrorColor := NewColor;
+end;
+
 procedure TFrmConfiguration.cmdSelectBinaryClick(Sender: TObject);
 begin
   if FileExists(txtFSIBinary.Text) then
@@ -210,6 +245,7 @@ begin
   end;
 
   toggleFoldOptions;
+  setCurrentEditorColors;
 end;
 
 procedure TFrmConfiguration.doOnConvertToTabsCheckBoxStateChange;
@@ -258,6 +294,46 @@ begin
   chkFolding.Enabled := True;
 end;
 
+procedure TFrmConfiguration.setCurrentEditorColors;
+var
+  CurrentTextColor, CurrentErrorColor: TColor;
+begin
+  if not Assigned(_config) then
+    Exit;
+  if Npp.IsDarkModeEnabled then begin
+    CurrentTextColor := _config.EditorTextColorDark;
+    CurrentErrorColor := _config.EditorErrorColorDark;
+  end else begin
+    CurrentTextColor := _config.EditorTextColor;
+    CurrentErrorColor := _config.EditorErrorColor;
+  end;
+  setDefaultEditorColor(cbStdOut, CurrentTextColor, True);
+  setDefaultEditorColor(cbStdErr, CurrentErrorColor, True);
+end;
+
+procedure TFrmConfiguration.setDefaultEditorColor(const Colors: TColorBox;
+  NewDefault: TColor; MakeCurrent: Boolean);
+var
+  ColorIndex: Integer;
+begin
+  with Colors do
+  begin
+    if (not MakeCurrent) then begin
+      DefaultColorColor := NewDefault;
+      ColorIndex := Items.IndexOf('Default');
+      if (ColorIndex > -1) then
+        Items.Delete(ColorIndex);
+      Items.AddObject('Default', TObject(NewDefault));
+    end else begin
+      ColorIndex := Items.IndexOf('Current');
+      if (ColorIndex > -1) then
+        Items.Delete(ColorIndex);
+      Items.AddObject('Current', TObject(NewDefault));
+      ItemIndex := Items.IndexOf('Current');
+    end;
+  end;
+end;
+
 procedure TFrmConfiguration.lblDotnetSdkSiteClick(Sender: TObject);
 begin
   ShellAPI.ShellExecute(0, 'Open', @lblDotnetSdkSite.Caption[1], Nil, Nil, SW_SHOWNORMAL);
@@ -301,6 +377,16 @@ begin
   toggleFoldOptions;
 end;
 
+procedure TFrmConfiguration.HandleCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if (ModalResult <> mrOK) then begin
+    // revert to user preferences in case config values have been dirtied
+    _config.LoadFromConfigFile;
+  end;
+  inherited;
+  CanClose := True;
+end;
+
 procedure TFrmConfiguration.{$IFNDEF FPC}DestroyWindowHandle{$ELSE}DestroyWnd{$ENDIF};
 begin
   if Assigned(_config) then
@@ -319,11 +405,13 @@ begin
     txtFSIBinary.TextHint := txtFSIBinary.Hint;
     txtFSIBinaryArgs.TextHint := txtFSIBinaryArgs.Hint;
   end;
+  setCurrentEditorColors;
 end;
 
 procedure TFrmConfiguration.SubclassAndTheme(DmfMask: Cardinal);
 var
   DarkModeColors: TDarkModeColors;
+  CmBoxTheme: PWChar;
 begin
   inherited SubclassAndTheme(DmfMask);
   SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.grpFSISettings.Handle);
@@ -332,16 +420,32 @@ begin
   SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.pnlCustomFSI.Handle);
   SendMessage(Npp.NppData.NppHandle, NPPM_DARKMODESUBCLASSANDTHEME, DmfMask, Self.pnlTabSettings.Handle);
   if Npp.IsDarkModeEnabled then begin
+    CmBoxTheme := 'DarkMode_CFD';
     DarkModeColors := Default(TDarkModeColors);
     Npp.GetDarkModeColors(@DarkModeColors);
     Color := TColor(DarkModeColors.PureBackground);
+    cbStdOut.Color := TColor(DarkModeColors.SofterBackground);
     Font.Color := TColor(DarkModeColors.Text);
     lblDotnetSdkSite.Font.Color := TColor(DMF_COLOR_URL);
+    setDefaultEditorColor(cbStdOut, clWhite);
+    setDefaultEditorColor(cbStderr, TColor(DMF_COLOR_ERROR_TEXT));
   end else begin
+    CmBoxTheme := Nil;
     Color := clBtnFace;
+    cbStdOut.Color := clDefault;
     Font.Color := clWindowText;
     lblDotnetSdkSite.Font.Color := clHighlight;
+    setDefaultEditorColor(cbStdOut, clBlack);
+    setDefaultEditorColor(cbStderr, clRed);
   end;
+  SetWindowTheme(cbStdOut.Handle, CmBoxTheme, nil);
+  SetWindowTheme(cbStdErr.Handle, CmBoxTheme, nil);
+  cbStdErr.Color := cbStdOut.Color;
+  cbStdOut.Font.Color := Font.Color;
+  cbStdErr.Font.Color := cbStdOut.Font.Color;
+  lblStdOutColor.Font.Color := Font.Color;
+  lblStdErrColor.Font.Color := Font.Color;
+  lblTabLength.Font.Color := Font.Color;
 end;
 
 end.

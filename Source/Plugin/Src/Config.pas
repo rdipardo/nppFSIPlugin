@@ -47,7 +47,9 @@ unit Config;
 
 interface
 
-uses Utf8IniFiles;
+uses
+  Graphics,
+  Utf8IniFiles;
 
 type
 
@@ -63,6 +65,7 @@ type
     _passArgsToDotnetFsi: TPropertyInt;
     _fsiPath: String;
     _fsiArgs: String;
+    _clStdOut, _clStdOutDark, _clStdErr, _clStdErrDark: TColor;
     _convertTabsToSpacesInFSIEditor: TPropertyInt;
     _tabLength: Integer;
     _echoNPPTextInEditor: TPropertyInt;
@@ -77,6 +80,10 @@ type
     property UseArgs: TPropertyInt read _passArgsToDotnetFsi write _passArgsToDotnetFsi;
     property FSIPath: String read _fsiPath write _fsiPath;
     property FSIArgs: String read _fsiArgs write _fsiArgs;
+    property EditorTextColor: TColor read _clStdOut write _clStdOut;
+    property EditorTextColorDark: TColor read _clStdOutDark write _clStdOutDark;
+    property EditorErrorColor: TColor read _clStdErr write _clStdErr;
+    property EditorErrorColorDark: TColor read _clStdErrDark write _clStdErrDark;
     property ConvertTabsToSpacesInFSIEditor: TPropertyInt read _convertTabsToSpacesInFSIEditor write _convertTabsToSpacesInFSIEditor;
     property TabLength: Integer read _tabLength write _tabLength;
     property EchoNPPTextInEditor: TPropertyInt read _echoNPPTextInEditor write _echoNPPTextInEditor;
@@ -150,6 +157,10 @@ begin
       _convertTabsToSpacesInFSIEditor := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
       _tabLength := configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH);
       _echoNPPTextInEditor := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_ECHO_NPP_TEXT_KEY_NAME, True);
+      _clStdOut := TColor(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'TEXT_COLOR', clBlack));
+      _clStdErr := TColor(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'ERROR_TEXT_COLOR', clRed));
+      _clStdOutDark := TColor(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'DARK_MODE_TEXT_COLOR', clWhite));
+      _clStdErrDark := TColor(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'DARK_MODE_ERROR_TEXT_COLOR', DMF_COLOR_ERROR_TEXT));
     finally
       configINI.Free;
     end;
@@ -170,6 +181,10 @@ begin
     configINI.WriteBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, _convertTabsToSpacesInFSIEditor);
     configINI.WriteInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, _tabLength);
     configINI.WriteBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_ECHO_NPP_TEXT_KEY_NAME, _echoNPPTextInEditor);
+    configINI.WriteInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'TEXT_COLOR', ColorToRGB(_clStdOut));
+    configINI.WriteInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'ERROR_TEXT_COLOR', ColorToRGB(_clStdErr));
+    configINI.WriteInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'DARK_MODE_TEXT_COLOR', ColorToRGB(_clStdOutDark));
+    configINI.WriteInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'DARK_MODE_ERROR_TEXT_COLOR', ColorToRGB(_clStdErrDark));
     TLexerProperties.SaveProperties(configINI);
   finally
     configINI.Free;

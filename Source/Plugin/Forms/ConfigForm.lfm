@@ -1,36 +1,37 @@
-object FrmConfiguration: TFrmConfiguration
-  Left = 558
+inherited FrmConfiguration: TFrmConfiguration
+  Left = 725
   Height = 435
-  Top = 211
-  Width = 913
+  Top = 168
+  Width = 912
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Configuration'
   ClientHeight = 435
-  ClientWidth = 913
+  ClientWidth = 912
   DesignTimePPI = 144
+  OnCloseQuery = HandleCloseQuery
   OnShow = FormShow
   Position = poScreenCenter
   object pnlBase: TPanel[0]
     Left = 0
     Height = 435
     Top = 0
-    Width = 913
+    Width = 912
     Align = alClient
     BevelOuter = bvNone
     ClientHeight = 435
-    ClientWidth = 913
+    ClientWidth = 912
     ParentBackground = False
     TabOrder = 0
     object grpFSISettings: TGroupBox
       Left = 12
       Height = 190
       Top = 10
-      Width = 888
+      Width = 887
       Anchors = [akTop, akLeft, akRight]
       Caption = 'FSI'
       ClientHeight = 165
-      ClientWidth = 884
+      ClientWidth = 883
       ParentBackground = False
       TabOrder = 2
       object pnlCustomFSI: TPanel
@@ -118,7 +119,6 @@ object FrmConfiguration: TFrmConfiguration
           Font.Color = clHighlight
           Font.Height = -17
           Font.Name = 'Tahoma'
-          Font.Style = []
           ParentColor = False
           ParentFont = False
           OnClick = lblDotnetSdkSiteClick
@@ -159,34 +159,36 @@ object FrmConfiguration: TFrmConfiguration
       Left = 12
       Height = 164
       Top = 208
-      Width = 391
+      Width = 428
       Anchors = [akTop, akLeft, akRight, akBottom]
       Caption = 'Editor'
-      ClientHeight = 164
-      ClientWidth = 387
+      ClientHeight = 139
+      ClientWidth = 424
       ParentBackground = False
       TabOrder = 3
       object pnlTabSettings: TPanel
-        Left = 19
+        Left = 8
         Height = 38
-        Top = 50
-        Width = 336
+        Top = 46
+        Width = 188
         BevelOuter = bvNone
         ClientHeight = 38
-        ClientWidth = 336
+        ClientWidth = 188
+        Font.Color = clWindowText
+        Font.Height = -17
         ParentBackground = False
+        ParentFont = False
         TabOrder = 1
         object lblTabLength: TLabel
-          Left = 5
-          Height = 20
+          Left = -1
+          Height = 23
           Top = 2
-          Width = 85
+          Width = 88
           Caption = 'Tab Length:'
-          ParentColor = False
         end
         object txtTabLength: TEdit
-          Left = 132
-          Height = 28
+          Left = 96
+          Height = 29
           Top = 0
           Width = 46
           MaxLength = 2
@@ -194,8 +196,8 @@ object FrmConfiguration: TFrmConfiguration
           Text = '1'
         end
         object updnTabLength: TUpDown
-          Left = 178
-          Height = 28
+          Left = 142
+          Height = 29
           Top = 0
           Width = 35
           Associate = txtTabLength
@@ -207,28 +209,102 @@ object FrmConfiguration: TFrmConfiguration
         end
       end
       object chkConvertToTabs: TCheckBox
-        Left = 24
-        Height = 24
-        Top = 12
-        Width = 188
+        Left = 8
+        Height = 25
+        Top = 8
+        Width = 181
         Caption = 'Convert tabs to spaces'
+        Font.Color = clWindowText
+        Font.Height = -16
+        ParentFont = False
         TabOrder = 0
         OnChange = chkConvertToTabsClick
         OnKeyUp = chkConvertToTabsKeyUp
       end
       object chkEchoText: TCheckBox
-        Left = 24
-        Height = 24
-        Top = 95
-        Width = 223
+        Left = 8
+        Height = 25
+        Top = 90
+        Width = 221
         Caption = 'Echo text from NPP in editor'
+        Font.Color = clWindowText
+        Font.Height = -16
+        ParentFont = False
         TabOrder = 2
         OnChange = chkConvertToTabsClick
         OnKeyUp = chkConvertToTabsKeyUp
       end
+      object pnlStdOutColor: TPanel
+        Left = 240
+        Height = 58
+        Top = 0
+        Width = 176
+        BevelOuter = bvNone
+        ClientHeight = 58
+        ClientWidth = 176
+        TabOrder = 3
+        object lblStdOutColor: TLabel
+          Left = 0
+          Height = 20
+          Top = 0
+          Width = 176
+          Align = alTop
+          Caption = 'Output Text Color'
+          FocusControl = cbStdOut
+          Font.Color = clWindowText
+          Font.Height = -15
+          ParentFont = False
+        end
+        object cbStdOut: TColorBox
+          Left = 0
+          Height = 26
+          Top = 20
+          Width = 176
+          DefaultColorColor = clBlack
+          OnChange = cbStdOutChanged
+          Style = [cbStandardColors, cbExtendedColors, cbIncludeDefault, cbCustomColor, cbPrettyNames]
+          Align = alTop
+          ItemHeight = 20
+          TabOrder = 0
+        end
+      end
+      object pnlStdErrColor: TPanel
+        Left = 240
+        Height = 59
+        Top = 62
+        Width = 176
+        BevelOuter = bvNone
+        ClientHeight = 59
+        ClientWidth = 176
+        TabOrder = 4
+        object lblStdErrColor: TLabel
+          Left = 0
+          Height = 20
+          Top = 0
+          Width = 176
+          Align = alTop
+          Caption = 'Error Text Color'
+          FocusControl = cbStdOut
+          Font.Color = clWindowText
+          Font.Height = -15
+          ParentFont = False
+        end
+        object cbStdErr: TColorBox
+          Left = 0
+          Height = 26
+          Top = 20
+          Width = 176
+          DefaultColorColor = clRed
+          OnChange = cbStdErrChanged
+          Style = [cbStandardColors, cbExtendedColors, cbIncludeDefault, cbCustomColor, cbPrettyNames]
+          Align = alTop
+          ItemHeight = 20
+          TabOrder = 0
+        end
+      end
     end
     object cmdSave: TButton
-      Left = 656
+      Left = 655
       Height = 38
       Top = 380
       Width = 113
@@ -240,7 +316,7 @@ object FrmConfiguration: TFrmConfiguration
       OnClick = cmdSaveClick
     end
     object cmdCancel: TButton
-      Left = 784
+      Left = 783
       Height = 38
       Top = 380
       Width = 113
@@ -252,65 +328,68 @@ object FrmConfiguration: TFrmConfiguration
       OnClick = cmdCancelClick
     end
     object grpLexerProps: TGroupBox
-      Left = 413
+      Left = 448
       Height = 164
       Top = 208
-      Width = 487
+      Width = 451
       Anchors = [akTop, akLeft, akRight, akBottom]
       Caption = 'Source Code Folding'
-      ClientHeight = 164
-      ClientWidth = 483
+      ClientHeight = 139
+      ClientWidth = 447
       ParentBackground = False
       TabOrder = 4
       object pnlFoldOptions: TPanel
-        Left = 0
+        Left = 8
         Height = 108
-        Top = 10
-        Width = 478
+        Top = 8
+        Width = 430
         BevelOuter = bvNone
         ClientHeight = 108
-        ClientWidth = 478
+        ClientWidth = 430
+        Font.Color = clWindowText
+        Font.Height = -16
         ParentBackground = False
+        ParentFont = False
         TabOrder = 0
         object chkFoldComments: TCheckBox
           Left = 10
-          Height = 24
+          Height = 25
           Top = 38
-          Width = 134
+          Width = 132
           Caption = 'Fold comments'
           TabOrder = 1
           OnChange = updateFoldingOption
         end
         object chkFoldMultiLineComments: TCheckBox
           Left = 10
-          Height = 24
+          Height = 25
           Top = 77
-          Width = 162
+          Width = 161
           Caption = 'Fold line comments'
           TabOrder = 2
           OnChange = updateFoldingOption
         end
         object chkFoldOpenStatements: TCheckBox
           Left = 202
-          Height = 24
+          Height = 25
           Top = 38
-          Width = 192
+          Width = 186
           Caption = 'Fold "open" statements'
           TabOrder = 4
           OnChange = updateFoldingOption
         end
         object chkFoldPreprocessor: TCheckBox
           Left = 202
-          Height = 24
+          Height = 25
           Top = 77
-          Width = 223
+          Width = 220
           Caption = 'Fold preprocessor directives'
           TabOrder = 5
           OnChange = updateFoldingOption
         end
         object chkFoldCompact: TCheckBox
           Left = 202
-          Height = 24
+          Height = 25
           Top = 0
           Width = 139
           Caption = 'Fold empty lines'
@@ -319,9 +398,9 @@ object FrmConfiguration: TFrmConfiguration
         end
         object chkFolding: TCheckBox
           Left = 10
-          Height = 24
+          Height = 25
           Top = 0
-          Width = 126
+          Width = 124
           Caption = 'Enable folding'
           TabOrder = 0
           OnChange = chkFoldingChange

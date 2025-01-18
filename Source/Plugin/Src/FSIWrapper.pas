@@ -172,8 +172,7 @@ type
     /// <summary>
     /// Add text to editor.
     /// </summary>
-    procedure AddToEditor(const text: String; const clDefault: TColor = clBlack;
-      const clDarkMode: TColor = clWhite);
+    procedure AddToEditor(const text: String; isError: Boolean = False);
   public
     /// <summary>
     /// Gets a readonly instance of the config manager.
@@ -315,17 +314,24 @@ begin
   end;
 end;
 
-procedure TFSIViewer.AddToEditor(const text: String; const clDefault: TColor = clBlack;
-  const clDarkMode: TColor = clWhite);
+procedure TFSIViewer.AddToEditor(const text: String; isError: Boolean);
 begin
   _editor.SelStart := _editor.GetTextLen;
 {$IFDEF FPC}
   _editor.SelText := text;
 {$ENDIF}
   if Npp.IsDarkModeEnabled then
-    _editor.SelAttributes.Color := clDarkMode
-  else
-    _editor.SelAttributes.Color := clDefault;
+  begin
+    if isError then
+      _editor.SelAttributes.Color := _config.EditorErrorColorDark
+    else
+      _editor.SelAttributes.Color := _config.EditorTextColorDark;
+  end else begin
+    if isError then
+      _editor.SelAttributes.Color := _config.EditorErrorColor
+    else
+      _editor.SelAttributes.Color := _config.EditorTextColor;
+  end;
 {$IFNDEF FPC}
   _editor.SelText := text;
 {$ELSE}
@@ -432,7 +438,7 @@ begin
   _editor.ReadOnly := (not _pipedConsole.Running);
   if (DidMessage = -1) and _editor.ReadOnly and echo then begin
     AddToEditor(Format(#13#10'%s %d'#13#10,
-      [MsgPrefix, _pipedConsole.LastError]), clRed, TColor($4763FF));
+      [MsgPrefix, _pipedConsole.LastError]), True);
     updateEditableAreaStart(True);
   end;
   Result := (not _editor.ReadOnly);
@@ -468,7 +474,7 @@ begin
   strStream := TStringStream.Create;
   try
     strStream.CopyFrom(stream, 0);
-    AddToEditor(strStream.DataString, clRed, TColor($4763FF));
+    AddToEditor(strStream.DataString, True);
     updateEditableAreaStart(True);
 
     if Assigned(_onErrorOutput) then
