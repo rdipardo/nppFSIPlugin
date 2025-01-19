@@ -2,6 +2,8 @@
 #
 # Copyright (c) 2022 Robert Di Pardo, MIT License
 #
+test -z "$GH_API_TOKEN_2025" && exit 0
+
 # https://discuss.circleci.com/t/circle-branch-and-pipeline-git-branch-are-empty/44317/3
 COMMIT=$(git rev-parse ${CIRCLE_TAG}) \
   && TMP=$(git branch -a --contains $COMMIT) \
@@ -13,7 +15,7 @@ printf '\\t%s\\n' "$(sha256sum ${SLUGX86})" >> sha256sums.md
 printf '\\t%s\\n' "$(sha256sum ${SLUGX64})" >> sha256sums.md
 curl -sL -X POST \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer ${GH_API_TOKEN_2024}" \
+    -H "Authorization: Bearer ${GH_API_TOKEN_2025}" \
         "https://api.github.com/repos/${CIRCLE_USERNAME}/${CIRCLE_PROJECT_REPONAME}/releases" \
     -d "{\"tag_name\":\"${CIRCLE_TAG}\",
         \"target_commitish\":\"${BRANCH}\",

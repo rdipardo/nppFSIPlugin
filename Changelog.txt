@@ -1,5 +1,9 @@
 h3. Releases
 
+* 0.2.3.1 (2025-01-19)
+** Changed: tab settings for F# files will follow the 'Convert tabs to spaces' and 'Tab length' configuration options; the default is 4 spaces
+** Added: the text colour of console output messages can be configured for light and dark modes
+
 * 0.2.3.0 (2024-12-08)
 ** Fixed: avoid calling NPPM_CREATELEXER in Notepad++ versions 8.4.1/2 by checking for zero-padded version words
 ** Changed: the lexer appears in the language menu as 'F#' instead of 'fsharp'

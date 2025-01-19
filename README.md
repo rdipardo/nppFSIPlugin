@@ -35,7 +35,20 @@ For the default or a light theme, use the [default F# UDL].
 > Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
 
 ## How to configure tab settings for F# source files
-### Notepad++ preferences menu
+### *F# Interactive* v0.2.3.1 and later
+
+- Open the plugin options dialog:
+
+  <img src="https://i.ibb.co/26Gr440/fsi-v0-2-3-1-options-menu.png" alt="plugin-options-menus" border="0" width="375"/>
+
+- To indent using spaces, check the box beside __*Convert tabs to spaces*__
+- To indent using hard tabs, *un*&#x200C;check the box beside __*Convert tabs to spaces*__
+- Set the number of spaces (or tab size) using the __*Tab length*__ edit control
+
+  <img src="https://i.ibb.co/Tb95Tvt/fsi-v0-2-3-1-tab-settings-detail.png" alt="plugin-tab-settings-detail" border="0" width="375"/>
+
+### Older plugin versions
+#### Notepad++ preferences menu
 
 With the plugin loaded, modify your [indentation preferences](https://npp-user-manual.org/docs/preferences/#indentation)
 for F# (or "fsharp", if using version 0.2.2.0 and older).
@@ -43,7 +56,7 @@ for F# (or "fsharp", if using version 0.2.2.0 and older).
 > [!Important]
 > Your choices will *not* be saved when you exit Notepad++
 
-### XML configuration file
+#### XML configuration file
 
 To make 4 spaces the default tab setting for F# files when Notepad++ starts, do the following:
 

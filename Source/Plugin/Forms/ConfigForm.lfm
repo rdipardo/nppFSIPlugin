@@ -184,7 +184,7 @@ inherited FrmConfiguration: TFrmConfiguration
           Height = 23
           Top = 2
           Width = 88
-          Caption = 'Tab Length:'
+          Caption = 'Tab length:'
         end
         object txtTabLength: TEdit
           Left = 96
