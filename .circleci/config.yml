@@ -30,7 +30,7 @@ jobs:
         type: string
         default: NPPFSIPlugin
     environment:
-      UPX_VER: 4.2.4
+      UPX_VER: 5.0.0
       UPX_DIR: "C:\\upx"
     steps:
       - checkout

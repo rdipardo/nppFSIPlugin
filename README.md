@@ -60,7 +60,7 @@ for F# (or "fsharp", if using version 0.2.2.0 and older).
 
 To make 4 spaces the default tab setting for F# files when Notepad++ starts, do the following:
 
-- Open `NPPFSIPlugin.xml` in `%AppData%\plugins\Config` or `$(PORTABLE_NPP_DIR)\plugins\Config`
+- Open `NPPFSIPlugin.xml` in `%AppData%\Notepad++\plugins\Config` or `$(PORTABLE_NPP_DIR)\plugins\Config`
 
 - Add the attribute `tabSettings="132"` to the node `/NotepadPlus/Languages/Language[@name="F#"]`
   (or `/NotepadPlus/Languages/Language[@name="fsharp"]`, if using version 0.2.2.0 and older)
