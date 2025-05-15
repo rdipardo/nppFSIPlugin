@@ -51,6 +51,9 @@ uses
   Graphics,
   Utf8IniFiles;
 
+const
+  DEFAULT_TAB_SETTING = -1;
+
 type
 
   TPropertyInt = Boolean;
@@ -70,6 +73,8 @@ type
     _tabLength: Integer;
     _echoNPPTextInEditor: TPropertyInt;
     _initialFoldState: TPropertyInt;
+    procedure SetTabPreference(TabPref: TPropertyInt);
+    procedure SetTabLength(TabLength: Integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -84,8 +89,8 @@ type
     property EditorTextColorDark: TColor read _clStdOutDark write _clStdOutDark;
     property EditorErrorColor: TColor read _clStdErr write _clStdErr;
     property EditorErrorColorDark: TColor read _clStdErrDark write _clStdErrDark;
-    property ConvertTabsToSpacesInFSIEditor: TPropertyInt read _convertTabsToSpacesInFSIEditor write _convertTabsToSpacesInFSIEditor;
-    property TabLength: Integer read _tabLength write _tabLength;
+    property ConvertTabsToSpacesInFSIEditor: TPropertyInt read _convertTabsToSpacesInFSIEditor write SetTabPreference;
+    property TabLength: Integer read _tabLength write SetTabLength;
     property EchoNPPTextInEditor: TPropertyInt read _echoNPPTextInEditor write _echoNPPTextInEditor;
   end;
 
@@ -115,6 +120,7 @@ type
     class property XMLConfig: WideString read GetXMLConfig;
   end;
 
+function TryParseTabSettings(var Value: LongInt): Boolean;
 procedure CopyFile(const SrcPath, DestPath: WideString);
 
 implementation
@@ -124,6 +130,9 @@ uses
   Classes, SysUtils, Windows, Dom, XmlRead,
   // plugin units
   Constants, ModulePath, NppPlugin, FSIPlugin;
+
+var
+  TabPrefValue: LongInt = DEFAULT_TAB_SETTING;
 
 { TConfiguration }
 
@@ -154,8 +163,8 @@ begin
       _passArgsToDotnetFsi := configINI.ReadBool(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_PASS_ARGS_TO_DOTNET_FSI, False);
       _fsiPath := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARY_KEY_NAME, EmptyStr);
       _fsiArgs := configINI.ReadString(CONFIG_FSI_SECTION_NAME, CONFIG_FSI_SECTION_BINARYARGS_KEY_NAME, EmptyStr);
-      _convertTabsToSpacesInFSIEditor := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
-      _tabLength := configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH);
+      SetTabPreference(configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True));
+      SetTabLength(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH));
       _echoNPPTextInEditor := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_ECHO_NPP_TEXT_KEY_NAME, True);
       _clStdOut := TColor(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'TEXT_COLOR', clBlack));
       _clStdErr := TColor(configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, 'ERROR_TEXT_COLOR', clRed));
@@ -195,6 +204,22 @@ begin
       PWchar('File Reload Required'), MB_ICONINFORMATION);
 end;
 {$ENDREGION}
+
+{%Region 'Private Methods'}
+procedure TConfiguration.SetTabPreference(TabPref: TPropertyInt);
+begin
+  _convertTabsToSpacesInFSIEditor := TabPref;
+  if TryParseTabSettings(TabPrefValue) then
+    _convertTabsToSpacesInFSIEditor := TPropertyInt(TabPrefValue shr 7);
+end;
+
+procedure TConfiguration.SetTabLength(TabLength: Integer);
+begin
+  _tabLength := TabLength;
+  if TryParseTabSettings(TabPrefValue) then
+    _tabLength := TabPrefValue and $7f;
+end;
+{%EndRegion}
 
 { TLexerProperties }
 
@@ -253,8 +278,14 @@ begin
     FoldMultiLineComments := GetProperty(configINI, 'FOLD_MULTILINE_COMMENTS');
     FoldOpenStatements := GetProperty(configINI, 'FOLD_OPEN_STATEMENTS');
     FoldPreprocessor := GetProperty(configINI, 'FOLD_PREPROCESSOR');
-    IndentWithSpaces := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
-    IndentWidth := configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH);
+    if TryParseTabSettings(TabPrefValue) then
+    begin
+      IndentWithSpaces := TPropertyInt(TabPrefValue shr 7);
+      IndentWidth := TabPrefValue and $7f;
+    end else begin
+      IndentWithSpaces := configINI.ReadBool(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABTOSPACES_KEY_NAME, True);
+      IndentWidth := configINI.ReadInteger(CONFIG_FSIEDITOR_SECTION_NAME, CONFIG_FSIEDITOR_SECTION_TABLENGTH_KEY_NAME, DEFAULT_TAB_LENGTH);
+    end;
   finally
     FreeAndNil(configINI);
   end;
@@ -388,6 +419,61 @@ begin
     begin
       MessageBoxW(0, PWideChar(UTF8Decode(E.Message)), PWideChar('Error'), MB_ICONERROR);
     end;
+  end;
+end;
+
+{ ------------------------------------------------------------------------------------------------ }
+function TryParseTabSettings(var Value: LongInt): Boolean;
+var
+  Doc: TXMLDocument;
+  Root, TabSettingsNode: TDOMNode;
+  hXMLFile: THandle;
+  fStream: TStream;
+  ParseResult: Word;
+begin
+  Doc := nil;
+  fStream := nil;
+  Result := False;
+  try
+    hXMLFile := FileOpen(TLexerProperties.XMLConfig, fmOpenRead);
+    if hXMLFile <> THandle(-1) then
+    begin
+      fStream := THandleStream.Create(hXMLFile);
+      try
+        ReadXMLFile(Doc, fStream);
+      except
+        on E: Exception do
+        begin
+        end;
+      end;
+      if Assigned(Doc) then
+      begin
+        Root := Doc.DocumentElement.FirstChild;
+        while Assigned(Root) do
+        begin
+          if UnicodeSameText(Root.NodeName, 'language') then
+          begin
+            if Assigned(Root.Attributes) then
+            begin
+              TabSettingsNode := Root.Attributes.GetNamedItem('tabSettings');
+              if Assigned(TabSettingsNode) then
+              begin
+                Val (TabSettingsNode.NodeValue, Value, ParseResult);
+                Result := (ParseResult = 0) and (Value > 0);
+                Break;
+              end;
+            end;
+          end;
+          Root := Root.FirstChild;
+        end;
+      end;
+    end;
+  finally
+    FileClose(hXMLFile);
+    if Assigned(Doc) then
+      FreeAndNil(Doc);
+    if Assigned(fStream) then
+      FreeAndNil(fStream);
   end;
 end;
 

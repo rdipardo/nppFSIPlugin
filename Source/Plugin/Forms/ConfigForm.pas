@@ -137,6 +137,8 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
+var
+  TabSettingValue: LongInt = Config.DEFAULT_TAB_SETTING;
 
 { TFrmConfiguration }
 
@@ -224,6 +226,10 @@ begin
 end;
 
 procedure TFrmConfiguration.initialize;
+const
+  TabSettingsToolTip = 'Managed by Notepad++'#13#10+
+    'Go to Settings > Preferences > Indentation and select'#13#10+
+    '"Use default value" to enable these options';
 begin
   if not Assigned(_config) then
     _config := TConfiguration.Create;
@@ -231,6 +237,19 @@ begin
   chkPassArgsToDotnetFsi.Checked := _config.UseArgs;
   txtFSIBinary.Text := _config.FSIPath;
   txtFSIBinaryArgs.Text := _config.FSIArgs;
+  if Config.TryParseTabSettings(TabSettingValue) then
+  begin
+    pnlTabSettings.Enabled := False;
+    pnlTabSettings.ShowHint := True;
+    pnlTabSettings.Hint := TabSettingsToolTip;
+  end else begin
+    pnlTabSettings.Enabled := True;
+    pnlTabSettings.ShowHint := False;
+    _config.LoadFromConfigFile;
+  end;
+  chkConvertToTabs.Enabled := pnlTabSettings.Enabled;
+  chkConvertToTabs.ShowHint := pnlTabSettings.ShowHint;
+  chkConvertToTabs.Hint := pnlTabSettings.Hint;
   chkConvertToTabs.Checked := _config.ConvertTabsToSpacesInFSIEditor;
   txtTabLength.Text := IntToStr(_config.TabLength);
   chkEchoText.Checked := _config.EchoNPPTextInEditor;
@@ -264,11 +283,14 @@ begin
   _config.UseArgs := chkPassArgsToDotnetFsi.Checked;
   _config.FSIPath := txtFSIBinary.Text;
   _config.FSIArgs := txtFSIBinaryArgs.Text;
-  _config.ConvertTabsToSpacesInFSIEditor := chkConvertToTabs.Checked;
-  if (chkConvertToTabs.Checked) then
-    _config.TabLength := StrToInt(txtTabLength.Text)
-  else
-    _config.TabLength := DEFAULT_TAB_LENGTH;
+  if chkConvertToTabs.Enabled then
+  begin
+    _config.ConvertTabsToSpacesInFSIEditor := chkConvertToTabs.Checked;
+    if (chkConvertToTabs.Checked) then
+      _config.TabLength := StrToInt(txtTabLength.Text)
+    else
+      _config.TabLength := DEFAULT_TAB_LENGTH;
+  end;
   _config.EchoNPPTextInEditor := chkEchoText.Checked;
   with TLexerProperties do
   begin
