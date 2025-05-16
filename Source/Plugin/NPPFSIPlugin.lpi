@@ -25,8 +25,8 @@
       <UseVersionInfo Value="True"/>
       <MinorVersionNr Value="2"/>
       <RevisionNr Value="3"/>
-      <BuildNr Value="1"/>
-      <StringTable Comments="Updated for x64 Notepad++ by Robert Di Pardo, Copyright 2025" FileDescription="F# source code lexer and IPC client for F# Interactive" InternalName="$NameOnly($(ProjFile))" LegalCopyright="Copyright 2010 Prapin Peethambaran" OriginalFilename="$NameOnly($(ProjFile)).dll" ProductName="F# Interactive" ProductVersion="0.2.3.1"/>
+      <BuildNr Value="2"/>
+      <StringTable Comments="Updated for x64 Notepad++ by Robert Di Pardo, Copyright 2025" FileDescription="F# source code lexer and IPC client for F# Interactive" InternalName="$NameOnly($(ProjFile))" LegalCopyright="Copyright 2010 Prapin Peethambaran" OriginalFilename="$NameOnly($(ProjFile)).dll" ProductName="F# Interactive" ProductVersion="0.2.3.2"/>
     </VersionInfo>
     <BuildModes Count="2">
       <Item1 Name="Debug" Default="True"/>

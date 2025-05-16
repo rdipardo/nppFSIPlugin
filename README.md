@@ -2,7 +2,7 @@
 
 ![Built with Free Pascal][fpc] [![cci-badge][]][cci-status]
 
-![NPPFSIPlugin-v0.2.2.0-x64](https://raw.githubusercontent.com/rdipardo/NPPFSIPlugin/media/rel/nppFSIPlugin-v0.2.2-x64.png)
+![Plugin Demo](https://raw.githubusercontent.com/rdipardo/nppFSIPlugin/media/rel/nppFSIPlugin-v0.2.3.2-x64.png)
 
 ## Usage
 
@@ -35,7 +35,13 @@ For the default or a light theme, use the [default F# UDL].
 > Both UDLs have ["transparent" backgrounds] (i.e., `colorStyle="1"`).
 
 ## How to configure tab settings for F# source files
-### *F# Interactive* v0.2.3.1 and later
+### Notepad++ 8.8.1 and later
+
+With the plugin loaded, modify your [indentation preferences](https://npp-user-manual.org/docs/preferences/#indentation)
+for F# (or "fsharp", if using version 0.2.2.0 and older).
+
+### Older Notepad++ versions
+#### *F# Interactive* v0.2.3.1 and later
 
 - Open the plugin options dialog:
 
@@ -48,14 +54,6 @@ For the default or a light theme, use the [default F# UDL].
   <img src="https://i.ibb.co/Tb95Tvt/fsi-v0-2-3-1-tab-settings-detail.png" alt="plugin-tab-settings-detail" border="0" width="375"/>
 
 ### Older plugin versions
-#### Notepad++ preferences menu
-
-With the plugin loaded, modify your [indentation preferences](https://npp-user-manual.org/docs/preferences/#indentation)
-for F# (or "fsharp", if using version 0.2.2.0 and older).
-
-> [!Important]
-> Your choices will *not* be saved when you exit Notepad++
-
 #### XML configuration file
 
 To make 4 spaces the default tab setting for F# files when Notepad++ starts, do the following:
