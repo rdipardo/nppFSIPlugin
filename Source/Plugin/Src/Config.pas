@@ -102,7 +102,6 @@ type
     class function StylerNeedsUpdate: boolean;
     class function GetProperty(const config: TUtf8IniFile; const Key: string;
       DefVal: TPropertyInt = True): TPropertyInt;
-    class procedure SetProperty(const Key: string; Value: TPropertyInt);
   public
     Fold: TPropertyInt; static;
     FoldCompact: TPropertyInt; static;
@@ -241,9 +240,18 @@ class procedure TLexerProperties.SetLexer;
 const
   SCLEX_FSHARP = 132; { lexilla/include/SciLexer.h }
 var
+  DirectProc: SciFnDirect;
+  HSciWnd, PSciDirect: HWND;
   statusBarText, ext: WideString;
+
+  procedure SetProperty(const Key: string; Value: TPropertyInt);
+  begin
+    DirectProc(PSciDirect, SCI_SETPROPERTY, WPARAM(PChar(Key)),
+      LPARAM(PChar(BoolToStr(Value, '1', '0'))));
+  end;
 begin
-  if SendMessageW(Npp.CurrentScintilla, NppPlugin.SCI_GETLEXER, 0, 0) <> SCLEX_FSHARP then
+  HSciWnd := Npp.CurrentScintilla;
+  if SendMessageW(HSciWnd, SCI_GETLEXER, 0, 0) <> SCLEX_FSHARP then
     Exit;
 
   ext := Npp.GetCurrentFileExt;
@@ -257,6 +265,9 @@ begin
   SendMessageW(Npp.NppData.nppHandle, NppPlugin.NPPM_SETSTATUSBAR, NppPlugin.STATUSBAR_DOC_TYPE,
     LPARAM(PWChar(statusBarText)));
 
+  DirectProc := SciFnDirect(SendMessageW(HSciWnd, SCI_GETDIRECTFUNCTION, 0, 0));
+  PSciDirect := SendMessageW(HSciWnd, SCI_GETDIRECTPOINTER, 0, 0);
+
   LoadProperties;
   SetProperty('fold', Fold);
   SetProperty('fold.compact', FoldCompact);
@@ -264,8 +275,8 @@ begin
   SetProperty('fold.fsharp.comment.multiline', FoldMultiLineComments);
   SetProperty('fold.fsharp.imports', FoldOpenStatements);
   SetProperty('fold.fsharp.preprocessor', FoldPreprocessor);
-  SendMessage(Npp.CurrentScintilla, SCI_SETUSETABS, (not IndentWithSpaces).ToInteger(), 0);
-  SendMessage(Npp.CurrentScintilla, SCI_SETTABWIDTH, IndentWidth, 0);
+  DirectProc(PSciDirect, SCI_SETUSETABS, (not IndentWithSpaces).ToInteger(), 0);
+  DirectProc(PSciDirect, SCI_SETTABWIDTH, IndentWidth, 0);
 end;
 
 class procedure TLexerProperties.LoadProperties;
@@ -323,12 +334,6 @@ class function TLexerProperties.GetProperty(const config: TUtf8IniFile;
   const Key: string; DefVal: TPropertyInt): TPropertyInt;
 begin
   Result := config.ReadBool('LEXER_PROPERTIES', Key, DefVal);
-end;
-
-class procedure TLexerProperties.SetProperty(const Key: string; Value: TPropertyInt);
-begin
-  SendMessageW(Npp.CurrentScintilla, NppPlugin.SCI_SETPROPERTY, WPARAM(PChar(Key)),
-    LPARAM(PChar(BoolToStr(Value, '1', '0'))));
 end;
 
 class function TLexerProperties.StylerNeedsUpdate: boolean;
