@@ -1,9 +1,9 @@
 version: 2.1
 #
-# Copyright (c) 2022 Robert Di Pardo, MIT License
+# Copyright (c) 2022,2025 Robert Di Pardo, MIT License
 #
 orbs:
-  lazarus: rdipardo/lazarus@3
+  lazarus: rdipardo/lazarus@4
   win: circleci/windows@5
 
 references:
@@ -16,6 +16,7 @@ references:
       tags:
         only: /v.*/
   production: &production
+    context: gh-release-authoring
     filters:
       branches:
         ignore: /.*/
@@ -30,10 +31,11 @@ jobs:
         type: string
         default: NPPFSIPlugin
     environment:
-      UPX_VER: 5.0.1
+      UPX_VER: 5.0.2
       UPX_DIR: "C:\\upx"
     steps:
-      - checkout
+      - checkout:
+          method: full
       - attach_workspace:
           at: .
       - run:
@@ -71,13 +73,13 @@ jobs:
 workflows:
   lazarus-build:
     jobs:
-      - lazarus/build-win:
+      - lazarus/build_win:
           project: NPPFSIPlugin
-          project-dir: Source/Plugin
-          bin-dir: Source/Plugin/Bin
-          build-type: Release
-          cross-build: true
+          project_dir: Source/Plugin
+          bin_dir: Source/Plugin/Bin
+          build_type: Release
+          cross_build: true
           <<: *development
       - push-release:
           <<: *production
-          requires: [lazarus/build-win]
+          requires: [lazarus/build_win]
